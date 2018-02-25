@@ -1,0 +1,685 @@
+; .\main.SRC generated from: main.C
+; COMPILER INVOKED BY:
+;        C:\Keil\C51\BIN\C51.EXE main.C BROWSE DEBUG OBJECTEXTEND CODE LISTINCLUDE SRC(.\main.SRC)
+
+$NOMOD51
+
+NAME	MAIN
+
+P0	DATA	080H
+P1	DATA	090H
+P2	DATA	0A0H
+P3	DATA	0B0H
+T0	BIT	0B0H.4
+AC	BIT	0D0H.6
+T1	BIT	0B0H.5
+T2	BIT	090H.0
+EA	BIT	0A8H.7
+IE	DATA	0A8H
+EXF2	BIT	0C8H.6
+RD	BIT	0B0H.7
+ES	BIT	0A8H.4
+IP	DATA	0B8H
+RI	BIT	098H.0
+INT0	BIT	0B0H.2
+CY	BIT	0D0H.7
+TI	BIT	098H.1
+INT1	BIT	0B0H.3
+RCAP2H	DATA	0CBH
+PS	BIT	0B8H.4
+SP	DATA	081H
+T2EX	BIT	090H.1
+OV	BIT	0D0H.2
+RCAP2L	DATA	0CAH
+C_T2	BIT	0C8H.1
+WR	BIT	0B0H.6
+RCLK	BIT	0C8H.5
+TCLK	BIT	0C8H.4
+SBUF	DATA	099H
+PCON	DATA	087H
+SCON	DATA	098H
+TMOD	DATA	089H
+TCON	DATA	088H
+IE0	BIT	088H.1
+IE1	BIT	088H.3
+B	DATA	0F0H
+CP_RL2	BIT	0C8H.0
+ACC	DATA	0E0H
+ET0	BIT	0A8H.1
+ET1	BIT	0A8H.3
+TF0	BIT	088H.5
+ET2	BIT	0A8H.5
+TF1	BIT	088H.7
+TF2	BIT	0C8H.7
+RB8	BIT	098H.2
+TH0	DATA	08CH
+EX0	BIT	0A8H.0
+IT0	BIT	088H.0
+TH1	DATA	08DH
+TB8	BIT	098H.3
+EX1	BIT	0A8H.2
+IT1	BIT	088H.2
+TH2	DATA	0CDH
+P	BIT	0D0H.0
+SM0	BIT	098H.7
+TL0	DATA	08AH
+SM1	BIT	098H.6
+TL1	DATA	08BH
+SM2	BIT	098H.5
+TL2	DATA	0CCH
+PT0	BIT	0B8H.1
+PT1	BIT	0B8H.3
+RS0	BIT	0D0H.3
+PT2	BIT	0B8H.5
+TR0	BIT	088H.4
+RS1	BIT	0D0H.4
+TR1	BIT	088H.6
+TR2	BIT	0C8H.2
+PX0	BIT	0B8H.0
+PX1	BIT	0B8H.2
+DPH	DATA	083H
+DPL	DATA	082H
+EXEN2	BIT	0C8H.3
+REN	BIT	098H.4
+T2CON	DATA	0C8H
+RXD	BIT	0B0H.0
+TXD	BIT	0B0H.1
+F0	BIT	0D0H.5
+PSW	DATA	0D0H
+?PR?main?MAIN        SEGMENT CODE 
+?PR?_?desTest?MAIN   SEGMENT CODE 
+?DT?MAIN             SEGMENT DATA 
+?CO?MAIN             SEGMENT CODE 
+	EXTRN	CODE (_?decrypt)
+	EXTRN	CODE (_?encrypt)
+	EXTRN	CODE (_?check_hex)
+	EXTRN	CODE (_uart_string)
+	EXTRN	CODE (uart_init)
+	EXTRN	CODE (_?operation)
+	EXTRN	CODE (_?get_hex)
+	EXTRN	CODE (_bin_to_string)
+	EXTRN	CODE (_?uart_getstring)
+	EXTRN	CODE (?C_STARTUP)
+	EXTRN	DATA (?C_IBP)
+	PUBLIC	error_check_vlues
+	PUBLIC	error
+	PUBLIC	result
+	PUBLIC	input
+	PUBLIC	welcome
+	PUBLIC	_?desTest
+	PUBLIC	main
+
+	RSEG  ?DT?MAIN
+            key:   DS   8
+
+	RSEG  ?CO?MAIN
+?SC_0:
+	DB  'R' ,'e' ,'s' ,'u' ,'l' ,'t' ,':' ,' ' ,'K' ,'e' 
+	DB  'y' ,' ' ,'C' ,'h' ,'a' ,'n' ,'g' ,'e' ,'d' ,' ' 
+	DB  'S' ,'u' ,'c' ,'c' ,'e' ,'s' ,'s' ,'f' ,'u' ,'l' 
+	DB  'l' ,'y' ,00DH,000H
+
+welcome:
+	DB  'w' ,'e' ,'l' ,'c' ,'o' ,'m' ,'e' ,00DH,000H
+
+
+input:
+	DB  'I' ,'n' ,'p' ,'u' ,'t' ,':' ,000H
+
+
+result:
+	DB  'R' ,'e' ,'s' ,'u' ,'l' ,'t' ,':' ,000H
+
+
+error:
+	DB  'p' ,'l' ,'e' ,'a' ,'s' ,'e' ,' ' ,'e' ,'n' ,'t' 
+	DB  'e' ,'r' ,' ' ,'S' ,'E' ,'T' ,'K' ,'E' ,'Y' ,' ' 
+	DB  'o' ,'r' ,' ' ,'E' ,'N' ,'C' ,'R' ,'Y' ,'P' ,'T' 
+	DB  ' ' ,'o' ,'r' ,' ' ,'D' ,'E' ,'C' ,'R' ,'Y' ,'P' 
+	DB  'T' ,00DH,000H
+
+
+error_check_vlues:
+	DB  'c' ,'h' ,'e' ,'c' ,'k' ,' ' ,'v' ,'a' ,'l' ,'u' 
+	DB  'e' ,'s' ,' ' ,'t' ,'o' ,' ' ,'b' ,'e' ,' ' ,'h' 
+	DB  'e' ,'x' ,00DH,000H
+
+
+; /*
+; *************************************************************************************************************
+; *                                        DES-Algorithm-Implementation
+; *                                          Data Encryption Standard
+; *
+; *                                               DES  Test code
+; *
+; * File : main.C
+; * By   : Mostafa Abd El-Fatah, 2015
+; *************************************************************************************************************
+; */
+; //#pragma SRC
+; #include <REG52.H>                /* special function register declarations   */
+; /* for the intended 8051 derivative         */
+; #include <stdio.h>                /* prototype declarations for I/O functions */
+; #include "datatypes.h"
+; #include "DES.h"
+; #include "UART.h"
+; #include "TERMINAL.h"
+; 
+; /*
+; **************************************************************************************************************
+; *                                               VARIABLES
+; **************************************************************************************************************
+; */
+; code char welcome[] = "welcome\r";
+; code char input[] = "Input:";
+; code char result[] = "Result:";
+; code char error[] = "please enter SETKEY or ENCRYPT or DECRYPT\r";
+; code char error_check_vlues[] = "check values to be hex\r";
+; 
+; /*$PAGE*/
+; /*
+; *********************************************************************************************************
+; *                                       FUNCTION PROTOTYPES
+; *********************************************************************************************************
+; */
+; 
+; void desTest(void) reentrant;
+; 
+; /*
+; **************************************************************************************************************
+; *                                                MAIN
+; **************************************************************************************************************
+; */
+; void main (void)
+
+	RSEG  ?PR?main?MAIN
+main:
+	USING	0
+			; SOURCE LINE # 46
+; {
+			; SOURCE LINE # 47
+;     uart_init();
+			; SOURCE LINE # 48
+	LCALL	uart_init
+;     uart_string(welcome);
+			; SOURCE LINE # 49
+	MOV  	R3,#0FFH
+	MOV  	R2,#HIGH (welcome)
+	MOV  	R1,#LOW (welcome)
+	LCALL	_uart_string
+?C0001:
+; //_asm NOP _endasm
+; //__asm { 0x00 }
+; //asm(" nop ");
+; //__asm{}
+; 
+; //	#pragma asm
+; //	nop;
+; //	#pragma endasm
+; 
+;     /*------------------------------------------------
+;      loop executed forever.
+;     ------------------------------------------------*/
+;     while (1)
+			; SOURCE LINE # 62
+;     {
+			; SOURCE LINE # 63
+;         desTest();
+			; SOURCE LINE # 64
+	LCALL	_?desTest
+;     }
+			; SOURCE LINE # 65
+	SJMP 	?C0001
+; END OF main
+
+; }
+; 
+; /*$PAGE*/
+; /*
+; *********************************************************************************************************
+; *                         Test encrypt and decrypt DES algorithm implementation
+; *
+; * Description: This function is used to Display Encrypted and Decrypted input data to the console.
+; *
+; * Arguments  : None
+; *
+; * Returns    : None
+; *********************************************************************************************************
+; */
+; void desTest(void) reentrant
+
+	RSEG  ?PR?_?desTest?MAIN
+_?desTest:
+	USING	0
+			; SOURCE LINE # 80
+	MOV  	A,?C_IBP
+	ADD  	A,#0EAH
+	MOV  	?C_IBP,A
+; {
+;     uint8_t *check_in, *ptr_hex;
+;     unsigned char out[8]; 
+;     unsigned char in[8];
+;     static unsigned char key[8];
+; 
+;     uart_string(input);
+			; SOURCE LINE # 87
+	MOV  	R3,#0FFH
+	MOV  	R2,#HIGH (input)
+	MOV  	R1,#LOW (input)
+	LCALL	_uart_string
+;     check_in = uart_getstring();
+			; SOURCE LINE # 88
+	LCALL	_?uart_getstring
+	MOV  	R0,?C_IBP
+	MOV  	@R0,AR3
+	INC  	R0
+	MOV  	@R0,AR2
+	INC  	R0
+	MOV  	@R0,AR1
+; 
+;     switch(operation(check_in))
+			; SOURCE LINE # 90
+	MOV  	R0,?C_IBP
+	MOV  	AR3,@R0
+	INC  	R0
+	MOV  	A,@R0
+	MOV  	R2,A
+	INC  	R0
+	MOV  	A,@R0
+	MOV  	R1,A
+	LCALL	_?operation
+	MOV  	A,R7
+	ADD  	A,#0FEH
+	JZ   	?C0008
+	DEC  	A
+	JNZ  	$ + 5H
+	LJMP 	?C0011
+	ADD  	A,#02H
+	JZ   	$ + 5H
+	LJMP 	?C0014
+;     {
+			; SOURCE LINE # 91
+;     case 1:
+			; SOURCE LINE # 92
+?C0005:
+;         //uart_string("SETKEY");
+;         ptr_hex = check_in+7;
+			; SOURCE LINE # 94
+	MOV  	R0,?C_IBP
+	MOV  	AR3,@R0
+	INC  	R0
+	MOV  	A,@R0
+	MOV  	R2,A
+	INC  	R0
+	MOV  	A,@R0
+	ADD  	A,#07H
+	MOV  	R1,A
+	CLR  	A
+	ADDC 	A,R2
+	MOV  	R2,A
+	MOV  	A,?C_IBP
+	ADD  	A,#03H
+	MOV  	R0,A
+	MOV  	@R0,AR3
+	INC  	R0
+	MOV  	@R0,AR2
+	INC  	R0
+	MOV  	@R0,AR1
+;         if(check_hex(ptr_hex)) 			/* if entered value in hex containue */
+			; SOURCE LINE # 95
+	MOV  	A,?C_IBP
+	ADD  	A,#03H
+	MOV  	R0,A
+	MOV  	AR3,@R0
+	INC  	R0
+	MOV  	A,@R0
+	MOV  	R2,A
+	INC  	R0
+	MOV  	A,@R0
+	MOV  	R1,A
+	LCALL	_?check_hex
+	MOV  	A,R7
+	JZ   	?C0006
+;         {
+			; SOURCE LINE # 96
+;             get_hex(key,ptr_hex);		/* get string input and convert it to hex */
+			; SOURCE LINE # 97
+	MOV  	A,?C_IBP
+	ADD  	A,#03H
+	MOV  	R0,A
+	MOV  	AR3,@R0
+	INC  	R0
+	MOV  	A,@R0
+	MOV  	R2,A
+	INC  	R0
+	MOV  	A,@R0
+	MOV  	R1,A
+	DEC  	?C_IBP
+	DEC  	?C_IBP
+	DEC  	?C_IBP
+	MOV  	R0,?C_IBP
+	MOV  	@R0,AR3
+	INC  	R0
+	MOV  	@R0,AR2
+	INC  	R0
+	MOV  	@R0,AR1
+	MOV  	R3,#00H
+	MOV  	R2,#HIGH (key)
+	MOV  	R1,#LOW (key)
+	LCALL	_?get_hex
+;             uart_string("Result: Key Changed Successfully\r");
+			; SOURCE LINE # 98
+	MOV  	R3,#0FFH
+	MOV  	R2,#HIGH (?SC_0)
+	MOV  	R1,#LOW (?SC_0)
+;         }
+			; SOURCE LINE # 99
+	LJMP 	?C0021
+?C0006:
+;         else
+;         {
+			; SOURCE LINE # 101
+;             uart_string(error_check_vlues);
+			; SOURCE LINE # 102
+	MOV  	R3,#0FFH
+	MOV  	R2,#HIGH (error_check_vlues)
+	MOV  	R1,#LOW (error_check_vlues)
+?C0016:
+;         }
+			; SOURCE LINE # 103
+;         break;
+			; SOURCE LINE # 104
+	LJMP 	?C0021
+; 
+;     case 2:
+			; SOURCE LINE # 106
+?C0008:
+;         //uart_string("ENCRYPT");
+;         ptr_hex = check_in+8;
+			; SOURCE LINE # 108
+	MOV  	R0,?C_IBP
+	MOV  	AR3,@R0
+	INC  	R0
+	MOV  	A,@R0
+	MOV  	R2,A
+	INC  	R0
+	MOV  	A,@R0
+	ADD  	A,#08H
+	MOV  	R1,A
+	CLR  	A
+	ADDC 	A,R2
+	MOV  	R2,A
+	MOV  	A,?C_IBP
+	ADD  	A,#03H
+	MOV  	R0,A
+	MOV  	@R0,AR3
+	INC  	R0
+	MOV  	@R0,AR2
+	INC  	R0
+	MOV  	@R0,AR1
+;         if(check_hex(ptr_hex)==1)
+			; SOURCE LINE # 109
+	MOV  	A,?C_IBP
+	ADD  	A,#03H
+	MOV  	R0,A
+	MOV  	AR3,@R0
+	INC  	R0
+	MOV  	A,@R0
+	MOV  	R2,A
+	INC  	R0
+	MOV  	A,@R0
+	MOV  	R1,A
+	LCALL	_?check_hex
+	MOV  	A,R7
+	XRL  	A,#01H
+	JNZ  	?C0009
+;         {
+			; SOURCE LINE # 110
+;             get_hex(in,ptr_hex);
+			; SOURCE LINE # 111
+	MOV  	A,?C_IBP
+	ADD  	A,#03H
+	MOV  	R0,A
+	MOV  	AR3,@R0
+	INC  	R0
+	MOV  	A,@R0
+	MOV  	R2,A
+	INC  	R0
+	MOV  	A,@R0
+	MOV  	R1,A
+	DEC  	?C_IBP
+	DEC  	?C_IBP
+	DEC  	?C_IBP
+	MOV  	R0,?C_IBP
+	MOV  	@R0,AR3
+	INC  	R0
+	MOV  	@R0,AR2
+	INC  	R0
+	MOV  	@R0,AR1
+	MOV  	R3,#00H
+	MOV  	A,?C_IBP
+	ADD  	A,#011H
+	MOV  	R1,A
+	MOV  	R2,#00H
+	LCALL	_?get_hex
+;             encrypt(out, in, key);      // encrypt "in" data by "key" and return encrypted data in "out"
+			; SOURCE LINE # 112
+	DEC  	?C_IBP
+	DEC  	?C_IBP
+	DEC  	?C_IBP
+	MOV  	R0,?C_IBP
+	MOV  	@R0,#00H
+	INC  	R0
+	MOV  	@R0,#HIGH (key)
+	INC  	R0
+	MOV  	@R0,#LOW (key)
+	MOV  	A,?C_IBP
+	ADD  	A,#011H
+	DEC  	?C_IBP
+	DEC  	?C_IBP
+	DEC  	?C_IBP
+	MOV  	R0,?C_IBP
+	MOV  	@R0,#00H
+	INC  	R0
+	MOV  	@R0,#00H
+	INC  	R0
+	MOV  	@R0,A
+	MOV  	R3,#00H
+	MOV  	A,?C_IBP
+	ADD  	A,#0CH
+	MOV  	R1,A
+	MOV  	R2,#00H
+	LCALL	_?encrypt
+;             uart_string(result);
+			; SOURCE LINE # 113
+	MOV  	R3,#0FFH
+	MOV  	R2,#HIGH (result)
+	MOV  	R1,#LOW (result)
+	LCALL	_uart_string
+;             uart_string(bin_to_string(out, 8));
+			; SOURCE LINE # 114
+	MOV  	R3,#00H
+	MOV  	A,?C_IBP
+	ADD  	A,#06H
+	MOV  	R1,A
+	MOV  	R2,#00H
+	MOV  	R5,#08H
+	MOV  	R4,#00H
+	LCALL	_bin_to_string
+?C0017:
+;         }
+			; SOURCE LINE # 115
+	LJMP 	?C0021
+?C0009:
+;         else
+;         {
+			; SOURCE LINE # 117
+;             uart_string(error_check_vlues);
+			; SOURCE LINE # 118
+	MOV  	R3,#0FFH
+	MOV  	R2,#HIGH (error_check_vlues)
+	MOV  	R1,#LOW (error_check_vlues)
+?C0018:
+;         }
+			; SOURCE LINE # 119
+;         break;
+			; SOURCE LINE # 120
+	LJMP 	?C0021
+; 
+;     case 3:
+			; SOURCE LINE # 122
+?C0011:
+;         //uart_string("DECRYPT");
+;         ptr_hex = check_in+8;
+			; SOURCE LINE # 124
+	MOV  	R0,?C_IBP
+	MOV  	AR3,@R0
+	INC  	R0
+	MOV  	A,@R0
+	MOV  	R2,A
+	INC  	R0
+	MOV  	A,@R0
+	ADD  	A,#08H
+	MOV  	R1,A
+	CLR  	A
+	ADDC 	A,R2
+	MOV  	R2,A
+	MOV  	A,?C_IBP
+	ADD  	A,#03H
+	MOV  	R0,A
+	MOV  	@R0,AR3
+	INC  	R0
+	MOV  	@R0,AR2
+	INC  	R0
+	MOV  	@R0,AR1
+;         if(check_hex(ptr_hex)==1)
+			; SOURCE LINE # 125
+	MOV  	A,?C_IBP
+	ADD  	A,#03H
+	MOV  	R0,A
+	MOV  	AR3,@R0
+	INC  	R0
+	MOV  	A,@R0
+	MOV  	R2,A
+	INC  	R0
+	MOV  	A,@R0
+	MOV  	R1,A
+	LCALL	_?check_hex
+	MOV  	A,R7
+	XRL  	A,#01H
+	JNZ  	?C0012
+;         {
+			; SOURCE LINE # 126
+;             get_hex(in,ptr_hex);
+			; SOURCE LINE # 127
+	MOV  	A,?C_IBP
+	ADD  	A,#03H
+	MOV  	R0,A
+	MOV  	AR3,@R0
+	INC  	R0
+	MOV  	A,@R0
+	MOV  	R2,A
+	INC  	R0
+	MOV  	A,@R0
+	MOV  	R1,A
+	DEC  	?C_IBP
+	DEC  	?C_IBP
+	DEC  	?C_IBP
+	MOV  	R0,?C_IBP
+	MOV  	@R0,AR3
+	INC  	R0
+	MOV  	@R0,AR2
+	INC  	R0
+	MOV  	@R0,AR1
+	MOV  	R3,#00H
+	MOV  	A,?C_IBP
+	ADD  	A,#011H
+	MOV  	R1,A
+	MOV  	R2,#00H
+	LCALL	_?get_hex
+;             decrypt(out, in, key);      // decrypt "in" data by "key" and return original data in "out"
+			; SOURCE LINE # 128
+	DEC  	?C_IBP
+	DEC  	?C_IBP
+	DEC  	?C_IBP
+	MOV  	R0,?C_IBP
+	MOV  	@R0,#00H
+	INC  	R0
+	MOV  	@R0,#HIGH (key)
+	INC  	R0
+	MOV  	@R0,#LOW (key)
+	MOV  	A,?C_IBP
+	ADD  	A,#011H
+	DEC  	?C_IBP
+	DEC  	?C_IBP
+	DEC  	?C_IBP
+	MOV  	R0,?C_IBP
+	MOV  	@R0,#00H
+	INC  	R0
+	MOV  	@R0,#00H
+	INC  	R0
+	MOV  	@R0,A
+	MOV  	R3,#00H
+	MOV  	A,?C_IBP
+	ADD  	A,#0CH
+	MOV  	R1,A
+	MOV  	R2,#00H
+	LCALL	_?decrypt
+;             uart_string(result);
+			; SOURCE LINE # 129
+	MOV  	R3,#0FFH
+	MOV  	R2,#HIGH (result)
+	MOV  	R1,#LOW (result)
+	LCALL	_uart_string
+;             uart_string(bin_to_string(out, 8));
+			; SOURCE LINE # 130
+	MOV  	R3,#00H
+	MOV  	A,?C_IBP
+	ADD  	A,#06H
+	MOV  	R1,A
+	MOV  	R2,#00H
+	MOV  	R5,#08H
+	MOV  	R4,#00H
+	LCALL	_bin_to_string
+?C0019:
+;         }
+			; SOURCE LINE # 131
+	SJMP 	?C0021
+?C0012:
+;         else
+;         {
+			; SOURCE LINE # 133
+;             uart_string(error_check_vlues);
+			; SOURCE LINE # 134
+	MOV  	R3,#0FFH
+	MOV  	R2,#HIGH (error_check_vlues)
+	MOV  	R1,#LOW (error_check_vlues)
+?C0020:
+;         }
+			; SOURCE LINE # 135
+;         break;
+			; SOURCE LINE # 136
+	SJMP 	?C0021
+; 
+;     default:
+			; SOURCE LINE # 138
+?C0014:
+;         uart_string(error);
+			; SOURCE LINE # 139
+	MOV  	R3,#0FFH
+	MOV  	R2,#HIGH (error)
+	MOV  	R1,#LOW (error)
+?C0021:
+	LCALL	_uart_string
+;     }
+			; SOURCE LINE # 140
+; }
+			; SOURCE LINE # 141
+?C0015:
+	MOV  	A,?C_IBP
+	ADD  	A,#016H
+	MOV  	?C_IBP,A
+	RET  	
+; END OF _?desTest
+
+	END

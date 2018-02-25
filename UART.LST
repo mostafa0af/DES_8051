@@ -1,0 +1,443 @@
+C51 COMPILER V9.02   UART                                                                  07/14/2015 21:42:19 PAGE 1   
+
+
+C51 COMPILER V9.02, COMPILATION OF MODULE UART
+OBJECT MODULE PLACED IN UART.OBJ
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE UART.c BROWSE DEBUG OBJECTEXTEND CODE LISTINCLUDE
+
+line level    source
+
+   1          /*
+   2          **********************************************************************************************************
+             -***
+   3          *                                        UART Communication
+   4          
+   5          * File : UART.C
+   6          * By   : github.com
+   7          **********************************************************************************************************
+             -***
+   8          */
+   9          #include "UART.h"
+   1      =1  #ifndef UART_h
+   2      =1  #define UART_h
+   3      =1  
+   4      =1  #include <REG52.H>
+   1      =2  /*--------------------------------------------------------------------------
+   2      =2  REG52.H
+   3      =2  
+   4      =2  Header file for generic 80C52 and 80C32 microcontroller.
+   5      =2  Copyright (c) 1988-2002 Keil Elektronik GmbH and Keil Software, Inc.
+   6      =2  All rights reserved.
+   7      =2  --------------------------------------------------------------------------*/
+   8      =2  
+   9      =2  #ifndef __REG52_H__
+  10      =2  #define __REG52_H__
+  11      =2  
+  12      =2  /*  BYTE Registers  */
+  13      =2  sfr P0    = 0x80;
+  14      =2  sfr P1    = 0x90;
+  15      =2  sfr P2    = 0xA0;
+  16      =2  sfr P3    = 0xB0;
+  17      =2  sfr PSW   = 0xD0;
+  18      =2  sfr ACC   = 0xE0;
+  19      =2  sfr B     = 0xF0;
+  20      =2  sfr SP    = 0x81;
+  21      =2  sfr DPL   = 0x82;
+  22      =2  sfr DPH   = 0x83;
+  23      =2  sfr PCON  = 0x87;
+  24      =2  sfr TCON  = 0x88;
+  25      =2  sfr TMOD  = 0x89;
+  26      =2  sfr TL0   = 0x8A;
+  27      =2  sfr TL1   = 0x8B;
+  28      =2  sfr TH0   = 0x8C;
+  29      =2  sfr TH1   = 0x8D;
+  30      =2  sfr IE    = 0xA8;
+  31      =2  sfr IP    = 0xB8;
+  32      =2  sfr SCON  = 0x98;
+  33      =2  sfr SBUF  = 0x99;
+  34      =2  
+  35      =2  /*  8052 Extensions  */
+  36      =2  sfr T2CON  = 0xC8;
+  37      =2  sfr RCAP2L = 0xCA;
+  38      =2  sfr RCAP2H = 0xCB;
+  39      =2  sfr TL2    = 0xCC;
+  40      =2  sfr TH2    = 0xCD;
+C51 COMPILER V9.02   UART                                                                  07/14/2015 21:42:19 PAGE 2   
+
+  41      =2  
+  42      =2  
+  43      =2  /*  BIT Registers  */
+  44      =2  /*  PSW  */
+  45      =2  sbit CY    = PSW^7;
+  46      =2  sbit AC    = PSW^6;
+  47      =2  sbit F0    = PSW^5;
+  48      =2  sbit RS1   = PSW^4;
+  49      =2  sbit RS0   = PSW^3;
+  50      =2  sbit OV    = PSW^2;
+  51      =2  sbit P     = PSW^0; //8052 only
+  52      =2  
+  53      =2  /*  TCON  */
+  54      =2  sbit TF1   = TCON^7;
+  55      =2  sbit TR1   = TCON^6;
+  56      =2  sbit TF0   = TCON^5;
+  57      =2  sbit TR0   = TCON^4;
+  58      =2  sbit IE1   = TCON^3;
+  59      =2  sbit IT1   = TCON^2;
+  60      =2  sbit IE0   = TCON^1;
+  61      =2  sbit IT0   = TCON^0;
+  62      =2  
+  63      =2  /*  IE  */
+  64      =2  sbit EA    = IE^7;
+  65      =2  sbit ET2   = IE^5; //8052 only
+  66      =2  sbit ES    = IE^4;
+  67      =2  sbit ET1   = IE^3;
+  68      =2  sbit EX1   = IE^2;
+  69      =2  sbit ET0   = IE^1;
+  70      =2  sbit EX0   = IE^0;
+  71      =2  
+  72      =2  /*  IP  */
+  73      =2  sbit PT2   = IP^5;
+  74      =2  sbit PS    = IP^4;
+  75      =2  sbit PT1   = IP^3;
+  76      =2  sbit PX1   = IP^2;
+  77      =2  sbit PT0   = IP^1;
+  78      =2  sbit PX0   = IP^0;
+  79      =2  
+  80      =2  /*  P3  */
+  81      =2  sbit RD    = P3^7;
+  82      =2  sbit WR    = P3^6;
+  83      =2  sbit T1    = P3^5;
+  84      =2  sbit T0    = P3^4;
+  85      =2  sbit INT1  = P3^3;
+  86      =2  sbit INT0  = P3^2;
+  87      =2  sbit TXD   = P3^1;
+  88      =2  sbit RXD   = P3^0;
+  89      =2  
+  90      =2  /*  SCON  */
+  91      =2  sbit SM0   = SCON^7;
+  92      =2  sbit SM1   = SCON^6;
+  93      =2  sbit SM2   = SCON^5;
+  94      =2  sbit REN   = SCON^4;
+  95      =2  sbit TB8   = SCON^3;
+  96      =2  sbit RB8   = SCON^2;
+  97      =2  sbit TI    = SCON^1;
+  98      =2  sbit RI    = SCON^0;
+  99      =2  
+ 100      =2  /*  P1  */
+ 101      =2  sbit T2EX  = P1^1; // 8052 only
+ 102      =2  sbit T2    = P1^0; // 8052 only
+C51 COMPILER V9.02   UART                                                                  07/14/2015 21:42:19 PAGE 3   
+
+ 103      =2               
+ 104      =2  /*  T2CON  */
+ 105      =2  sbit TF2    = T2CON^7;
+ 106      =2  sbit EXF2   = T2CON^6;
+ 107      =2  sbit RCLK   = T2CON^5;
+ 108      =2  sbit TCLK   = T2CON^4;
+ 109      =2  sbit EXEN2  = T2CON^3;
+ 110      =2  sbit TR2    = T2CON^2;
+ 111      =2  sbit C_T2   = T2CON^1;
+ 112      =2  sbit CP_RL2 = T2CON^0;
+ 113      =2  
+ 114      =2  #endif
+   5      =1  
+   6      =1  /*$PAGE*/
+   7      =1  /*
+   8      =1  *********************************************************************************************************
+   9      =1  *                                       FUNCTION PROTOTYPES
+  10      =1  *********************************************************************************************************
+  11      =1  */
+  12      =1  void uart_init(void);
+  13      =1  
+  14      =1  void uart_data(unsigned char);
+  15      =1  
+  16      =1  void uart_string(unsigned char []);
+  17      =1  
+  18      =1  unsigned char uart_rx();
+  19      =1  
+  20      =1  char* uart_getstring(void) reentrant;
+  21      =1  
+  22      =1  #endif
+  23      =1  
+  10          //#include "stdbool.h"
+  11          //#include "stdint.h"
+  12          
+  13          /*$PAGE*/
+  14          /*
+  15          *********************************************************************************************************
+  16          *                                      UART initialization
+  17          *
+  18          * Description: This function use to enable UART peripheral and set the parameters.
+  19          *                          Setup the serial port for 1200 baud at 16MHz.
+  20          *
+  21          * Arguments  : None
+  22          *
+  23          * Returns    : None
+  24          *********************************************************************************************************
+  25          */
+  26          void uart_init()
+  27          {
+  28   1          TMOD |= 0x20;               /* TMOD: timer 1, mode 2, 8-bit reload        */
+  29   1          SCON  = 0x50;                                       /* SCON: mode 1, 8-bit UART, enable rcvr      */
+  30   1          TH1   = 221;                /* TH1:  reload value for 1200 baud @ 16MHz   */
+  31   1          TR1   = 1;                  /* TR1:  timer 1 run                          */
+  32   1      }
+  33          
+  34          /*$PAGE*/
+  35          /*
+  36          *********************************************************************************************************
+  37          *                                      UART send data
+  38          *
+  39          * Description: This function use to send passed data via UART peripheral.
+  40          *
+C51 COMPILER V9.02   UART                                                                  07/14/2015 21:42:19 PAGE 4   
+
+  41          * Arguments  : mad              is a character will send in Tx pin.
+  42          *
+  43          * Returns    : None
+  44          *********************************************************************************************************
+  45          */
+  46          void uart_data(unsigned char mad)
+  47          {
+  48   1          SBUF=mad;
+  49   1          while(TI==0);
+  50   1          TI=0;
+  51   1      }
+  52          
+  53          /*$PAGE*/
+  54          /*
+  55          *********************************************************************************************************
+  56          *                                      UART send string
+  57          *
+  58          * Description: This function use to send array of char via UART peripheral.
+  59          *
+  60          * Arguments  : mad              is a point to the 1st element of string.
+  61          *
+  62          * Returns    : None
+  63          *********************************************************************************************************
+  64          */
+  65          void uart_string(unsigned char mad[])
+  66          {
+  67   1          unsigned int j;
+  68   1      
+  69   1          for(j=0; mad[j]!='\0'; j++)
+  70   1              uart_data(mad[j]);
+  71   1      }
+  72          
+  73          /*$PAGE*/
+  74          /*
+  75          *********************************************************************************************************
+  76          *                                      UART get data
+  77          *
+  78          * Description: This function use to data from UART peripheral
+  79          *
+  80          * Arguments  : None.
+  81          *
+  82          * Returns    : ch          is a character will receive data.
+  83          *********************************************************************************************************
+  84          */
+  85          unsigned char uart_rx()
+  86          {
+  87   1          unsigned char ch;
+  88   1          while(RI==0);
+  89   1          ch=SBUF;
+  90   1          RI = 0;
+  91   1          return (ch);
+  92   1      }
+  93          
+  94          /*$PAGE*/
+  95          /*
+  96          *********************************************************************************************************
+  97          *                                      UART get string
+  98          *
+  99          * Description: This function use to receive data and put it into array of characters
+ 100          *
+ 101          * Arguments  : None.
+ 102          *
+C51 COMPILER V9.02   UART                                                                  07/14/2015 21:42:19 PAGE 5   
+
+ 103          * Returns    : output   is a point to the 1st element of string.
+ 104          *********************************************************************************************************
+ 105          */
+ 106          char* uart_getstring(void) reentrant
+ 107          {
+ 108   1          static char output[26];
+ 109   1          char* str = output;
+ 110   1          do
+ 111   1          {
+ 112   2              str++;
+ 113   2              *str = uart_rx();
+ 114   2          }
+ 115   1          while(*str != '\r');
+ 116   1          *str = '\0';
+ 117   1          return output+1;
+ 118   1      }
+ 119          
+C51 COMPILER V9.02   UART                                                                  07/14/2015 21:42:19 PAGE 6   
+
+ASSEMBLY LISTING OF GENERATED OBJECT CODE
+
+
+             ; FUNCTION uart_init (BEGIN)
+                                           ; SOURCE LINE # 26
+                                           ; SOURCE LINE # 27
+                                           ; SOURCE LINE # 28
+0000 438920            ORL     TMOD,#020H
+                                           ; SOURCE LINE # 29
+0003 759850            MOV     SCON,#050H
+                                           ; SOURCE LINE # 30
+0006 758DDD            MOV     TH1,#0DDH
+                                           ; SOURCE LINE # 31
+0009 D28E              SETB    TR1
+                                           ; SOURCE LINE # 32
+000B 22                RET     
+             ; FUNCTION uart_init (END)
+
+             ; FUNCTION _uart_data (BEGIN)
+                                           ; SOURCE LINE # 46
+;---- Variable 'mad' assigned to Register 'R7' ----
+                                           ; SOURCE LINE # 47
+                                           ; SOURCE LINE # 48
+0000 8F99              MOV     SBUF,R7
+0002         ?C0002:
+                                           ; SOURCE LINE # 49
+0002 3099FD            JNB     TI,?C0002
+0005         ?C0003:
+                                           ; SOURCE LINE # 50
+0005 C299              CLR     TI
+                                           ; SOURCE LINE # 51
+0007 22                RET     
+             ; FUNCTION _uart_data (END)
+
+             ; FUNCTION _uart_string (BEGIN)
+                                           ; SOURCE LINE # 65
+0000 8B00        R     MOV     mad,R3
+0002 8A00        R     MOV     mad+01H,R2
+0004 8900        R     MOV     mad+02H,R1
+                                           ; SOURCE LINE # 66
+                                           ; SOURCE LINE # 69
+;---- Variable 'j' assigned to Register 'R4/R5' ----
+0006 E4                CLR     A
+0007 FD                MOV     R5,A
+0008 FC                MOV     R4,A
+0009         ?C0005:
+0009 AB00        R     MOV     R3,mad
+000B AA00        R     MOV     R2,mad+01H
+000D A900        R     MOV     R1,mad+02H
+000F 8D82              MOV     DPL,R5
+0011 8C83              MOV     DPH,R4
+0013 120000      E     LCALL   ?C?CLDOPTR
+0016 FF                MOV     R7,A
+0017 600A              JZ      ?C0008
+                                           ; SOURCE LINE # 70
+0019 120000      R     LCALL   _uart_data
+001C 0D                INC     R5
+001D BD0001            CJNE    R5,#00H,?C0016
+0020 0C                INC     R4
+0021         ?C0016:
+0021 80E6              SJMP    ?C0005
+                                           ; SOURCE LINE # 71
+C51 COMPILER V9.02   UART                                                                  07/14/2015 21:42:19 PAGE 7   
+
+0023         ?C0008:
+0023 22                RET     
+             ; FUNCTION _uart_string (END)
+
+             ; FUNCTION uart_rx (BEGIN)
+                                           ; SOURCE LINE # 85
+                                           ; SOURCE LINE # 86
+0000         ?C0009:
+                                           ; SOURCE LINE # 88
+0000 3098FD            JNB     RI,?C0009
+0003         ?C0010:
+                                           ; SOURCE LINE # 89
+;---- Variable 'ch' assigned to Register 'R7' ----
+0003 AF99              MOV     R7,SBUF
+                                           ; SOURCE LINE # 90
+0005 C298              CLR     RI
+                                           ; SOURCE LINE # 91
+                                           ; SOURCE LINE # 92
+0007         ?C0011:
+0007 22                RET     
+             ; FUNCTION uart_rx (END)
+
+             ; FUNCTION _?uart_getstring (BEGIN)
+                                           ; SOURCE LINE # 106
+0000 1500        E     DEC     ?C_IBP
+0002 1500        E     DEC     ?C_IBP
+0004 1500        E     DEC     ?C_IBP
+                                           ; SOURCE LINE # 109
+0006 A800        E     MOV     R0,?C_IBP
+0008 7600              MOV     @R0,#00H
+000A 08                INC     R0
+000B 7600        R     MOV     @R0,#HIGH output
+000D 08                INC     R0
+000E 7600        R     MOV     @R0,#LOW output
+0010         ?C0014:
+                                           ; SOURCE LINE # 111
+                                           ; SOURCE LINE # 112
+0010 A800        E     MOV     R0,?C_IBP
+0012 08                INC     R0
+0013 08                INC     R0
+0014 7401              MOV     A,#01H
+0016 26                ADD     A,@R0
+0017 F6                MOV     @R0,A
+0018 18                DEC     R0
+0019 E4                CLR     A
+001A 36                ADDC    A,@R0
+001B F6                MOV     @R0,A
+                                           ; SOURCE LINE # 113
+001C 120000      R     LCALL   uart_rx
+001F A800        E     MOV     R0,?C_IBP
+0021 8603              MOV     AR3,@R0
+0023 08                INC     R0
+0024 E6                MOV     A,@R0
+0025 FA                MOV     R2,A
+0026 08                INC     R0
+0027 E6                MOV     A,@R0
+0028 F9                MOV     R1,A
+0029 EF                MOV     A,R7
+002A 120000      E     LCALL   ?C?CSTPTR
+                                           ; SOURCE LINE # 114
+                                           ; SOURCE LINE # 115
+002D A800        E     MOV     R0,?C_IBP
+C51 COMPILER V9.02   UART                                                                  07/14/2015 21:42:19 PAGE 8   
+
+002F 8603              MOV     AR3,@R0
+0031 08                INC     R0
+0032 E6                MOV     A,@R0
+0033 FA                MOV     R2,A
+0034 08                INC     R0
+0035 E6                MOV     A,@R0
+0036 F9                MOV     R1,A
+0037 120000      E     LCALL   ?C?CLDPTR
+003A B40DD3            CJNE    A,#0DH,?C0014
+                                           ; SOURCE LINE # 116
+003D E4                CLR     A
+003E 120000      E     LCALL   ?C?CSTPTR
+                                           ; SOURCE LINE # 117
+0041 FB                MOV     R3,A
+0042 7A00        R     MOV     R2,#HIGH output+01H
+0044 7900        R     MOV     R1,#LOW output+01H
+                                           ; SOURCE LINE # 118
+0046         ?C0015:
+0046 0500        E     INC     ?C_IBP
+0048 0500        E     INC     ?C_IBP
+004A 0500        E     INC     ?C_IBP
+004C 22                RET     
+             ; FUNCTION _?uart_getstring (END)
+
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    141    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     26       3
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

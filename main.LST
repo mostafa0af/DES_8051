@@ -1,0 +1,1035 @@
+C51 COMPILER V9.02   MAIN                                                                  07/14/2015 21:42:18 PAGE 1   
+
+
+C51 COMPILER V9.02, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN main.OBJ
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE main.C BROWSE DEBUG OBJECTEXTEND CODE LISTINCLUDE
+
+line level    source
+
+   1          /*
+   2          **********************************************************************************************************
+             -***
+   3          *                                        DES-Algorithm-Implementation
+   4          *                                          Data Encryption Standard
+   5          *
+   6          *                                               DES  Test code
+   7          *
+   8          * File : main.C
+   9          * By   : Mostafa Abd El-Fatah, 2015
+  10          **********************************************************************************************************
+             -***
+  11          */
+  12          //#pragma SRC
+  13          #include <REG52.H>                /* special function register declarations   */
+   1      =1  /*--------------------------------------------------------------------------
+   2      =1  REG52.H
+   3      =1  
+   4      =1  Header file for generic 80C52 and 80C32 microcontroller.
+   5      =1  Copyright (c) 1988-2002 Keil Elektronik GmbH and Keil Software, Inc.
+   6      =1  All rights reserved.
+   7      =1  --------------------------------------------------------------------------*/
+   8      =1  
+   9      =1  #ifndef __REG52_H__
+  10      =1  #define __REG52_H__
+  11      =1  
+  12      =1  /*  BYTE Registers  */
+  13      =1  sfr P0    = 0x80;
+  14      =1  sfr P1    = 0x90;
+  15      =1  sfr P2    = 0xA0;
+  16      =1  sfr P3    = 0xB0;
+  17      =1  sfr PSW   = 0xD0;
+  18      =1  sfr ACC   = 0xE0;
+  19      =1  sfr B     = 0xF0;
+  20      =1  sfr SP    = 0x81;
+  21      =1  sfr DPL   = 0x82;
+  22      =1  sfr DPH   = 0x83;
+  23      =1  sfr PCON  = 0x87;
+  24      =1  sfr TCON  = 0x88;
+  25      =1  sfr TMOD  = 0x89;
+  26      =1  sfr TL0   = 0x8A;
+  27      =1  sfr TL1   = 0x8B;
+  28      =1  sfr TH0   = 0x8C;
+  29      =1  sfr TH1   = 0x8D;
+  30      =1  sfr IE    = 0xA8;
+  31      =1  sfr IP    = 0xB8;
+  32      =1  sfr SCON  = 0x98;
+  33      =1  sfr SBUF  = 0x99;
+  34      =1  
+  35      =1  /*  8052 Extensions  */
+  36      =1  sfr T2CON  = 0xC8;
+  37      =1  sfr RCAP2L = 0xCA;
+  38      =1  sfr RCAP2H = 0xCB;
+  39      =1  sfr TL2    = 0xCC;
+  40      =1  sfr TH2    = 0xCD;
+C51 COMPILER V9.02   MAIN                                                                  07/14/2015 21:42:18 PAGE 2   
+
+  41      =1  
+  42      =1  
+  43      =1  /*  BIT Registers  */
+  44      =1  /*  PSW  */
+  45      =1  sbit CY    = PSW^7;
+  46      =1  sbit AC    = PSW^6;
+  47      =1  sbit F0    = PSW^5;
+  48      =1  sbit RS1   = PSW^4;
+  49      =1  sbit RS0   = PSW^3;
+  50      =1  sbit OV    = PSW^2;
+  51      =1  sbit P     = PSW^0; //8052 only
+  52      =1  
+  53      =1  /*  TCON  */
+  54      =1  sbit TF1   = TCON^7;
+  55      =1  sbit TR1   = TCON^6;
+  56      =1  sbit TF0   = TCON^5;
+  57      =1  sbit TR0   = TCON^4;
+  58      =1  sbit IE1   = TCON^3;
+  59      =1  sbit IT1   = TCON^2;
+  60      =1  sbit IE0   = TCON^1;
+  61      =1  sbit IT0   = TCON^0;
+  62      =1  
+  63      =1  /*  IE  */
+  64      =1  sbit EA    = IE^7;
+  65      =1  sbit ET2   = IE^5; //8052 only
+  66      =1  sbit ES    = IE^4;
+  67      =1  sbit ET1   = IE^3;
+  68      =1  sbit EX1   = IE^2;
+  69      =1  sbit ET0   = IE^1;
+  70      =1  sbit EX0   = IE^0;
+  71      =1  
+  72      =1  /*  IP  */
+  73      =1  sbit PT2   = IP^5;
+  74      =1  sbit PS    = IP^4;
+  75      =1  sbit PT1   = IP^3;
+  76      =1  sbit PX1   = IP^2;
+  77      =1  sbit PT0   = IP^1;
+  78      =1  sbit PX0   = IP^0;
+  79      =1  
+  80      =1  /*  P3  */
+  81      =1  sbit RD    = P3^7;
+  82      =1  sbit WR    = P3^6;
+  83      =1  sbit T1    = P3^5;
+  84      =1  sbit T0    = P3^4;
+  85      =1  sbit INT1  = P3^3;
+  86      =1  sbit INT0  = P3^2;
+  87      =1  sbit TXD   = P3^1;
+  88      =1  sbit RXD   = P3^0;
+  89      =1  
+  90      =1  /*  SCON  */
+  91      =1  sbit SM0   = SCON^7;
+  92      =1  sbit SM1   = SCON^6;
+  93      =1  sbit SM2   = SCON^5;
+  94      =1  sbit REN   = SCON^4;
+  95      =1  sbit TB8   = SCON^3;
+  96      =1  sbit RB8   = SCON^2;
+  97      =1  sbit TI    = SCON^1;
+  98      =1  sbit RI    = SCON^0;
+  99      =1  
+ 100      =1  /*  P1  */
+ 101      =1  sbit T2EX  = P1^1; // 8052 only
+ 102      =1  sbit T2    = P1^0; // 8052 only
+C51 COMPILER V9.02   MAIN                                                                  07/14/2015 21:42:18 PAGE 3   
+
+ 103      =1               
+ 104      =1  /*  T2CON  */
+ 105      =1  sbit TF2    = T2CON^7;
+ 106      =1  sbit EXF2   = T2CON^6;
+ 107      =1  sbit RCLK   = T2CON^5;
+ 108      =1  sbit TCLK   = T2CON^4;
+ 109      =1  sbit EXEN2  = T2CON^3;
+ 110      =1  sbit TR2    = T2CON^2;
+ 111      =1  sbit C_T2   = T2CON^1;
+ 112      =1  sbit CP_RL2 = T2CON^0;
+ 113      =1  
+ 114      =1  #endif
+  14          /* for the intended 8051 derivative         */
+  15          #include <stdio.h>                /* prototype declarations for I/O functions */
+   1      =1  /*--------------------------------------------------------------------------
+   2      =1  STDIO.H
+   3      =1  
+   4      =1  Prototypes for standard I/O functions.
+   5      =1  Copyright (c) 1988-2002 Keil Elektronik GmbH and Keil Software, Inc.
+   6      =1  All rights reserved.
+   7      =1  --------------------------------------------------------------------------*/
+   8      =1  
+   9      =1  #ifndef __STDIO_H__
+  10      =1  #define __STDIO_H__
+  11      =1  
+  12      =1  #ifndef EOF
+  13      =1   #define EOF -1
+  14      =1  #endif
+  15      =1  
+  16      =1  #ifndef NULL
+  17      =1   #define NULL ((void *) 0)
+  18      =1  #endif
+  19      =1  
+  20      =1  #ifndef _SIZE_T
+  21      =1   #define _SIZE_T
+  22      =1   typedef unsigned int size_t;
+  23      =1  #endif
+  24      =1  
+  25      =1  #pragma SAVE
+  26      =1  #pragma REGPARMS
+  27      =1  extern char _getkey (void);
+  28      =1  extern char getchar (void);
+  29      =1  extern char ungetchar (char);
+  30      =1  extern char putchar (char);
+  31      =1  extern int printf   (const char *, ...);
+  32      =1  extern int sprintf  (char *, const char *, ...);
+  33      =1  extern int vprintf  (const char *, char *);
+  34      =1  extern int vsprintf (char *, const char *, char *);
+  35      =1  extern char *gets (char *, int n);
+  36      =1  extern int scanf (const char *, ...);
+  37      =1  extern int sscanf (char *, const char *, ...);
+  38      =1  extern int puts (const char *);
+  39      =1  
+  40      =1  #pragma RESTORE
+  41      =1  
+  42      =1  #endif
+  43      =1  
+  16          #include "datatypes.h"
+   1      =1  #ifndef datatypes_h
+   2      =1  #define datatypes_h
+   3      =1  
+   4      =1  typedef signed char             int8_t;
+C51 COMPILER V9.02   MAIN                                                                  07/14/2015 21:42:18 PAGE 4   
+
+   5      =1  typedef unsigned char           uint8_t;
+   6      =1  typedef short                           int16_t;
+   7      =1  typedef unsigned short          uint16_t;
+   8      =1  typedef long int                        int32_t;
+   9      =1  typedef unsigned long int       uint32_t;
+  10      =1  typedef uint32_t                        uint64_t[2];
+  11      =1  
+  12      =1  #endif
+  13      =1  
+  17          #include "DES.h"
+   1      =1  
+   2      =1  #ifndef DES_h
+   3      =1  #define DES_h
+   4      =1  
+   5      =1  #include <string.h>
+   1      =2  /*--------------------------------------------------------------------------
+   2      =2  STRING.H
+   3      =2  
+   4      =2  String functions.
+   5      =2  Copyright (c) 1988-2002 Keil Elektronik GmbH and Keil Software, Inc.
+   6      =2  All rights reserved.
+   7      =2  --------------------------------------------------------------------------*/
+   8      =2  
+   9      =2  #ifndef __STRING_H__
+  10      =2  #define __STRING_H__
+  11      =2  
+  12      =2  #ifndef _SIZE_T
+           =2  #define _SIZE_T
+           =2  typedef unsigned int size_t;
+           =2 #endif
+  16      =2  
+  17      =2  #ifndef NULL
+           =2  #define NULL ((void *) 0L)
+           =2 #endif
+  20      =2  
+  21      =2  #pragma SAVE
+  22      =2  #pragma REGPARMS
+  23      =2  extern char *strcat (char *s1, char *s2);
+  24      =2  extern char *strncat (char *s1, char *s2, int n);
+  25      =2  
+  26      =2  extern char strcmp (char *s1, char *s2);
+  27      =2  extern char strncmp (char *s1, char *s2, int n);
+  28      =2  
+  29      =2  extern char *strcpy (char *s1, char *s2);
+  30      =2  extern char *strncpy (char *s1, char *s2, int n);
+  31      =2  
+  32      =2  extern int strlen (char *);
+  33      =2  
+  34      =2  extern char *strchr (const char *s, char c);
+  35      =2  extern int strpos (const char *s, char c);
+  36      =2  extern char *strrchr (const char *s, char c);
+  37      =2  extern int strrpos (const char *s, char c);
+  38      =2  
+  39      =2  extern int strspn (char *s, char *set);
+  40      =2  extern int strcspn (char *s, char *set);
+  41      =2  extern char *strpbrk (char *s, char *set);
+  42      =2  extern char *strrpbrk (char *s, char *set);
+  43      =2  extern char *strstr  (char *s, char *sub);
+  44      =2  extern char *strtok  (char *str, const char *set);
+  45      =2  
+  46      =2  extern char memcmp (void *s1, void *s2, int n);
+  47      =2  extern void *memcpy (void *s1, void *s2, int n);
+C51 COMPILER V9.02   MAIN                                                                  07/14/2015 21:42:18 PAGE 5   
+
+  48      =2  extern void *memchr (void *s, char val, int n);
+  49      =2  extern void *memccpy (void *s1, void *s2, char val, int n);
+  50      =2  extern void *memmove (void *s1, void *s2, int n);
+  51      =2  extern void *memset  (void *s, char val, int n);
+  52      =2  #pragma RESTORE
+  53      =2  
+  54      =2  #endif
+   6      =1  #include "datatypes.h"
+   1      =2  #ifndef datatypes_h
+           =2 #define datatypes_h
+           =2 
+           =2 typedef signed char             int8_t;
+           =2 typedef unsigned char           uint8_t;
+           =2 typedef short                           int16_t;
+           =2 typedef unsigned short          uint16_t;
+           =2 typedef long int                        int32_t;
+           =2 typedef unsigned long int       uint32_t;
+           =2 typedef uint32_t                        uint64_t[2];
+           =2 
+           =2 #endif
+  13      =2  
+   7      =1  
+   8      =1  /*$PAGE*/
+   9      =1  /*
+  10      =1  *********************************************************************************************************
+  11      =1  *                                       FUNCTION PROTOTYPES
+  12      =1  *********************************************************************************************************
+  13      =1  */
+  14      =1  void encrypt(void* out, const void* in, const void* key) reentrant;
+  15      =1  
+  16      =1  void decrypt(void* out, const void* in, const uint8_t* key) reentrant;
+  17      =1  
+  18      =1  void permute(const uint8_t *ptable, const uint8_t *in, uint8_t *out) reentrant;
+  19      =1  
+  20      =1  void changeendian32(uint32_t * a) reentrant;
+  21      =1  
+  22      =1  void shiftkey(uint8_t *key) reentrant;
+  23      =1  
+  24      =1  void shiftkey_inv(uint8_t *key) reentrant;
+  25      =1  
+  26      =1  void splitin6bitwords(const unsigned char a[]) reentrant;
+  27      =1  
+  28      =1  uint8_t substitute(uint8_t a, uint8_t * sbp) reentrant;
+  29      =1  
+  30      =1  uint32_t des_f(uint32_t r, uint8_t* kr) reentrant;
+  31      =1  
+  32      =1  #endif
+  33      =1  
+  34      =1  
+  18          #include "UART.h"
+   1      =1  #ifndef UART_h
+   2      =1  #define UART_h
+   3      =1  
+   4      =1  #include <REG52.H>
+   1      =2  /*--------------------------------------------------------------------------
+   2      =2  REG52.H
+   3      =2  
+   4      =2  Header file for generic 80C52 and 80C32 microcontroller.
+   5      =2  Copyright (c) 1988-2002 Keil Elektronik GmbH and Keil Software, Inc.
+   6      =2  All rights reserved.
+   7      =2  --------------------------------------------------------------------------*/
+   8      =2  
+C51 COMPILER V9.02   MAIN                                                                  07/14/2015 21:42:18 PAGE 6   
+
+   9      =2  #ifndef __REG52_H__
+           =2 #define __REG52_H__
+           =2 
+           =2 /*  BYTE Registers  */
+           =2 sfr P0    = 0x80;
+           =2 sfr P1    = 0x90;
+           =2 sfr P2    = 0xA0;
+           =2 sfr P3    = 0xB0;
+           =2 sfr PSW   = 0xD0;
+           =2 sfr ACC   = 0xE0;
+           =2 sfr B     = 0xF0;
+           =2 sfr SP    = 0x81;
+           =2 sfr DPL   = 0x82;
+           =2 sfr DPH   = 0x83;
+           =2 sfr PCON  = 0x87;
+           =2 sfr TCON  = 0x88;
+           =2 sfr TMOD  = 0x89;
+           =2 sfr TL0   = 0x8A;
+           =2 sfr TL1   = 0x8B;
+           =2 sfr TH0   = 0x8C;
+           =2 sfr TH1   = 0x8D;
+           =2 sfr IE    = 0xA8;
+           =2 sfr IP    = 0xB8;
+           =2 sfr SCON  = 0x98;
+           =2 sfr SBUF  = 0x99;
+           =2 
+           =2 /*  8052 Extensions  */
+           =2 sfr T2CON  = 0xC8;
+           =2 sfr RCAP2L = 0xCA;
+           =2 sfr RCAP2H = 0xCB;
+           =2 sfr TL2    = 0xCC;
+           =2 sfr TH2    = 0xCD;
+           =2 
+           =2 
+           =2 /*  BIT Registers  */
+           =2 /*  PSW  */
+           =2 sbit CY    = PSW^7;
+           =2 sbit AC    = PSW^6;
+           =2 sbit F0    = PSW^5;
+           =2 sbit RS1   = PSW^4;
+           =2 sbit RS0   = PSW^3;
+           =2 sbit OV    = PSW^2;
+           =2 sbit P     = PSW^0; //8052 only
+           =2 
+           =2 /*  TCON  */
+           =2 sbit TF1   = TCON^7;
+           =2 sbit TR1   = TCON^6;
+           =2 sbit TF0   = TCON^5;
+           =2 sbit TR0   = TCON^4;
+           =2 sbit IE1   = TCON^3;
+           =2 sbit IT1   = TCON^2;
+           =2 sbit IE0   = TCON^1;
+           =2 sbit IT0   = TCON^0;
+           =2 
+           =2 /*  IE  */
+           =2 sbit EA    = IE^7;
+           =2 sbit ET2   = IE^5; //8052 only
+           =2 sbit ES    = IE^4;
+           =2 sbit ET1   = IE^3;
+           =2 sbit EX1   = IE^2;
+           =2 sbit ET0   = IE^1;
+           =2 sbit EX0   = IE^0;
+C51 COMPILER V9.02   MAIN                                                                  07/14/2015 21:42:18 PAGE 7   
+
+           =2 
+           =2 /*  IP  */
+           =2 sbit PT2   = IP^5;
+           =2 sbit PS    = IP^4;
+           =2 sbit PT1   = IP^3;
+           =2 sbit PX1   = IP^2;
+           =2 sbit PT0   = IP^1;
+           =2 sbit PX0   = IP^0;
+           =2 
+           =2 /*  P3  */
+           =2 sbit RD    = P3^7;
+           =2 sbit WR    = P3^6;
+           =2 sbit T1    = P3^5;
+           =2 sbit T0    = P3^4;
+           =2 sbit INT1  = P3^3;
+           =2 sbit INT0  = P3^2;
+           =2 sbit TXD   = P3^1;
+           =2 sbit RXD   = P3^0;
+           =2 
+           =2 /*  SCON  */
+           =2 sbit SM0   = SCON^7;
+           =2 sbit SM1   = SCON^6;
+           =2 sbit SM2   = SCON^5;
+           =2 sbit REN   = SCON^4;
+           =2 sbit TB8   = SCON^3;
+           =2 sbit RB8   = SCON^2;
+           =2 sbit TI    = SCON^1;
+           =2 sbit RI    = SCON^0;
+           =2 
+           =2 /*  P1  */
+           =2 sbit T2EX  = P1^1; // 8052 only
+           =2 sbit T2    = P1^0; // 8052 only
+           =2              
+           =2 /*  T2CON  */
+           =2 sbit TF2    = T2CON^7;
+           =2 sbit EXF2   = T2CON^6;
+           =2 sbit RCLK   = T2CON^5;
+           =2 sbit TCLK   = T2CON^4;
+           =2 sbit EXEN2  = T2CON^3;
+           =2 sbit TR2    = T2CON^2;
+           =2 sbit C_T2   = T2CON^1;
+           =2 sbit CP_RL2 = T2CON^0;
+           =2 
+           =2 #endif
+   5      =1  
+   6      =1  /*$PAGE*/
+   7      =1  /*
+   8      =1  *********************************************************************************************************
+   9      =1  *                                       FUNCTION PROTOTYPES
+  10      =1  *********************************************************************************************************
+  11      =1  */
+  12      =1  void uart_init(void);
+  13      =1  
+  14      =1  void uart_data(unsigned char);
+  15      =1  
+  16      =1  void uart_string(unsigned char []);
+  17      =1  
+  18      =1  unsigned char uart_rx();
+  19      =1  
+  20      =1  char* uart_getstring(void) reentrant;
+  21      =1  
+  22      =1  #endif
+C51 COMPILER V9.02   MAIN                                                                  07/14/2015 21:42:18 PAGE 8   
+
+  23      =1  
+  19          #include "TERMINAL.h"
+   1      =1  #ifndef TERMINAL_h
+   2      =1  #define TERMINAL_h
+   3      =1  
+   4      =1  #include "datatypes.h"
+   1      =2  #ifndef datatypes_h
+           =2 #define datatypes_h
+           =2 
+           =2 typedef signed char             int8_t;
+           =2 typedef unsigned char           uint8_t;
+           =2 typedef short                           int16_t;
+           =2 typedef unsigned short          uint16_t;
+           =2 typedef long int                        int32_t;
+           =2 typedef unsigned long int       uint32_t;
+           =2 typedef uint32_t                        uint64_t[2];
+           =2 
+           =2 #endif
+  13      =2  
+   5      =1  
+   6      =1  /*$PAGE*/
+   7      =1  /*
+   8      =1  *********************************************************************************************************
+   9      =1  *                                       FUNCTION PROTOTYPES
+  10      =1  *********************************************************************************************************
+  11      =1  */
+  12      =1  uint8_t operation(uint8_t *in) reentrant;
+  13      =1  
+  14      =1  uint8_t check_hex(uint8_t *in) reentrant;
+  15      =1  
+  16      =1  void get_hex(uint8_t* out,uint8_t* in) reentrant;
+  17      =1  
+  18      =1  uint8_t str_comp(uint8_t* str1,uint8_t* str2, uint8_t nbytes) reentrant;
+  19      =1  
+  20      =1  char* bin_to_string(const unsigned char input[], int nbytes);
+  21      =1  
+  22      =1  #endif
+  23      =1  
+  20          
+  21          /*
+  22          **********************************************************************************************************
+             -****
+  23          *                                               VARIABLES
+  24          **********************************************************************************************************
+             -****
+  25          */
+  26          code char welcome[] = "welcome\r";
+  27          code char input[] = "Input:";
+  28          code char result[] = "Result:";
+  29          code char error[] = "please enter SETKEY or ENCRYPT or DECRYPT\r";
+  30          code char error_check_vlues[] = "check values to be hex\r";
+  31          
+  32          /*$PAGE*/
+  33          /*
+  34          *********************************************************************************************************
+  35          *                                       FUNCTION PROTOTYPES
+  36          *********************************************************************************************************
+  37          */
+  38          
+  39          void desTest(void) reentrant;
+  40          
+  41          /*
+C51 COMPILER V9.02   MAIN                                                                  07/14/2015 21:42:18 PAGE 9   
+
+  42          **********************************************************************************************************
+             -****
+  43          *                                                MAIN
+  44          **********************************************************************************************************
+             -****
+  45          */
+  46          void main (void)
+  47          {
+  48   1          uart_init();
+  49   1          uart_string(welcome);
+  50   1      //      #pragma asm
+  51   1      //      nop;
+  52   1      //      #pragma endasm
+  53   1      
+  54   1          /*------------------------------------------------
+  55   1           loop executed forever.
+  56   1          ------------------------------------------------*/
+  57   1          while (1)
+  58   1          {
+  59   2              desTest();
+  60   2          }
+  61   1      }
+  62          
+  63          /*$PAGE*/
+  64          /*
+  65          *********************************************************************************************************
+  66          *                         Test encrypt and decrypt DES algorithm implementation
+  67          *
+  68          * Description: This function is used to Display Encrypted and Decrypted input data to the console.
+  69          *
+  70          * Arguments  : None
+  71          *
+  72          * Returns    : None
+  73          *********************************************************************************************************
+  74          */
+  75          void desTest(void) reentrant
+  76          {
+  77   1          uint8_t *check_in, *ptr_hex;
+  78   1          unsigned char out[8]; 
+  79   1          unsigned char in[8];
+  80   1          static unsigned char key[8];
+  81   1      
+  82   1          uart_string(input);
+  83   1          check_in = uart_getstring();
+  84   1      
+  85   1          switch(operation(check_in))
+  86   1          {
+  87   2          case 1:
+  88   2              //uart_string("SETKEY");
+  89   2              ptr_hex = check_in+7;
+  90   2              if(check_hex(ptr_hex))                  /* if entered value in hex containue */
+  91   2              {
+  92   3                  get_hex(key,ptr_hex);               /* get string input and convert it to hex */
+  93   3                  uart_string("Result: Key Changed Successfully\r");
+  94   3              }
+  95   2              else
+  96   2              {
+  97   3                  uart_string(error_check_vlues);
+  98   3              }
+  99   2              break;
+ 100   2      
+ 101   2          case 2:
+C51 COMPILER V9.02   MAIN                                                                  07/14/2015 21:42:18 PAGE 10  
+
+ 102   2              //uart_string("ENCRYPT");
+ 103   2              ptr_hex = check_in+8;
+ 104   2              if(check_hex(ptr_hex)==1)
+ 105   2              {
+ 106   3                  get_hex(in,ptr_hex);
+ 107   3                  encrypt(out, in, key);      // encrypt "in" data by "key" and return encrypted data in "out"
+ 108   3                  uart_string(result);
+ 109   3                  uart_string(bin_to_string(out, 8));
+ 110   3              }
+ 111   2              else
+ 112   2              {
+ 113   3                  uart_string(error_check_vlues);
+ 114   3              }
+ 115   2              break;
+ 116   2      
+ 117   2          case 3:
+ 118   2              //uart_string("DECRYPT");
+ 119   2              ptr_hex = check_in+8;
+ 120   2              if(check_hex(ptr_hex)==1)
+ 121   2              {
+ 122   3                  get_hex(in,ptr_hex);
+ 123   3                  decrypt(out, in, key);      // decrypt "in" data by "key" and return original data in "out"
+ 124   3                  uart_string(result);
+ 125   3                  uart_string(bin_to_string(out, 8));
+ 126   3              }
+ 127   2              else
+ 128   2              {
+ 129   3                  uart_string(error_check_vlues);
+ 130   3              }
+ 131   2              break;
+ 132   2      
+ 133   2          default:
+ 134   2              uart_string(error);
+ 135   2          }
+ 136   1      }
+ 137          
+C51 COMPILER V9.02   MAIN                                                                  07/14/2015 21:42:18 PAGE 11  
+
+ASSEMBLY LISTING OF GENERATED OBJECT CODE
+
+
+             ; FUNCTION main (BEGIN)
+                                           ; SOURCE LINE # 46
+                                           ; SOURCE LINE # 47
+                                           ; SOURCE LINE # 48
+0000 120000      E     LCALL   uart_init
+                                           ; SOURCE LINE # 49
+0003 7BFF              MOV     R3,#0FFH
+0005 7A00        R     MOV     R2,#HIGH welcome
+0007 7900        R     MOV     R1,#LOW welcome
+0009 120000      E     LCALL   _uart_string
+000C         ?C0001:
+                                           ; SOURCE LINE # 57
+                                           ; SOURCE LINE # 58
+                                           ; SOURCE LINE # 59
+000C 120000      R     LCALL   _?desTest
+                                           ; SOURCE LINE # 60
+000F 80FB              SJMP    ?C0001
+             ; FUNCTION main (END)
+
+             ; FUNCTION _?desTest (BEGIN)
+                                           ; SOURCE LINE # 75
+0000 E500        E     MOV     A,?C_IBP
+0002 24EA              ADD     A,#0EAH
+0004 F500        E     MOV     ?C_IBP,A
+                                           ; SOURCE LINE # 82
+0006 7BFF              MOV     R3,#0FFH
+0008 7A00        R     MOV     R2,#HIGH input
+000A 7900        R     MOV     R1,#LOW input
+000C 120000      E     LCALL   _uart_string
+                                           ; SOURCE LINE # 83
+000F 120000      E     LCALL   _?uart_getstring
+0012 A800        E     MOV     R0,?C_IBP
+0014 A603              MOV     @R0,AR3
+0016 08                INC     R0
+0017 A602              MOV     @R0,AR2
+0019 08                INC     R0
+001A A601              MOV     @R0,AR1
+                                           ; SOURCE LINE # 85
+001C A800        E     MOV     R0,?C_IBP
+001E 8603              MOV     AR3,@R0
+0020 08                INC     R0
+0021 E6                MOV     A,@R0
+0022 FA                MOV     R2,A
+0023 08                INC     R0
+0024 E6                MOV     A,@R0
+0025 F9                MOV     R1,A
+0026 120000      E     LCALL   _?operation
+0029 EF                MOV     A,R7
+002A 24FE              ADD     A,#0FEH
+002C 6074              JZ      ?C0008
+002E 14                DEC     A
+002F 7003              JNZ     $ + 5H
+0031 020000      R     LJMP    ?C0011
+0034 2402              ADD     A,#02H
+0036 6003              JZ      $ + 5H
+0038 020000      R     LJMP    ?C0014
+                                           ; SOURCE LINE # 86
+                                           ; SOURCE LINE # 87
+003B         ?C0005:
+C51 COMPILER V9.02   MAIN                                                                  07/14/2015 21:42:18 PAGE 12  
+
+                                           ; SOURCE LINE # 89
+003B A800        E     MOV     R0,?C_IBP
+003D 8603              MOV     AR3,@R0
+003F 08                INC     R0
+0040 E6                MOV     A,@R0
+0041 FA                MOV     R2,A
+0042 08                INC     R0
+0043 E6                MOV     A,@R0
+0044 2407              ADD     A,#07H
+0046 F9                MOV     R1,A
+0047 E4                CLR     A
+0048 3A                ADDC    A,R2
+0049 FA                MOV     R2,A
+004A E500        E     MOV     A,?C_IBP
+004C 2403              ADD     A,#03H
+004E F8                MOV     R0,A
+004F A603              MOV     @R0,AR3
+0051 08                INC     R0
+0052 A602              MOV     @R0,AR2
+0054 08                INC     R0
+0055 A601              MOV     @R0,AR1
+                                           ; SOURCE LINE # 90
+0057 E500        E     MOV     A,?C_IBP
+0059 2403              ADD     A,#03H
+005B F8                MOV     R0,A
+005C 8603              MOV     AR3,@R0
+005E 08                INC     R0
+005F E6                MOV     A,@R0
+0060 FA                MOV     R2,A
+0061 08                INC     R0
+0062 E6                MOV     A,@R0
+0063 F9                MOV     R1,A
+0064 120000      E     LCALL   _?check_hex
+0067 EF                MOV     A,R7
+0068 602F              JZ      ?C0006
+                                           ; SOURCE LINE # 91
+                                           ; SOURCE LINE # 92
+006A E500        E     MOV     A,?C_IBP
+006C 2403              ADD     A,#03H
+006E F8                MOV     R0,A
+006F 8603              MOV     AR3,@R0
+0071 08                INC     R0
+0072 E6                MOV     A,@R0
+0073 FA                MOV     R2,A
+0074 08                INC     R0
+0075 E6                MOV     A,@R0
+0076 F9                MOV     R1,A
+0077 1500        E     DEC     ?C_IBP
+0079 1500        E     DEC     ?C_IBP
+007B 1500        E     DEC     ?C_IBP
+007D A800        E     MOV     R0,?C_IBP
+007F A603              MOV     @R0,AR3
+0081 08                INC     R0
+0082 A602              MOV     @R0,AR2
+0084 08                INC     R0
+0085 A601              MOV     @R0,AR1
+0087 7B00              MOV     R3,#00H
+0089 7A00        R     MOV     R2,#HIGH key
+008B 7900        R     MOV     R1,#LOW key
+008D 120000      E     LCALL   _?get_hex
+                                           ; SOURCE LINE # 93
+0090 7BFF              MOV     R3,#0FFH
+C51 COMPILER V9.02   MAIN                                                                  07/14/2015 21:42:18 PAGE 13  
+
+0092 7A00        R     MOV     R2,#HIGH ?SC_0
+0094 7900        R     MOV     R1,#LOW ?SC_0
+                                           ; SOURCE LINE # 94
+0096 020000      R     LJMP    ?C0021
+0099         ?C0006:
+                                           ; SOURCE LINE # 96
+                                           ; SOURCE LINE # 97
+0099 7BFF              MOV     R3,#0FFH
+009B 7A00        R     MOV     R2,#HIGH error_check_vlues
+009D 7900        R     MOV     R1,#LOW error_check_vlues
+009F         ?C0016:
+                                           ; SOURCE LINE # 98
+                                           ; SOURCE LINE # 99
+009F 020000      R     LJMP    ?C0021
+                                           ; SOURCE LINE # 101
+00A2         ?C0008:
+                                           ; SOURCE LINE # 103
+00A2 A800        E     MOV     R0,?C_IBP
+00A4 8603              MOV     AR3,@R0
+00A6 08                INC     R0
+00A7 E6                MOV     A,@R0
+00A8 FA                MOV     R2,A
+00A9 08                INC     R0
+00AA E6                MOV     A,@R0
+00AB 2408              ADD     A,#08H
+00AD F9                MOV     R1,A
+00AE E4                CLR     A
+00AF 3A                ADDC    A,R2
+00B0 FA                MOV     R2,A
+00B1 E500        E     MOV     A,?C_IBP
+00B3 2403              ADD     A,#03H
+00B5 F8                MOV     R0,A
+00B6 A603              MOV     @R0,AR3
+00B8 08                INC     R0
+00B9 A602              MOV     @R0,AR2
+00BB 08                INC     R0
+00BC A601              MOV     @R0,AR1
+                                           ; SOURCE LINE # 104
+00BE E500        E     MOV     A,?C_IBP
+00C0 2403              ADD     A,#03H
+00C2 F8                MOV     R0,A
+00C3 8603              MOV     AR3,@R0
+00C5 08                INC     R0
+00C6 E6                MOV     A,@R0
+00C7 FA                MOV     R2,A
+00C8 08                INC     R0
+00C9 E6                MOV     A,@R0
+00CA F9                MOV     R1,A
+00CB 120000      E     LCALL   _?check_hex
+00CE EF                MOV     A,R7
+00CF 6401              XRL     A,#01H
+00D1 7074              JNZ     ?C0009
+                                           ; SOURCE LINE # 105
+                                           ; SOURCE LINE # 106
+00D3 E500        E     MOV     A,?C_IBP
+00D5 2403              ADD     A,#03H
+00D7 F8                MOV     R0,A
+00D8 8603              MOV     AR3,@R0
+00DA 08                INC     R0
+00DB E6                MOV     A,@R0
+00DC FA                MOV     R2,A
+00DD 08                INC     R0
+C51 COMPILER V9.02   MAIN                                                                  07/14/2015 21:42:18 PAGE 14  
+
+00DE E6                MOV     A,@R0
+00DF F9                MOV     R1,A
+00E0 1500        E     DEC     ?C_IBP
+00E2 1500        E     DEC     ?C_IBP
+00E4 1500        E     DEC     ?C_IBP
+00E6 A800        E     MOV     R0,?C_IBP
+00E8 A603              MOV     @R0,AR3
+00EA 08                INC     R0
+00EB A602              MOV     @R0,AR2
+00ED 08                INC     R0
+00EE A601              MOV     @R0,AR1
+00F0 7B00              MOV     R3,#00H
+00F2 E500        E     MOV     A,?C_IBP
+00F4 2411              ADD     A,#011H
+00F6 F9                MOV     R1,A
+00F7 7A00              MOV     R2,#00H
+00F9 120000      E     LCALL   _?get_hex
+                                           ; SOURCE LINE # 107
+00FC 1500        E     DEC     ?C_IBP
+00FE 1500        E     DEC     ?C_IBP
+0100 1500        E     DEC     ?C_IBP
+0102 A800        E     MOV     R0,?C_IBP
+0104 7600              MOV     @R0,#00H
+0106 08                INC     R0
+0107 7600        R     MOV     @R0,#HIGH key
+0109 08                INC     R0
+010A 7600        R     MOV     @R0,#LOW key
+010C E500        E     MOV     A,?C_IBP
+010E 2411              ADD     A,#011H
+0110 1500        E     DEC     ?C_IBP
+0112 1500        E     DEC     ?C_IBP
+0114 1500        E     DEC     ?C_IBP
+0116 A800        E     MOV     R0,?C_IBP
+0118 7600              MOV     @R0,#00H
+011A 08                INC     R0
+011B 7600              MOV     @R0,#00H
+011D 08                INC     R0
+011E F6                MOV     @R0,A
+011F 7B00              MOV     R3,#00H
+0121 E500        E     MOV     A,?C_IBP
+0123 240C              ADD     A,#0CH
+0125 F9                MOV     R1,A
+0126 7A00              MOV     R2,#00H
+0128 120000      E     LCALL   _?encrypt
+                                           ; SOURCE LINE # 108
+012B 7BFF              MOV     R3,#0FFH
+012D 7A00        R     MOV     R2,#HIGH result
+012F 7900        R     MOV     R1,#LOW result
+0131 120000      E     LCALL   _uart_string
+                                           ; SOURCE LINE # 109
+0134 7B00              MOV     R3,#00H
+0136 E500        E     MOV     A,?C_IBP
+0138 2406              ADD     A,#06H
+013A F9                MOV     R1,A
+013B 7A00              MOV     R2,#00H
+013D 7D08              MOV     R5,#08H
+013F 7C00              MOV     R4,#00H
+0141 120000      E     LCALL   _bin_to_string
+0144         ?C0017:
+                                           ; SOURCE LINE # 110
+0144 020000      R     LJMP    ?C0021
+0147         ?C0009:
+C51 COMPILER V9.02   MAIN                                                                  07/14/2015 21:42:18 PAGE 15  
+
+                                           ; SOURCE LINE # 112
+                                           ; SOURCE LINE # 113
+0147 7BFF              MOV     R3,#0FFH
+0149 7A00        R     MOV     R2,#HIGH error_check_vlues
+014B 7900        R     MOV     R1,#LOW error_check_vlues
+014D         ?C0018:
+                                           ; SOURCE LINE # 114
+                                           ; SOURCE LINE # 115
+014D 020000      R     LJMP    ?C0021
+                                           ; SOURCE LINE # 117
+0150         ?C0011:
+                                           ; SOURCE LINE # 119
+0150 A800        E     MOV     R0,?C_IBP
+0152 8603              MOV     AR3,@R0
+0154 08                INC     R0
+0155 E6                MOV     A,@R0
+0156 FA                MOV     R2,A
+0157 08                INC     R0
+0158 E6                MOV     A,@R0
+0159 2408              ADD     A,#08H
+015B F9                MOV     R1,A
+015C E4                CLR     A
+015D 3A                ADDC    A,R2
+015E FA                MOV     R2,A
+015F E500        E     MOV     A,?C_IBP
+0161 2403              ADD     A,#03H
+0163 F8                MOV     R0,A
+0164 A603              MOV     @R0,AR3
+0166 08                INC     R0
+0167 A602              MOV     @R0,AR2
+0169 08                INC     R0
+016A A601              MOV     @R0,AR1
+                                           ; SOURCE LINE # 120
+016C E500        E     MOV     A,?C_IBP
+016E 2403              ADD     A,#03H
+0170 F8                MOV     R0,A
+0171 8603              MOV     AR3,@R0
+0173 08                INC     R0
+0174 E6                MOV     A,@R0
+0175 FA                MOV     R2,A
+0176 08                INC     R0
+0177 E6                MOV     A,@R0
+0178 F9                MOV     R1,A
+0179 120000      E     LCALL   _?check_hex
+017C EF                MOV     A,R7
+017D 6401              XRL     A,#01H
+017F 7073              JNZ     ?C0012
+                                           ; SOURCE LINE # 121
+                                           ; SOURCE LINE # 122
+0181 E500        E     MOV     A,?C_IBP
+0183 2403              ADD     A,#03H
+0185 F8                MOV     R0,A
+0186 8603              MOV     AR3,@R0
+0188 08                INC     R0
+0189 E6                MOV     A,@R0
+018A FA                MOV     R2,A
+018B 08                INC     R0
+018C E6                MOV     A,@R0
+018D F9                MOV     R1,A
+018E 1500        E     DEC     ?C_IBP
+0190 1500        E     DEC     ?C_IBP
+0192 1500        E     DEC     ?C_IBP
+C51 COMPILER V9.02   MAIN                                                                  07/14/2015 21:42:18 PAGE 16  
+
+0194 A800        E     MOV     R0,?C_IBP
+0196 A603              MOV     @R0,AR3
+0198 08                INC     R0
+0199 A602              MOV     @R0,AR2
+019B 08                INC     R0
+019C A601              MOV     @R0,AR1
+019E 7B00              MOV     R3,#00H
+01A0 E500        E     MOV     A,?C_IBP
+01A2 2411              ADD     A,#011H
+01A4 F9                MOV     R1,A
+01A5 7A00              MOV     R2,#00H
+01A7 120000      E     LCALL   _?get_hex
+                                           ; SOURCE LINE # 123
+01AA 1500        E     DEC     ?C_IBP
+01AC 1500        E     DEC     ?C_IBP
+01AE 1500        E     DEC     ?C_IBP
+01B0 A800        E     MOV     R0,?C_IBP
+01B2 7600              MOV     @R0,#00H
+01B4 08                INC     R0
+01B5 7600        R     MOV     @R0,#HIGH key
+01B7 08                INC     R0
+01B8 7600        R     MOV     @R0,#LOW key
+01BA E500        E     MOV     A,?C_IBP
+01BC 2411              ADD     A,#011H
+01BE 1500        E     DEC     ?C_IBP
+01C0 1500        E     DEC     ?C_IBP
+01C2 1500        E     DEC     ?C_IBP
+01C4 A800        E     MOV     R0,?C_IBP
+01C6 7600              MOV     @R0,#00H
+01C8 08                INC     R0
+01C9 7600              MOV     @R0,#00H
+01CB 08                INC     R0
+01CC F6                MOV     @R0,A
+01CD 7B00              MOV     R3,#00H
+01CF E500        E     MOV     A,?C_IBP
+01D1 240C              ADD     A,#0CH
+01D3 F9                MOV     R1,A
+01D4 7A00              MOV     R2,#00H
+01D6 120000      E     LCALL   _?decrypt
+                                           ; SOURCE LINE # 124
+01D9 7BFF              MOV     R3,#0FFH
+01DB 7A00        R     MOV     R2,#HIGH result
+01DD 7900        R     MOV     R1,#LOW result
+01DF 120000      E     LCALL   _uart_string
+                                           ; SOURCE LINE # 125
+01E2 7B00              MOV     R3,#00H
+01E4 E500        E     MOV     A,?C_IBP
+01E6 2406              ADD     A,#06H
+01E8 F9                MOV     R1,A
+01E9 7A00              MOV     R2,#00H
+01EB 7D08              MOV     R5,#08H
+01ED 7C00              MOV     R4,#00H
+01EF 120000      E     LCALL   _bin_to_string
+01F2         ?C0019:
+                                           ; SOURCE LINE # 126
+01F2 800E              SJMP    ?C0021
+01F4         ?C0012:
+                                           ; SOURCE LINE # 128
+                                           ; SOURCE LINE # 129
+01F4 7BFF              MOV     R3,#0FFH
+01F6 7A00        R     MOV     R2,#HIGH error_check_vlues
+01F8 7900        R     MOV     R1,#LOW error_check_vlues
+C51 COMPILER V9.02   MAIN                                                                  07/14/2015 21:42:18 PAGE 17  
+
+01FA         ?C0020:
+                                           ; SOURCE LINE # 130
+                                           ; SOURCE LINE # 131
+01FA 8006              SJMP    ?C0021
+                                           ; SOURCE LINE # 133
+01FC         ?C0014:
+                                           ; SOURCE LINE # 134
+01FC 7BFF              MOV     R3,#0FFH
+01FE 7A00        R     MOV     R2,#HIGH error
+0200 7900        R     MOV     R1,#LOW error
+0202         ?C0021:
+0202 120000      E     LCALL   _uart_string
+                                           ; SOURCE LINE # 135
+                                           ; SOURCE LINE # 136
+0205         ?C0015:
+0205 E500        E     MOV     A,?C_IBP
+0207 2416              ADD     A,#016H
+0209 F500        E     MOV     ?C_IBP,A
+020B 22                RET     
+             ; FUNCTION _?desTest (END)
+
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    541    ----
+   CONSTANT SIZE    =    125    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      8    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

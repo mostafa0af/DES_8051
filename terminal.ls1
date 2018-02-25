@@ -1,0 +1,962 @@
+A51 MACRO ASSEMBLER  TERMINAL                                                             07/14/2015 21:39:21 PAGE     1
+
+
+MACRO ASSEMBLER A51 V8.02
+OBJECT MODULE PLACED IN terminal.OBJ
+ASSEMBLER INVOKED BY: C:\Keil\C51\BIN\A51.EXE terminal.src PR(.\terminal.ls1) EP DEBUG
+
+LOC  OBJ            LINE     SOURCE
+
+                       1     ; .\terminal.SRC generated from: terminal.c
+                       2     ; COMPILER INVOKED BY:
+                       3     ;        C:\Keil\C51\BIN\C51.EXE terminal.c BROWSE DEBUG OBJECTEXTEND CODE LISTINCLUDE SRC(
+                             .\terminal.SRC)
+                       4     
+                       5     
+                       6     NAME    TERMINAL
+                       7     
+                       8     ?PR?_?operation?TERMINAL                 SEGMENT CODE 
+                       9     ?PR?_?check_hex?TERMINAL                 SEGMENT CODE 
+                      10     ?PR?_?get_hex?TERMINAL                   SEGMENT CODE 
+                      11     ?PR?_bin_to_string?TERMINAL              SEGMENT CODE 
+                      12     ?DT?TERMINAL         SEGMENT DATA 
+                      13     ?DT?_bin_to_string?TERMINAL              SEGMENT DATA OVERLAYABLE 
+                      14     ?PR?_?str_comp?TERMINAL                  SEGMENT CODE 
+                      15     ?CO?TERMINAL         SEGMENT CODE 
+                      16             EXTRN   DATA (?C_IBP)
+                      17             EXTRN   CODE (?C?CLDOPTR)
+                      18             EXTRN   CODE (?C?CSTOPTR)
+                      19             EXTRN   CODE (?C?CSTPTR)
+                      20             PUBLIC  decimal2hex
+                      21             PUBLIC  operation_chose
+                      22             PUBLIC  _?str_comp
+                      23             PUBLIC  _bin_to_string
+                      24             PUBLIC  _?get_hex
+                      25             PUBLIC  _?check_hex
+                      26             PUBLIC  _?operation
+                      27     
+----                  28             RSEG  ?DT?_bin_to_string?TERMINAL
+0000                  29     ?_bin_to_string?BYTE:
+0000                  30           input?340:   DS   3
+0003                  31             ORG  3
+0003                  32          nbytes?341:   DS   2
+0005                  33             ORG  5
+0005                  34      output_ptr?344:   DS   3
+                      35     
+----                  36             RSEG  ?DT?TERMINAL
+0000                  37          output?343:   DS   67
+                      38     
+----                  39             RSEG  ?CO?TERMINAL
+0000                  40     operation_chose:
+0000 5345544B         41             DB  'S' ,'E' ,'T' ,'K' ,'E' ,'Y' ,000H
+0004 455900                  
+                      42     
+0007 00               43             DB  000H
+                      44     
+0008 454E4352         45             DB  'E' ,'N' ,'C' ,'R' ,'Y' ,'P' ,'T' ,000H
+000C 59505400                
+                      46     
+0010 44454352         47             DB  'D' ,'E' ,'C' ,'R' ,'Y' ,'P' ,'T' ,000H
+0014 59505400                
+                      48     
+                      49     
+0018                  50     decimal2hex:
+0018 30               51             DB      030H
+0019 31               52             DB      031H
+001A 32               53             DB      032H
+001B 33               54             DB      033H
+A51 MACRO ASSEMBLER  TERMINAL                                                             07/14/2015 21:39:21 PAGE     2
+
+001C 34               55             DB      034H
+001D 35               56             DB      035H
+001E 36               57             DB      036H
+001F 37               58             DB      037H
+0020 38               59             DB      038H
+0021 39               60             DB      039H
+0022 41               61             DB      041H
+0023 42               62             DB      042H
+0024 43               63             DB      043H
+0025 44               64             DB      044H
+0026 45               65             DB      045H
+0027 46               66             DB      046H
+                      67     
+                      68     ; /*
+                      69     ; *****************************************************************************************
+                             ********************
+                      70     ; *                                        UART Communication
+                      71     ; 
+                      72     ; * File : UART.C
+                      73     ; * By   : github.com
+                      74     ; *****************************************************************************************
+                             ********************
+                      75     ; */
+                      76     ; #include "TERMINAL.H"
+                      77     ; 
+                      78     ; /*
+                      79     ; *****************************************************************************************
+                             *********************
+                      80     ; *                                               VARIABLES
+                      81     ; *****************************************************************************************
+                             *********************
+                      82     ; */
+                      83     ; 
+                      84     ; code uint8_t operation_chose[3][8] = {"SETKEY","ENCRYPT","DECRYPT"};
+                      85     ; 
+                      86     ; code uint8_t decimal2hex[] = {'0', '1', '2', '3', '4',
+                      87     ;                              '5', '6', '7', '8', '9',
+                      88     ;                              'A','B','C','D','E','F'
+                      89     ;                             };
+                      90     ; 
+                      91     ; /*$PAGE*/
+                      92     ; /*
+                      93     ; *****************************************************************************************
+                             ****************
+                      94     ; *                                              operation check
+                      95     ; *
+                      96     ; * Description: This function is used to check the input from terminal to chose the operat
+                             ion
+                      97     ; *
+                      98     ; * Arguments  : in         is a pointer to the input data come from terminal.
+                      99     ; *
+                     100     ; * Returns    : =1             SETKEY chosen
+                     101     ; *
+                     102     ; *                        =2           ENCRYPT chosen
+                     103     ; *
+                     104     ; *                        =3           DECRYPT chosen
+                     105     ; *
+                     106     ; *                        =0           wrong entered
+                     107     ; *****************************************************************************************
+                             ****************
+                     108     ; */
+                     109     ; uint8_t operation(uint8_t *in) reentrant
+                     110     
+----                 111             RSEG  ?PR?_?operation?TERMINAL
+0000                 112     _?operation:
+                     113             USING   0
+A51 MACRO ASSEMBLER  TERMINAL                                                             07/14/2015 21:39:21 PAGE     3
+
+                     114                             ; SOURCE LINE # 42
+0000 1500     F      115             DEC     ?C_IBP
+0002 1500     F      116             DEC     ?C_IBP
+0004 1500     F      117             DEC     ?C_IBP
+0006 A800     F      118             MOV     R0,?C_IBP
+0008 A603            119             MOV     @R0,AR3
+000A 08              120             INC     R0
+000B A602            121             MOV     @R0,AR2
+000D 08              122             INC     R0
+000E A601            123             MOV     @R0,AR1
+                     124     ; {
+                     125     ;     if(str_comp(in, &operation_chose[0], 6))
+                     126                             ; SOURCE LINE # 44
+0010 1500     F      127             DEC     ?C_IBP
+0012 A800     F      128             MOV     R0,?C_IBP
+0014 7606            129             MOV     @R0,#06H
+0016 1500     F      130             DEC     ?C_IBP
+0018 1500     F      131             DEC     ?C_IBP
+001A 1500     F      132             DEC     ?C_IBP
+001C A800     F      133             MOV     R0,?C_IBP
+001E 76FF            134             MOV     @R0,#0FFH
+0020 08              135             INC     R0
+0021 7600     F      136             MOV     @R0,#HIGH (operation_chose)
+0023 08              137             INC     R0
+0024 7600     F      138             MOV     @R0,#LOW (operation_chose)
+0026 120000   F      139             LCALL   L?0039
+0029 EF              140             MOV     A,R7
+002A 6004            141             JZ      ?C0001
+                     142     ;         return 1;
+                     143                             ; SOURCE LINE # 45
+002C 7F01            144             MOV     R7,#01H
+002E 8016            145             SJMP    ?C0002
+0030                 146     ?C0001:
+                     147     ; 
+                     148     ;     if(str_comp(in, &operation_chose[1], 6))
+                     149                             ; SOURCE LINE # 47
+0030 120000   F      150             LCALL   L?0038
+0033 EF              151             MOV     A,R7
+0034 6004            152             JZ      ?C0003
+                     153     ;         return 2;
+                     154                             ; SOURCE LINE # 48
+0036 7F02            155             MOV     R7,#02H
+0038 800C            156             SJMP    ?C0002
+003A                 157     ?C0003:
+                     158     ; 
+                     159     ;     if(str_comp(in, &operation_chose[1], 6))
+                     160                             ; SOURCE LINE # 50
+003A 120000   F      161             LCALL   L?0038
+003D EF              162             MOV     A,R7
+003E 6004            163             JZ      ?C0004
+                     164     ;         return 3;
+                     165                             ; SOURCE LINE # 51
+0040 7F03            166             MOV     R7,#03H
+0042 8002            167             SJMP    ?C0002
+0044                 168     ?C0004:
+                     169     ; 
+                     170     ;     return 0;
+                     171                             ; SOURCE LINE # 53
+0044 7F00            172             MOV     R7,#00H
+                     173     ; }
+                     174                             ; SOURCE LINE # 54
+0046                 175     ?C0002:
+0046 0500     F      176             INC     ?C_IBP
+0048 0500     F      177             INC     ?C_IBP
+004A 0500     F      178             INC     ?C_IBP
+004C 22              179             RET     
+A51 MACRO ASSEMBLER  TERMINAL                                                             07/14/2015 21:39:21 PAGE     4
+
+                     180     ; END OF _?operation
+                     181     
+                     182     ; 
+                     183     ; /*$PAGE*/
+                     184     ; /*
+                     185     ; *****************************************************************************************
+                             ****************
+                     186     ; *                                              check hex data input
+                     187     ; *
+                     188     ; * Description: This function is used to check the hex input from terminal is already hex
+                     189     ; *
+                     190     ; * Arguments  : in         is a pointer to the input data come from terminal.
+                     191     ; *
+                     192     ; * Returns    : =1             data is hex
+                     193     ; *
+                     194     ; *                        =0           wrong data entered
+                     195     ; *****************************************************************************************
+                             ****************
+                     196     ; */
+                     197     ; uint8_t check_hex(uint8_t *in) reentrant
+                     198     
+----                 199             RSEG  ?PR?_?check_hex?TERMINAL
+0000                 200     _?check_hex:
+                     201             USING   0
+                     202                             ; SOURCE LINE # 70
+0000 1500     F      203             DEC     ?C_IBP
+0002 1500     F      204             DEC     ?C_IBP
+0004 1500     F      205             DEC     ?C_IBP
+0006 A800     F      206             MOV     R0,?C_IBP
+0008 A603            207             MOV     @R0,AR3
+000A 08              208             INC     R0
+000B A602            209             MOV     @R0,AR2
+000D 08              210             INC     R0
+000E A601            211             MOV     @R0,AR1
+0010 1500     F      212             DEC     ?C_IBP
+0012 1500     F      213             DEC     ?C_IBP
+0014 1500     F      214             DEC     ?C_IBP
+                     215     ; {
+                     216     ;     uint8_t i, j,check=0;
+                     217                             ; SOURCE LINE # 72
+0016 A800     F      218             MOV     R0,?C_IBP
+0018 08              219             INC     R0
+0019 08              220             INC     R0
+001A E4              221             CLR     A
+001B F6              222             MOV     @R0,A
+                     223     ;     for(i = 0; i<16; i++)
+                     224                             ; SOURCE LINE # 73
+001C A800     F      225             MOV     R0,?C_IBP
+001E F6              226             MOV     @R0,A
+001F                 227     ?C0005:
+001F A800     F      228             MOV     R0,?C_IBP
+0021 E6              229             MOV     A,@R0
+0022 C3              230             CLR     C
+0023 9410            231             SUBB    A,#010H
+0025 5049            232             JNC     ?C0006
+                     233     ;     {
+                     234                             ; SOURCE LINE # 74
+                     235     ;         for(j = 0; j<16; j++)
+                     236                             ; SOURCE LINE # 75
+0027 08              237             INC     R0
+0028 E4              238             CLR     A
+0029 F6              239             MOV     @R0,A
+002A                 240     ?C0008:
+002A A800     F      241             MOV     R0,?C_IBP
+002C 08              242             INC     R0
+002D E6              243             MOV     A,@R0
+A51 MACRO ASSEMBLER  TERMINAL                                                             07/14/2015 21:39:21 PAGE     5
+
+002E FF              244             MOV     R7,A
+002F C3              245             CLR     C
+0030 9410            246             SUBB    A,#010H
+0032 502D            247             JNC     ?C0009
+                     248     ;             if(in[i]==decimal2hex[j])
+                     249                             ; SOURCE LINE # 76
+0034 E500     F      250             MOV     A,?C_IBP
+0036 2403            251             ADD     A,#03H
+0038 F8              252             MOV     R0,A
+0039 8603            253             MOV     AR3,@R0
+003B 08              254             INC     R0
+003C E6              255             MOV     A,@R0
+003D FA              256             MOV     R2,A
+003E 08              257             INC     R0
+003F E6              258             MOV     A,@R0
+0040 F9              259             MOV     R1,A
+0041 A800     F      260             MOV     R0,?C_IBP
+0043 E6              261             MOV     A,@R0
+0044 F582            262             MOV     DPL,A
+0046 758300          263             MOV     DPH,#00H
+0049 120000   F      264             LCALL   ?C?CLDOPTR
+004C FE              265             MOV     R6,A
+004D EF              266             MOV     A,R7
+004E 900000   F      267             MOV     DPTR,#decimal2hex
+0051 93              268             MOVC    A,@A+DPTR
+0052 B50606          269             CJNE    A,AR6,?C0010
+                     270     ;                 check=1;
+                     271                             ; SOURCE LINE # 77
+0055 A800     F      272             MOV     R0,?C_IBP
+0057 08              273             INC     R0
+0058 08              274             INC     R0
+0059 7601            275             MOV     @R0,#01H
+005B                 276     ?C0010:
+005B A800     F      277             MOV     R0,?C_IBP
+005D 08              278             INC     R0
+005E 06              279             INC     @R0
+005F 80C9            280             SJMP    ?C0008
+0061                 281     ?C0009:
+                     282     ;         if(check==0)
+                     283                             ; SOURCE LINE # 78
+0061 A800     F      284             MOV     R0,?C_IBP
+0063 08              285             INC     R0
+0064 08              286             INC     R0
+0065 E6              287             MOV     A,@R0
+0066 7003            288             JNZ     ?C0007
+                     289     ;             return 0;
+                     290                             ; SOURCE LINE # 79
+0068 FF              291             MOV     R7,A
+0069 8007            292             SJMP    ?C0013
+                     293     ;     }
+                     294                             ; SOURCE LINE # 80
+006B                 295     ?C0007:
+006B A800     F      296             MOV     R0,?C_IBP
+006D 06              297             INC     @R0
+006E 80AF            298             SJMP    ?C0005
+0070                 299     ?C0006:
+                     300     ;     return 1;
+                     301                             ; SOURCE LINE # 81
+0070 7F01            302             MOV     R7,#01H
+                     303     ; }
+                     304                             ; SOURCE LINE # 82
+0072                 305     ?C0013:
+0072 E500     F      306             MOV     A,?C_IBP
+0074 2406            307             ADD     A,#06H
+0076 F500     F      308             MOV     ?C_IBP,A
+0078 22              309             RET     
+A51 MACRO ASSEMBLER  TERMINAL                                                             07/14/2015 21:39:21 PAGE     6
+
+                     310     ; END OF _?check_hex
+                     311     
+                     312     ; 
+                     313     ; /*$PAGE*/
+                     314     ; /*
+                     315     ; *****************************************************************************************
+                             ****************
+                     316     ; *                                              get hex from string input
+                     317     ; *
+                     318     ; * Description: This function is used to get hex from string input from terminal.
+                     319     ; *
+                     320     ; * Arguments  : out      pointer to the block (64 bit = 8 byte) where the converted data i
+                             s written to
+                     321     ; *
+                     322     ; *              in     pointer to the block (64 bit = 8 byte) where the terminal data come
+                     323     ; *
+                     324     ; * Returns    : None
+                     325     ; *****************************************************************************************
+                             ****************
+                     326     ; */
+                     327     ; void get_hex(uint8_t* out,uint8_t* in) reentrant
+                     328     
+----                 329             RSEG  ?PR?_?get_hex?TERMINAL
+0000                 330     _?get_hex:
+                     331             USING   0
+                     332                             ; SOURCE LINE # 98
+0000 1500     F      333             DEC     ?C_IBP
+0002 1500     F      334             DEC     ?C_IBP
+0004 1500     F      335             DEC     ?C_IBP
+0006 A800     F      336             MOV     R0,?C_IBP
+0008 A603            337             MOV     @R0,AR3
+000A 08              338             INC     R0
+000B A602            339             MOV     @R0,AR2
+000D 08              340             INC     R0
+000E A601            341             MOV     @R0,AR1
+0010 E500     F      342             MOV     A,?C_IBP
+0012 24FC            343             ADD     A,#0FCH
+0014 F500     F      344             MOV     ?C_IBP,A
+                     345     ; {
+                     346     ;     uint8_t i, j,hex_value=0,next=0;
+                     347                             ; SOURCE LINE # 100
+0016 F8              348             MOV     R0,A
+0017 08              349             INC     R0
+0018 08              350             INC     R0
+0019 E4              351             CLR     A
+001A F6              352             MOV     @R0,A
+001B E500     F      353             MOV     A,?C_IBP
+001D 2403            354             ADD     A,#03H
+001F F8              355             MOV     R0,A
+0020 E4              356             CLR     A
+0021 F6              357             MOV     @R0,A
+                     358     ;     for(i = 0; i<16; i++)
+                     359                             ; SOURCE LINE # 101
+0022 A800     F      360             MOV     R0,?C_IBP
+0024 F6              361             MOV     @R0,A
+0025                 362     ?C0014:
+0025 A800     F      363             MOV     R0,?C_IBP
+0027 E6              364             MOV     A,@R0
+0028 C3              365             CLR     C
+0029 9410            366             SUBB    A,#010H
+002B 4003            367             JC      $ + 5H
+002D 020000   F      368             LJMP    ?C0023
+                     369     ;     {
+                     370                             ; SOURCE LINE # 102
+                     371     ;         for(j = 0; j<16; j++)
+                     372                             ; SOURCE LINE # 103
+A51 MACRO ASSEMBLER  TERMINAL                                                             07/14/2015 21:39:21 PAGE     7
+
+0030 08              373             INC     R0
+0031 E4              374             CLR     A
+0032 F6              375             MOV     @R0,A
+0033                 376     ?C0017:
+0033 A800     F      377             MOV     R0,?C_IBP
+0035 08              378             INC     R0
+0036 E6              379             MOV     A,@R0
+0037 FF              380             MOV     R7,A
+0038 C3              381             CLR     C
+0039 9410            382             SUBB    A,#010H
+003B 5039            383             JNC     ?C0018
+                     384     ;         {
+                     385                             ; SOURCE LINE # 104
+                     386     ;             if(in[i]==decimal2hex[j])
+                     387                             ; SOURCE LINE # 105
+003D E500     F      388             MOV     A,?C_IBP
+003F 2407            389             ADD     A,#07H
+0041 F8              390             MOV     R0,A
+0042 8603            391             MOV     AR3,@R0
+0044 08              392             INC     R0
+0045 E6              393             MOV     A,@R0
+0046 FA              394             MOV     R2,A
+0047 08              395             INC     R0
+0048 E6              396             MOV     A,@R0
+0049 F9              397             MOV     R1,A
+004A A800     F      398             MOV     R0,?C_IBP
+004C E6              399             MOV     A,@R0
+004D F582            400             MOV     DPL,A
+004F 758300          401             MOV     DPH,#00H
+0052 120000   F      402             LCALL   ?C?CLDOPTR
+0055 FE              403             MOV     R6,A
+0056 EF              404             MOV     A,R7
+0057 900000   F      405             MOV     DPTR,#decimal2hex
+005A 93              406             MOVC    A,@A+DPTR
+005B B50612          407             CJNE    A,AR6,?C0019
+                     408     ;             {
+                     409                             ; SOURCE LINE # 106
+                     410     ;                 hex_value|=j;
+                     411                             ; SOURCE LINE # 107
+005E A800     F      412             MOV     R0,?C_IBP
+0060 08              413             INC     R0
+0061 08              414             INC     R0
+0062 C000            415             PUSH    AR0
+0064 A900            416             MOV     R1,AR0
+0066 A800     F      417             MOV     R0,?C_IBP
+0068 08              418             INC     R0
+0069 E7              419             MOV     A,@R1
+006A 46              420             ORL     A,@R0
+006B D000            421             POP     AR0
+006D F6              422             MOV     @R0,A
+                     423     ;                 break;
+                     424                             ; SOURCE LINE # 108
+006E 8006            425             SJMP    ?C0018
+                     426     ;             }
+                     427                             ; SOURCE LINE # 109
+                     428     ;         }
+                     429                             ; SOURCE LINE # 110
+0070                 430     ?C0019:
+0070 A800     F      431             MOV     R0,?C_IBP
+0072 08              432             INC     R0
+0073 06              433             INC     @R0
+0074 80BD            434             SJMP    ?C0017
+0076                 435     ?C0018:
+                     436     ;         if(i==1||i==3||i==5||i==7||i==9||i==11||i==13||i==15)
+                     437                             ; SOURCE LINE # 111
+0076 A800     F      438             MOV     R0,?C_IBP
+A51 MACRO ASSEMBLER  TERMINAL                                                             07/14/2015 21:39:21 PAGE     8
+
+0078 E6              439             MOV     A,@R0
+0079 FF              440             MOV     R7,A
+007A 6401            441             XRL     A,#01H
+007C 6022            442             JZ      ?C0022
+007E EF              443             MOV     A,R7
+007F 6403            444             XRL     A,#03H
+0081 601D            445             JZ      ?C0022
+0083 EF              446             MOV     A,R7
+0084 6405            447             XRL     A,#05H
+0086 6018            448             JZ      ?C0022
+0088 EF              449             MOV     A,R7
+0089 6407            450             XRL     A,#07H
+008B 6013            451             JZ      ?C0022
+008D EF              452             MOV     A,R7
+008E 6409            453             XRL     A,#09H
+0090 600E            454             JZ      ?C0022
+0092 EF              455             MOV     A,R7
+0093 640B            456             XRL     A,#0BH
+0095 6009            457             JZ      ?C0022
+0097 EF              458             MOV     A,R7
+0098 640D            459             XRL     A,#0DH
+009A 6004            460             JZ      ?C0022
+009C EF              461             MOV     A,R7
+009D B40F29          462             CJNE    A,#0FH,?C0021
+00A0                 463     ?C0022:
+                     464     ;         {
+                     465                             ; SOURCE LINE # 112
+                     466     ;             out[next++] = hex_value;
+                     467                             ; SOURCE LINE # 113
+00A0 A800     F      468             MOV     R0,?C_IBP
+00A2 08              469             INC     R0
+00A3 08              470             INC     R0
+00A4 E6              471             MOV     A,@R0
+00A5 FF              472             MOV     R7,A
+00A6 E500     F      473             MOV     A,?C_IBP
+00A8 2404            474             ADD     A,#04H
+00AA F8              475             MOV     R0,A
+00AB 8603            476             MOV     AR3,@R0
+00AD 08              477             INC     R0
+00AE E6              478             MOV     A,@R0
+00AF FA              479             MOV     R2,A
+00B0 08              480             INC     R0
+00B1 E6              481             MOV     A,@R0
+00B2 F9              482             MOV     R1,A
+00B3 E500     F      483             MOV     A,?C_IBP
+00B5 2403            484             ADD     A,#03H
+00B7 F8              485             MOV     R0,A
+00B8 E6              486             MOV     A,@R0
+00B9 06              487             INC     @R0
+00BA F582            488             MOV     DPL,A
+00BC 758300          489             MOV     DPH,#00H
+00BF EF              490             MOV     A,R7
+00C0 120000   F      491             LCALL   ?C?CSTOPTR
+                     492     ;             hex_value =0;
+                     493                             ; SOURCE LINE # 114
+00C3 A800     F      494             MOV     R0,?C_IBP
+00C5 08              495             INC     R0
+00C6 08              496             INC     R0
+00C7 E4              497             CLR     A
+00C8 F6              498             MOV     @R0,A
+                     499     ;         }
+                     500                             ; SOURCE LINE # 115
+00C9                 501     ?C0021:
+                     502     ;         hex_value=hex_value<<4;
+                     503                             ; SOURCE LINE # 116
+00C9 A800     F      504             MOV     R0,?C_IBP
+A51 MACRO ASSEMBLER  TERMINAL                                                             07/14/2015 21:39:21 PAGE     9
+
+00CB 08              505             INC     R0
+00CC 08              506             INC     R0
+00CD C000            507             PUSH    AR0
+00CF E6              508             MOV     A,@R0
+00D0 C4              509             SWAP    A
+00D1 54F0            510             ANL     A,#0F0H
+00D3 D000            511             POP     AR0
+00D5 F6              512             MOV     @R0,A
+                     513     ;     }
+                     514                             ; SOURCE LINE # 117
+00D6 A800     F      515             MOV     R0,?C_IBP
+00D8 06              516             INC     @R0
+00D9 020000   F      517             LJMP    ?C0014
+                     518     ; }
+                     519                             ; SOURCE LINE # 118
+00DC                 520     ?C0023:
+00DC E500     F      521             MOV     A,?C_IBP
+00DE 240A            522             ADD     A,#0AH
+00E0 F500     F      523             MOV     ?C_IBP,A
+00E2 22              524             RET     
+                     525     ; END OF _?get_hex
+                     526     
+                     527     ; 
+                     528     ; /*$PAGE*/
+                     529     ; /*
+                     530     ; *****************************************************************************************
+                             ****************
+                     531     ; *                                      binary to string
+                     532     ; *
+                     533     ; * Description: This function use to convert data from binary to string
+                     534     ; *
+                     535     ; * Arguments  : input    is a point to the array want to be converted.
+                     536     ; *
+                     537     ; *                        nbytes       is a char that represent the number of array.
+                     538     ; *
+                     539     ; * Returns    : output is a point to the 1st element of string.
+                     540     ; *****************************************************************************************
+                             ****************
+                     541     ; */
+                     542     ; char* bin_to_string(const unsigned char input[], int nbytes)
+                     543     
+----                 544             RSEG  ?PR?_bin_to_string?TERMINAL
+0000                 545     _bin_to_string:
+                     546             USING   0
+                     547                             ; SOURCE LINE # 134
+0000 8B00     F      548             MOV     input?340,R3
+0002 8A00     F      549             MOV     input?340+01H,R2
+0004 8900     F      550             MOV     input?340+02H,R1
+0006 8C00     F      551             MOV     nbytes?341,R4
+0008 8D00     F      552             MOV     nbytes?341+01H,R5
+                     553     ; {
+                     554                             ; SOURCE LINE # 135
+                     555     ;     int i;
+                     556     ;     static char output[64 + 3];
+                     557     ;     char* output_ptr = output;
+                     558                             ; SOURCE LINE # 138
+000A 750000   F      559             MOV     output_ptr?344,#00H
+000D 750000   F      560             MOV     output_ptr?344+01H,#HIGH (output?343)
+0010 750000   F      561             MOV     output_ptr?344+02H,#LOW (output?343)
+                     562     ;     *output_ptr++ = '0';
+                     563                             ; SOURCE LINE # 139
+0013 AB00     F      564             MOV     R3,output_ptr?344
+0015 0500     F      565             INC     output_ptr?344+02H
+0017 E500     F      566             MOV     A,output_ptr?344+02H
+0019 AA00     F      567             MOV     R2,output_ptr?344+01H
+001B 7002            568             JNZ     ?C0032
+A51 MACRO ASSEMBLER  TERMINAL                                                             07/14/2015 21:39:21 PAGE    10
+
+001D 0500     F      569             INC     output_ptr?344+01H
+001F                 570     ?C0032:
+001F 14              571             DEC     A
+0020 F9              572             MOV     R1,A
+0021 7430            573             MOV     A,#030H
+0023 120000   F      574             LCALL   ?C?CSTPTR
+                     575     ;     *output_ptr++ = 'x';
+                     576                             ; SOURCE LINE # 140
+0026 AB00     F      577             MOV     R3,output_ptr?344
+0028 0500     F      578             INC     output_ptr?344+02H
+002A E500     F      579             MOV     A,output_ptr?344+02H
+002C AA00     F      580             MOV     R2,output_ptr?344+01H
+002E 7002            581             JNZ     ?C0033
+0030 0500     F      582             INC     output_ptr?344+01H
+0032                 583     ?C0033:
+0032 14              584             DEC     A
+0033 F9              585             MOV     R1,A
+0034 7478            586             MOV     A,#078H
+0036 120000   F      587             LCALL   ?C?CSTPTR
+                     588     ;     for (i=0; i<nbytes; i++)
+                     589                             ; SOURCE LINE # 141
+                     590     ;---- Variable 'i?342' assigned to Register 'R6/R7' ----
+0039 E4              591             CLR     A
+003A FF              592             MOV     R7,A
+003B FE              593             MOV     R6,A
+003C                 594     ?C0024:
+003C C3              595             CLR     C
+003D EF              596             MOV     A,R7
+003E 9500     F      597             SUBB    A,nbytes?341+01H
+0040 E500     F      598             MOV     A,nbytes?341
+0042 6480            599             XRL     A,#080H
+0044 F8              600             MOV     R0,A
+0045 EE              601             MOV     A,R6
+0046 6480            602             XRL     A,#080H
+0048 98              603             SUBB    A,R0
+0049 5056            604             JNC     ?C0025
+                     605     ;     {
+                     606                             ; SOURCE LINE # 142
+                     607     ;         *output_ptr++ = decimal2hex[(input[i]&0xF0)>>4];
+                     608                             ; SOURCE LINE # 143
+004B AB00     F      609             MOV     R3,input?340
+004D AA00     F      610             MOV     R2,input?340+01H
+004F A900     F      611             MOV     R1,input?340+02H
+0051 8F82            612             MOV     DPL,R7
+0053 8E83            613             MOV     DPH,R6
+0055 120000   F      614             LCALL   ?C?CLDOPTR
+0058 54F0            615             ANL     A,#0F0H
+005A C4              616             SWAP    A
+005B 540F            617             ANL     A,#0FH
+005D 900000   F      618             MOV     DPTR,#decimal2hex
+0060 93              619             MOVC    A,@A+DPTR
+0061 FD              620             MOV     R5,A
+0062 AB00     F      621             MOV     R3,output_ptr?344
+0064 0500     F      622             INC     output_ptr?344+02H
+0066 E500     F      623             MOV     A,output_ptr?344+02H
+0068 AA00     F      624             MOV     R2,output_ptr?344+01H
+006A 7002            625             JNZ     ?C0034
+006C 0500     F      626             INC     output_ptr?344+01H
+006E                 627     ?C0034:
+006E 14              628             DEC     A
+006F F9              629             MOV     R1,A
+0070 ED              630             MOV     A,R5
+0071 120000   F      631             LCALL   ?C?CSTPTR
+                     632     ;         *output_ptr++ = decimal2hex[(input[i]&0x0F)];
+                     633                             ; SOURCE LINE # 144
+0074 AB00     F      634             MOV     R3,input?340
+A51 MACRO ASSEMBLER  TERMINAL                                                             07/14/2015 21:39:21 PAGE    11
+
+0076 AA00     F      635             MOV     R2,input?340+01H
+0078 A900     F      636             MOV     R1,input?340+02H
+007A 8F82            637             MOV     DPL,R7
+007C 8E83            638             MOV     DPH,R6
+007E 120000   F      639             LCALL   ?C?CLDOPTR
+0081 540F            640             ANL     A,#0FH
+0083 900000   F      641             MOV     DPTR,#decimal2hex
+0086 93              642             MOVC    A,@A+DPTR
+0087 FD              643             MOV     R5,A
+0088 AB00     F      644             MOV     R3,output_ptr?344
+008A 0500     F      645             INC     output_ptr?344+02H
+008C E500     F      646             MOV     A,output_ptr?344+02H
+008E AA00     F      647             MOV     R2,output_ptr?344+01H
+0090 7002            648             JNZ     ?C0035
+0092 0500     F      649             INC     output_ptr?344+01H
+0094                 650     ?C0035:
+0094 14              651             DEC     A
+0095 F9              652             MOV     R1,A
+0096 ED              653             MOV     A,R5
+0097 120000   F      654             LCALL   ?C?CSTPTR
+                     655     ;     }
+                     656                             ; SOURCE LINE # 145
+009A 0F              657             INC     R7
+009B BF0001          658             CJNE    R7,#00H,?C0036
+009E 0E              659             INC     R6
+009F                 660     ?C0036:
+009F 809B            661             SJMP    ?C0024
+00A1                 662     ?C0025:
+                     663     ;     *output_ptr++ = '\r';
+                     664                             ; SOURCE LINE # 146
+00A1 AB00     F      665             MOV     R3,output_ptr?344
+00A3 0500     F      666             INC     output_ptr?344+02H
+00A5 E500     F      667             MOV     A,output_ptr?344+02H
+00A7 AA00     F      668             MOV     R2,output_ptr?344+01H
+00A9 7002            669             JNZ     ?C0037
+00AB 0500     F      670             INC     output_ptr?344+01H
+00AD                 671     ?C0037:
+00AD 14              672             DEC     A
+00AE F9              673             MOV     R1,A
+00AF 740D            674             MOV     A,#0DH
+00B1 120000   F      675             LCALL   ?C?CSTPTR
+                     676     ;     *output_ptr = '\0';
+                     677                             ; SOURCE LINE # 147
+00B4 AB00     F      678             MOV     R3,output_ptr?344
+00B6 AA00     F      679             MOV     R2,output_ptr?344+01H
+00B8 A900     F      680             MOV     R1,output_ptr?344+02H
+00BA E4              681             CLR     A
+00BB 120000   F      682             LCALL   ?C?CSTPTR
+                     683     ;     return output;
+                     684                             ; SOURCE LINE # 148
+00BE FB              685             MOV     R3,A
+00BF 7A00     F      686             MOV     R2,#HIGH (output?343)
+00C1 7900     F      687             MOV     R1,#LOW (output?343)
+                     688     ; }
+                     689                             ; SOURCE LINE # 149
+00C3                 690     ?C0027:
+00C3 22              691             RET     
+                     692     ; END OF _bin_to_string
+                     693     
+                     694     ; 
+                     695     ; /*$PAGE*/
+                     696     ; /*
+                     697     ; *****************************************************************************************
+                             ****************
+                     698     ; *                                              string compare
+                     699     ; *
+A51 MACRO ASSEMBLER  TERMINAL                                                             07/14/2015 21:39:21 PAGE    12
+
+                     700     ; * Description: This function is used to compare between tow string in certin n bytes.
+                     701     ; *
+                     702     ; * Arguments  : str1           pointer to the 1st element of 1st string
+                     703     ; *
+                     704     ; *              str2           pointer to the 2nd element of 2nd string
+                     705     ; *
+                     706     ; *              nbytes number of bytes
+                     707     ; *
+                     708     ; * Returns  =1  of str1 match with str2
+                     709     ; *
+                     710     ; *                =0  of str1 dosnt match with str2
+                     711     ; *****************************************************************************************
+                             ****************
+                     712     ; */
+                     713     ; uint8_t str_comp(uint8_t* str1,uint8_t* str2, uint8_t nbytes) reentrant
+                     714     
+----                 715             RSEG  ?PR?_?str_comp?TERMINAL
+0000                 716     L?0038:
+                     717             USING   0
+0000 1500     F      718             DEC     ?C_IBP
+0002 A800     F      719             MOV     R0,?C_IBP
+0004 7606            720             MOV     @R0,#06H
+0006 1500     F      721             DEC     ?C_IBP
+0008 1500     F      722             DEC     ?C_IBP
+000A 1500     F      723             DEC     ?C_IBP
+000C A800     F      724             MOV     R0,?C_IBP
+000E 76FF            725             MOV     @R0,#0FFH
+0010 08              726             INC     R0
+0011 7600     F      727             MOV     @R0,#HIGH (operation_chose+08H)
+0013 08              728             INC     R0
+0014 7600     F      729             MOV     @R0,#LOW (operation_chose+08H)
+0016                 730     L?0039:
+0016 E500     F      731             MOV     A,?C_IBP
+0018 2404            732             ADD     A,#04H
+001A F8              733             MOV     R0,A
+001B 8603            734             MOV     AR3,@R0
+001D 08              735             INC     R0
+001E E6              736             MOV     A,@R0
+001F FA              737             MOV     R2,A
+0020 08              738             INC     R0
+0021 E6              739             MOV     A,@R0
+0022 F9              740             MOV     R1,A
+0023                 741     _?str_comp:
+                     742             USING   0
+                     743                             ; SOURCE LINE # 169
+0023 1500     F      744             DEC     ?C_IBP
+0025 1500     F      745             DEC     ?C_IBP
+0027 1500     F      746             DEC     ?C_IBP
+0029 A800     F      747             MOV     R0,?C_IBP
+002B A603            748             MOV     @R0,AR3
+002D 08              749             INC     R0
+002E A602            750             MOV     @R0,AR2
+0030 08              751             INC     R0
+0031 A601            752             MOV     @R0,AR1
+0033 1500     F      753             DEC     ?C_IBP
+                     754     ; {
+                     755     ;     uint8_t i=0;
+                     756                             ; SOURCE LINE # 171
+0035 A800     F      757             MOV     R0,?C_IBP
+0037 E4              758             CLR     A
+0038 F6              759             MOV     @R0,A
+0039                 760     ?C0028:
+                     761     ;     while(i < nbytes)
+                     762                             ; SOURCE LINE # 172
+0039 E500     F      763             MOV     A,?C_IBP
+003B 2407            764             ADD     A,#07H
+A51 MACRO ASSEMBLER  TERMINAL                                                             07/14/2015 21:39:21 PAGE    13
+
+003D F9              765             MOV     R1,A
+003E A800     F      766             MOV     R0,?C_IBP
+0040 E6              767             MOV     A,@R0
+0041 FF              768             MOV     R7,A
+0042 C3              769             CLR     C
+0043 97              770             SUBB    A,@R1
+0044 5035            771             JNC     ?C0029
+                     772     ;     {
+                     773                             ; SOURCE LINE # 173
+                     774     ;         if(str1[i]!=str2[i])
+                     775                             ; SOURCE LINE # 174
+0046 E500     F      776             MOV     A,?C_IBP
+0048 2404            777             ADD     A,#04H
+004A F8              778             MOV     R0,A
+004B 8603            779             MOV     AR3,@R0
+004D 08              780             INC     R0
+004E E6              781             MOV     A,@R0
+004F FA              782             MOV     R2,A
+0050 08              783             INC     R0
+0051 E6              784             MOV     A,@R0
+0052 F9              785             MOV     R1,A
+0053 8F82            786             MOV     DPL,R7
+0055 758300          787             MOV     DPH,#00H
+0058 120000   F      788             LCALL   ?C?CLDOPTR
+005B FE              789             MOV     R6,A
+005C A800     F      790             MOV     R0,?C_IBP
+005E 08              791             INC     R0
+005F 8603            792             MOV     AR3,@R0
+0061 08              793             INC     R0
+0062 E6              794             MOV     A,@R0
+0063 FA              795             MOV     R2,A
+0064 08              796             INC     R0
+0065 E6              797             MOV     A,@R0
+0066 F9              798             MOV     R1,A
+0067 8F82            799             MOV     DPL,R7
+0069 758300          800             MOV     DPH,#00H
+006C 120000   F      801             LCALL   ?C?CLDOPTR
+006F 6E              802             XRL     A,R6
+0070 6004            803             JZ      ?C0030
+                     804     ;                       return 0;
+                     805                             ; SOURCE LINE # 175
+0072 7F00            806             MOV     R7,#00H
+0074 8007            807             SJMP    ?C0031
+0076                 808     ?C0030:
+                     809     ;               i++;
+                     810                             ; SOURCE LINE # 176
+0076 A800     F      811             MOV     R0,?C_IBP
+0078 06              812             INC     @R0
+                     813     ;       }
+                     814                             ; SOURCE LINE # 177
+0079 80BE            815             SJMP    ?C0028
+007B                 816     ?C0029:
+                     817     ;       return 1;
+                     818                             ; SOURCE LINE # 178
+007B 7F01            819             MOV     R7,#01H
+                     820     ; }                     ; SOURCE LINE # 179
+007D                 821     ?C0031:
+007D E500     F      822             MOV     A,?C_IBP
+007F 2408            823             ADD     A,#08H
+0081 F500     F      824             MOV     ?C_IBP,A
+0083 22              825             RET     
+                     826     ; END OF _?str_comp
+                     827     
+                     828             END
+A51 MACRO ASSEMBLER  TERMINAL                                                             07/14/2015 21:39:21 PAGE    14
+
+SYMBOL TABLE LISTING
+------ ----- -------
+
+
+N A M E                      T Y P E  V A L U E   ATTRIBUTES
+
+?C0001. . . . . . . . . . .  C ADDR   0030H   R   SEG=?PR?_?OPERATION?TERMINAL
+?C0002. . . . . . . . . . .  C ADDR   0046H   R   SEG=?PR?_?OPERATION?TERMINAL
+?C0003. . . . . . . . . . .  C ADDR   003AH   R   SEG=?PR?_?OPERATION?TERMINAL
+?C0004. . . . . . . . . . .  C ADDR   0044H   R   SEG=?PR?_?OPERATION?TERMINAL
+?C0005. . . . . . . . . . .  C ADDR   001FH   R   SEG=?PR?_?CHECK_HEX?TERMINAL
+?C0006. . . . . . . . . . .  C ADDR   0070H   R   SEG=?PR?_?CHECK_HEX?TERMINAL
+?C0007. . . . . . . . . . .  C ADDR   006BH   R   SEG=?PR?_?CHECK_HEX?TERMINAL
+?C0008. . . . . . . . . . .  C ADDR   002AH   R   SEG=?PR?_?CHECK_HEX?TERMINAL
+?C0009. . . . . . . . . . .  C ADDR   0061H   R   SEG=?PR?_?CHECK_HEX?TERMINAL
+?C0010. . . . . . . . . . .  C ADDR   005BH   R   SEG=?PR?_?CHECK_HEX?TERMINAL
+?C0013. . . . . . . . . . .  C ADDR   0072H   R   SEG=?PR?_?CHECK_HEX?TERMINAL
+?C0014. . . . . . . . . . .  C ADDR   0025H   R   SEG=?PR?_?GET_HEX?TERMINAL
+?C0017. . . . . . . . . . .  C ADDR   0033H   R   SEG=?PR?_?GET_HEX?TERMINAL
+?C0018. . . . . . . . . . .  C ADDR   0076H   R   SEG=?PR?_?GET_HEX?TERMINAL
+?C0019. . . . . . . . . . .  C ADDR   0070H   R   SEG=?PR?_?GET_HEX?TERMINAL
+?C0021. . . . . . . . . . .  C ADDR   00C9H   R   SEG=?PR?_?GET_HEX?TERMINAL
+?C0022. . . . . . . . . . .  C ADDR   00A0H   R   SEG=?PR?_?GET_HEX?TERMINAL
+?C0023. . . . . . . . . . .  C ADDR   00DCH   R   SEG=?PR?_?GET_HEX?TERMINAL
+?C0024. . . . . . . . . . .  C ADDR   003CH   R   SEG=?PR?_BIN_TO_STRING?TERMINAL
+?C0025. . . . . . . . . . .  C ADDR   00A1H   R   SEG=?PR?_BIN_TO_STRING?TERMINAL
+?C0027. . . . . . . . . . .  C ADDR   00C3H   R   SEG=?PR?_BIN_TO_STRING?TERMINAL
+?C0028. . . . . . . . . . .  C ADDR   0039H   R   SEG=?PR?_?STR_COMP?TERMINAL
+?C0029. . . . . . . . . . .  C ADDR   007BH   R   SEG=?PR?_?STR_COMP?TERMINAL
+?C0030. . . . . . . . . . .  C ADDR   0076H   R   SEG=?PR?_?STR_COMP?TERMINAL
+?C0031. . . . . . . . . . .  C ADDR   007DH   R   SEG=?PR?_?STR_COMP?TERMINAL
+?C0032. . . . . . . . . . .  C ADDR   001FH   R   SEG=?PR?_BIN_TO_STRING?TERMINAL
+?C0033. . . . . . . . . . .  C ADDR   0032H   R   SEG=?PR?_BIN_TO_STRING?TERMINAL
+?C0034. . . . . . . . . . .  C ADDR   006EH   R   SEG=?PR?_BIN_TO_STRING?TERMINAL
+?C0035. . . . . . . . . . .  C ADDR   0094H   R   SEG=?PR?_BIN_TO_STRING?TERMINAL
+?C0036. . . . . . . . . . .  C ADDR   009FH   R   SEG=?PR?_BIN_TO_STRING?TERMINAL
+?C0037. . . . . . . . . . .  C ADDR   00ADH   R   SEG=?PR?_BIN_TO_STRING?TERMINAL
+?C?CLDOPTR. . . . . . . . .  C ADDR   -----       EXT
+?C?CSTOPTR. . . . . . . . .  C ADDR   -----       EXT
+?C?CSTPTR . . . . . . . . .  C ADDR   -----       EXT
+?CO?TERMINAL. . . . . . . .  C SEG    0028H       REL=UNIT
+?C_IBP. . . . . . . . . . .  D ADDR   -----       EXT
+?DT?TERMINAL. . . . . . . .  D SEG    0043H       REL=UNIT
+?DT?_BIN_TO_STRING?TERMINAL  D SEG    0008H       REL=UNIT
+?PR?_?CHECK_HEX?TERMINAL. .  C SEG    0079H       REL=UNIT
+?PR?_?GET_HEX?TERMINAL. . .  C SEG    00E3H       REL=UNIT
+?PR?_?OPERATION?TERMINAL. .  C SEG    004DH       REL=UNIT
+?PR?_?STR_COMP?TERMINAL . .  C SEG    0084H       REL=UNIT
+?PR?_BIN_TO_STRING?TERMINAL  C SEG    00C4H       REL=UNIT
+?_BIN_TO_STRING?BYTE. . . .  D ADDR   0000H   R   SEG=?DT?_BIN_TO_STRING?TERMINAL
+AR0 . . . . . . . . . . . .  D ADDR   0000H   A   
+AR1 . . . . . . . . . . . .  D ADDR   0001H   A   
+AR2 . . . . . . . . . . . .  D ADDR   0002H   A   
+AR3 . . . . . . . . . . . .  D ADDR   0003H   A   
+AR6 . . . . . . . . . . . .  D ADDR   0006H   A   
+DECIMAL2HEX . . . . . . . .  C ADDR   0018H   R   SEG=?CO?TERMINAL
+DPH . . . . . . . . . . . .  D ADDR   0083H   A   
+DPL . . . . . . . . . . . .  D ADDR   0082H   A   
+INPUT?340 . . . . . . . . .  D ADDR   0000H   R   SEG=?DT?_BIN_TO_STRING?TERMINAL
+L?0038. . . . . . . . . . .  C ADDR   0000H   R   SEG=?PR?_?STR_COMP?TERMINAL
+L?0039. . . . . . . . . . .  C ADDR   0016H   R   SEG=?PR?_?STR_COMP?TERMINAL
+NBYTES?341. . . . . . . . .  D ADDR   0003H   R   SEG=?DT?_BIN_TO_STRING?TERMINAL
+OPERATION_CHOSE . . . . . .  C ADDR   0000H   R   SEG=?CO?TERMINAL
+OUTPUT?343. . . . . . . . .  D ADDR   0000H   R   SEG=?DT?TERMINAL
+OUTPUT_PTR?344. . . . . . .  D ADDR   0005H   R   SEG=?DT?_BIN_TO_STRING?TERMINAL
+TERMINAL. . . . . . . . . .  N NUMB   -----       
+A51 MACRO ASSEMBLER  TERMINAL                                                             07/14/2015 21:39:21 PAGE    15
+
+_?CHECK_HEX . . . . . . . .  C ADDR   0000H   R   SEG=?PR?_?CHECK_HEX?TERMINAL
+_?GET_HEX . . . . . . . . .  C ADDR   0000H   R   SEG=?PR?_?GET_HEX?TERMINAL
+_?OPERATION . . . . . . . .  C ADDR   0000H   R   SEG=?PR?_?OPERATION?TERMINAL
+_?STR_COMP. . . . . . . . .  C ADDR   0023H   R   SEG=?PR?_?STR_COMP?TERMINAL
+_BIN_TO_STRING. . . . . . .  C ADDR   0000H   R   SEG=?PR?_BIN_TO_STRING?TERMINAL
+
+
+REGISTER BANK(S) USED: 0 
+
+
+ASSEMBLY COMPLETE.  0 WARNING(S), 0 ERROR(S)

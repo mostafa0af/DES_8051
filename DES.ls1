@@ -1,0 +1,3300 @@
+A51 MACRO ASSEMBLER  DES                                                                  07/14/2015 21:39:16 PAGE     1
+
+
+MACRO ASSEMBLER A51 V8.02
+OBJECT MODULE PLACED IN DES.OBJ
+ASSEMBLER INVOKED BY: C:\Keil\C51\BIN\A51.EXE DES.src PR(.\DES.ls1) EP DEBUG
+
+LOC  OBJ            LINE     SOURCE
+
+                       1     ; .\DES.SRC generated from: DES.c
+                       2     ; COMPILER INVOKED BY:
+                       3     ;        C:\Keil\C51\BIN\C51.EXE DES.c BROWSE DEBUG OBJECTEXTEND CODE LISTINCLUDE SRC(.\DES
+                             .SRC)
+                       4     
+                       5     $nomod51 
+                       6     
+                       7     NAME    DES
+                       8     
+  0080                 9     P0      DATA    080H
+  0090                10     P1      DATA    090H
+  00A0                11     P2      DATA    0A0H
+  00B0                12     P3      DATA    0B0H
+  00B4                13     T0      BIT     0B0H.4
+  00D6                14     AC      BIT     0D0H.6
+  00B5                15     T1      BIT     0B0H.5
+  0090                16     T2      BIT     090H.0
+  00AF                17     EA      BIT     0A8H.7
+  00A8                18     IE      DATA    0A8H
+  00CE                19     EXF2    BIT     0C8H.6
+  00B7                20     RD      BIT     0B0H.7
+  00AC                21     ES      BIT     0A8H.4
+  00B8                22     IP      DATA    0B8H
+  0098                23     RI      BIT     098H.0
+  00B2                24     INT0    BIT     0B0H.2
+  00D7                25     CY      BIT     0D0H.7
+  0099                26     TI      BIT     098H.1
+  00B3                27     INT1    BIT     0B0H.3
+  00CB                28     RCAP2H  DATA    0CBH
+  00BC                29     PS      BIT     0B8H.4
+  0081                30     SP      DATA    081H
+  0091                31     T2EX    BIT     090H.1
+  00D2                32     OV      BIT     0D0H.2
+  00CA                33     RCAP2L  DATA    0CAH
+  00C9                34     C_T2    BIT     0C8H.1
+  00B6                35     WR      BIT     0B0H.6
+  00CD                36     RCLK    BIT     0C8H.5
+  00CC                37     TCLK    BIT     0C8H.4
+  0099                38     SBUF    DATA    099H
+  0087                39     PCON    DATA    087H
+  0098                40     SCON    DATA    098H
+  0089                41     TMOD    DATA    089H
+  0088                42     TCON    DATA    088H
+  0089                43     IE0     BIT     088H.1
+  008B                44     IE1     BIT     088H.3
+  00F0                45     B       DATA    0F0H
+  00C8                46     CP_RL2  BIT     0C8H.0
+  00E0                47     ACC     DATA    0E0H
+  00A9                48     ET0     BIT     0A8H.1
+  00AB                49     ET1     BIT     0A8H.3
+  008D                50     TF0     BIT     088H.5
+  00AD                51     ET2     BIT     0A8H.5
+  008F                52     TF1     BIT     088H.7
+  00CF                53     TF2     BIT     0C8H.7
+  009A                54     RB8     BIT     098H.2
+  008C                55     TH0     DATA    08CH
+  00A8                56     EX0     BIT     0A8H.0
+  0088                57     IT0     BIT     088H.0
+A51 MACRO ASSEMBLER  DES                                                                  07/14/2015 21:39:16 PAGE     2
+
+  008D                58     TH1     DATA    08DH
+  009B                59     TB8     BIT     098H.3
+  00AA                60     EX1     BIT     0A8H.2
+  008A                61     IT1     BIT     088H.2
+  00CD                62     TH2     DATA    0CDH
+  00D0                63     P       BIT     0D0H.0
+  009F                64     SM0     BIT     098H.7
+  008A                65     TL0     DATA    08AH
+  009E                66     SM1     BIT     098H.6
+  008B                67     TL1     DATA    08BH
+  009D                68     SM2     BIT     098H.5
+  00CC                69     TL2     DATA    0CCH
+  00B9                70     PT0     BIT     0B8H.1
+  00BB                71     PT1     BIT     0B8H.3
+  00D3                72     RS0     BIT     0D0H.3
+  00BD                73     PT2     BIT     0B8H.5
+  008C                74     TR0     BIT     088H.4
+  00D4                75     RS1     BIT     0D0H.4
+  008E                76     TR1     BIT     088H.6
+  00CA                77     TR2     BIT     0C8H.2
+  00B8                78     PX0     BIT     0B8H.0
+  00BA                79     PX1     BIT     0B8H.2
+  0083                80     DPH     DATA    083H
+  0082                81     DPL     DATA    082H
+  00CB                82     EXEN2   BIT     0C8H.3
+  009C                83     REN     BIT     098H.4
+  00C8                84     T2CON   DATA    0C8H
+  00B0                85     RXD     BIT     0B0H.0
+  00B1                86     TXD     BIT     0B0H.1
+  00D5                87     F0      BIT     0D0H.5
+  00D0                88     PSW     DATA    0D0H
+                      89     ?PR?_?permute?DES    SEGMENT CODE 
+                      90     ?PR?_?shiftkey?DES   SEGMENT CODE 
+                      91     ?PR?_?shiftkey_inv?DES                   SEGMENT CODE 
+                      92     ?PR?_?splitin6bitwords?DES               SEGMENT CODE 
+                      93     ?PR?_?substitute?DES SEGMENT CODE 
+                      94     ?PR?_?des_f?DES      SEGMENT CODE 
+                      95     ?PR?_?encrypt?DES    SEGMENT CODE 
+                      96     ?PR?_?decrypt?DES    SEGMENT CODE 
+                      97     ?CO?DES              SEGMENT CODE 
+                      98             EXTRN   DATA (?C_IBP)
+                      99             EXTRN   CODE (?C?CLDOPTR)
+                     100             EXTRN   CODE (?C?CLDPTR)
+                     101             EXTRN   CODE (?C?CSTOPTR)
+                     102             EXTRN   CODE (?C?COPY)
+                     103             EXTRN   CODE (?C?LSTIDATA)
+                     104             EXTRN   CODE (?C?LSTKIDATA)
+                     105             EXTRN   CODE (?C?CSTPTR)
+                     106             EXTRN   CODE (?C?LLDIDATA)
+                     107             EXTRN   CODE (?C?LSHL)
+                     108             EXTRN   CODE (?C?LLDIDATA0)
+                     109             PUBLIC  shiftkeyinv_permtab
+                     110             PUBLIC  shiftkey_permtab
+                     111             PUBLIC  splitin6bitword_permtab
+                     112             PUBLIC  pc2_permtab
+                     113             PUBLIC  pc1_permtab
+                     114             PUBLIC  inv_ip_permtab
+                     115             PUBLIC  ip_permtab
+                     116             PUBLIC  p_permtab
+                     117             PUBLIC  e_permtab
+                     118             PUBLIC  sbox
+                     119             PUBLIC  _?decrypt
+                     120             PUBLIC  _?encrypt
+                     121             PUBLIC  _?des_f
+                     122             PUBLIC  _?substitute
+                     123             PUBLIC  _?splitin6bitwords
+A51 MACRO ASSEMBLER  DES                                                                  07/14/2015 21:39:16 PAGE     3
+
+                     124             PUBLIC  _?shiftkey_inv
+                     125             PUBLIC  _?shiftkey
+                     126             PUBLIC  _?permute
+                     127     
+----                 128             RSEG  ?CO?DES
+0000                 129     sbox:
+0000 E4              130             DB      0E4H
+0001 D1              131             DB      0D1H
+0002 2F              132             DB      02FH
+0003 B8              133             DB      0B8H
+0004 3A              134             DB      03AH
+0005 6C              135             DB      06CH
+0006 59              136             DB      059H
+0007 07              137             DB      007H
+0008 0F              138             DB      00FH
+0009 74              139             DB      074H
+000A E2              140             DB      0E2H
+000B D1              141             DB      0D1H
+000C A6              142             DB      0A6H
+000D CB              143             DB      0CBH
+000E 95              144             DB      095H
+000F 38              145             DB      038H
+0010 41              146             DB      041H
+0011 E8              147             DB      0E8H
+0012 D6              148             DB      0D6H
+0013 2B              149             DB      02BH
+0014 FC              150             DB      0FCH
+0015 97              151             DB      097H
+0016 3A              152             DB      03AH
+0017 50              153             DB      050H
+0018 FC              154             DB      0FCH
+0019 82              155             DB      082H
+001A 49              156             DB      049H
+001B 17              157             DB      017H
+001C 5B              158             DB      05BH
+001D 3E              159             DB      03EH
+001E A0              160             DB      0A0H
+001F 6D              161             DB      06DH
+0020 F1              162             DB      0F1H
+0021 8E              163             DB      08EH
+0022 6B              164             DB      06BH
+0023 34              165             DB      034H
+0024 97              166             DB      097H
+0025 2D              167             DB      02DH
+0026 C0              168             DB      0C0H
+0027 5A              169             DB      05AH
+0028 3D              170             DB      03DH
+0029 47              171             DB      047H
+002A F2              172             DB      0F2H
+002B 8E              173             DB      08EH
+002C C0              174             DB      0C0H
+002D 1A              175             DB      01AH
+002E 69              176             DB      069H
+002F B5              177             DB      0B5H
+0030 0E              178             DB      00EH
+0031 7B              179             DB      07BH
+0032 A4              180             DB      0A4H
+0033 D1              181             DB      0D1H
+0034 58              182             DB      058H
+0035 C6              183             DB      0C6H
+0036 93              184             DB      093H
+0037 2F              185             DB      02FH
+0038 D8              186             DB      0D8H
+0039 A1              187             DB      0A1H
+003A 3F              188             DB      03FH
+003B 42              189             DB      042H
+A51 MACRO ASSEMBLER  DES                                                                  07/14/2015 21:39:16 PAGE     4
+
+003C B6              190             DB      0B6H
+003D 7C              191             DB      07CH
+003E 05              192             DB      005H
+003F E9              193             DB      0E9H
+0040 A0              194             DB      0A0H
+0041 9E              195             DB      09EH
+0042 63              196             DB      063H
+0043 F5              197             DB      0F5H
+0044 1D              198             DB      01DH
+0045 C7              199             DB      0C7H
+0046 B4              200             DB      0B4H
+0047 28              201             DB      028H
+0048 D7              202             DB      0D7H
+0049 09              203             DB      009H
+004A 34              204             DB      034H
+004B 6A              205             DB      06AH
+004C 28              206             DB      028H
+004D 5E              207             DB      05EH
+004E CB              208             DB      0CBH
+004F F1              209             DB      0F1H
+0050 D6              210             DB      0D6H
+0051 49              211             DB      049H
+0052 8F              212             DB      08FH
+0053 30              213             DB      030H
+0054 B1              214             DB      0B1H
+0055 2C              215             DB      02CH
+0056 5A              216             DB      05AH
+0057 E7              217             DB      0E7H
+0058 1A              218             DB      01AH
+0059 D0              219             DB      0D0H
+005A 69              220             DB      069H
+005B 87              221             DB      087H
+005C 4F              222             DB      04FH
+005D E3              223             DB      0E3H
+005E B5              224             DB      0B5H
+005F 2C              225             DB      02CH
+0060 7D              226             DB      07DH
+0061 E3              227             DB      0E3H
+0062 06              228             DB      006H
+0063 9A              229             DB      09AH
+0064 12              230             DB      012H
+0065 85              231             DB      085H
+0066 BC              232             DB      0BCH
+0067 4F              233             DB      04FH
+0068 D8              234             DB      0D8H
+0069 B5              235             DB      0B5H
+006A 6F              236             DB      06FH
+006B 03              237             DB      003H
+006C 47              238             DB      047H
+006D 2C              239             DB      02CH
+006E 1A              240             DB      01AH
+006F E9              241             DB      0E9H
+0070 A6              242             DB      0A6H
+0071 90              243             DB      090H
+0072 CB              244             DB      0CBH
+0073 7D              245             DB      07DH
+0074 F1              246             DB      0F1H
+0075 3E              247             DB      03EH
+0076 52              248             DB      052H
+0077 84              249             DB      084H
+0078 3F              250             DB      03FH
+0079 06              251             DB      006H
+007A A1              252             DB      0A1H
+007B D8              253             DB      0D8H
+007C 94              254             DB      094H
+007D 5B              255             DB      05BH
+A51 MACRO ASSEMBLER  DES                                                                  07/14/2015 21:39:16 PAGE     5
+
+007E C7              256             DB      0C7H
+007F 2E              257             DB      02EH
+0080 2C              258             DB      02CH
+0081 41              259             DB      041H
+0082 7A              260             DB      07AH
+0083 B6              261             DB      0B6H
+0084 85              262             DB      085H
+0085 3F              263             DB      03FH
+0086 D0              264             DB      0D0H
+0087 E9              265             DB      0E9H
+0088 EB              266             DB      0EBH
+0089 2C              267             DB      02CH
+008A 47              268             DB      047H
+008B D1              269             DB      0D1H
+008C 50              270             DB      050H
+008D FA              271             DB      0FAH
+008E 39              272             DB      039H
+008F 86              273             DB      086H
+0090 42              274             DB      042H
+0091 1B              275             DB      01BH
+0092 AD              276             DB      0ADH
+0093 78              277             DB      078H
+0094 F9              278             DB      0F9H
+0095 C5              279             DB      0C5H
+0096 63              280             DB      063H
+0097 0E              281             DB      00EH
+0098 B8              282             DB      0B8H
+0099 C7              283             DB      0C7H
+009A 1E              284             DB      01EH
+009B 2D              285             DB      02DH
+009C 6F              286             DB      06FH
+009D 09              287             DB      009H
+009E A4              288             DB      0A4H
+009F 53              289             DB      053H
+00A0 C1              290             DB      0C1H
+00A1 AF              291             DB      0AFH
+00A2 92              292             DB      092H
+00A3 68              293             DB      068H
+00A4 0D              294             DB      00DH
+00A5 34              295             DB      034H
+00A6 E7              296             DB      0E7H
+00A7 5B              297             DB      05BH
+00A8 AF              298             DB      0AFH
+00A9 42              299             DB      042H
+00AA 7C              300             DB      07CH
+00AB 95              301             DB      095H
+00AC 61              302             DB      061H
+00AD DE              303             DB      0DEH
+00AE 0B              304             DB      00BH
+00AF 38              305             DB      038H
+00B0 9E              306             DB      09EH
+00B1 F5              307             DB      0F5H
+00B2 28              308             DB      028H
+00B3 C3              309             DB      0C3H
+00B4 70              310             DB      070H
+00B5 4A              311             DB      04AH
+00B6 1D              312             DB      01DH
+00B7 B6              313             DB      0B6H
+00B8 43              314             DB      043H
+00B9 2C              315             DB      02CH
+00BA 95              316             DB      095H
+00BB FA              317             DB      0FAH
+00BC BE              318             DB      0BEH
+00BD 17              319             DB      017H
+00BE 60              320             DB      060H
+00BF 8D              321             DB      08DH
+A51 MACRO ASSEMBLER  DES                                                                  07/14/2015 21:39:16 PAGE     6
+
+00C0 4B              322             DB      04BH
+00C1 2E              323             DB      02EH
+00C2 F0              324             DB      0F0H
+00C3 8D              325             DB      08DH
+00C4 3C              326             DB      03CH
+00C5 97              327             DB      097H
+00C6 5A              328             DB      05AH
+00C7 61              329             DB      061H
+00C8 D0              330             DB      0D0H
+00C9 B7              331             DB      0B7H
+00CA 49              332             DB      049H
+00CB 1A              333             DB      01AH
+00CC E3              334             DB      0E3H
+00CD 5C              335             DB      05CH
+00CE 2F              336             DB      02FH
+00CF 86              337             DB      086H
+00D0 14              338             DB      014H
+00D1 BD              339             DB      0BDH
+00D2 C3              340             DB      0C3H
+00D3 7E              341             DB      07EH
+00D4 AF              342             DB      0AFH
+00D5 68              343             DB      068H
+00D6 05              344             DB      005H
+00D7 92              345             DB      092H
+00D8 6B              346             DB      06BH
+00D9 D8              347             DB      0D8H
+00DA 14              348             DB      014H
+00DB A7              349             DB      0A7H
+00DC 95              350             DB      095H
+00DD 0F              351             DB      00FH
+00DE E2              352             DB      0E2H
+00DF 3C              353             DB      03CH
+00E0 D2              354             DB      0D2H
+00E1 84              355             DB      084H
+00E2 6F              356             DB      06FH
+00E3 B1              357             DB      0B1H
+00E4 A9              358             DB      0A9H
+00E5 3E              359             DB      03EH
+00E6 50              360             DB      050H
+00E7 C7              361             DB      0C7H
+00E8 1F              362             DB      01FH
+00E9 D8              363             DB      0D8H
+00EA A3              364             DB      0A3H
+00EB 74              365             DB      074H
+00EC C5              366             DB      0C5H
+00ED 6B              367             DB      06BH
+00EE 0E              368             DB      00EH
+00EF 92              369             DB      092H
+00F0 7B              370             DB      07BH
+00F1 41              371             DB      041H
+00F2 9C              372             DB      09CH
+00F3 E2              373             DB      0E2H
+00F4 06              374             DB      006H
+00F5 AD              375             DB      0ADH
+00F6 F3              376             DB      0F3H
+00F7 58              377             DB      058H
+00F8 21              378             DB      021H
+00F9 E7              379             DB      0E7H
+00FA 4A              380             DB      04AH
+00FB 8D              381             DB      08DH
+00FC FC              382             DB      0FCH
+00FD 90              383             DB      090H
+00FE 35              384             DB      035H
+00FF 6B              385             DB      06BH
+                     386     
+0100                 387     e_permtab:
+A51 MACRO ASSEMBLER  DES                                                                  07/14/2015 21:39:16 PAGE     7
+
+0100 04              388             DB      004H
+0101 06              389             DB      006H
+0102 20              390             DB      020H
+0103 01              391             DB      001H
+0104 02              392             DB      002H
+0105 03              393             DB      003H
+0106 04              394             DB      004H
+0107 05              395             DB      005H
+0108 04              396             DB      004H
+0109 05              397             DB      005H
+010A 06              398             DB      006H
+010B 07              399             DB      007H
+010C 08              400             DB      008H
+010D 09              401             DB      009H
+010E 08              402             DB      008H
+010F 09              403             DB      009H
+0110 0A              404             DB      00AH
+0111 0B              405             DB      00BH
+0112 0C              406             DB      00CH
+0113 0D              407             DB      00DH
+0114 0C              408             DB      00CH
+0115 0D              409             DB      00DH
+0116 0E              410             DB      00EH
+0117 0F              411             DB      00FH
+0118 10              412             DB      010H
+0119 11              413             DB      011H
+011A 10              414             DB      010H
+011B 11              415             DB      011H
+011C 12              416             DB      012H
+011D 13              417             DB      013H
+011E 14              418             DB      014H
+011F 15              419             DB      015H
+0120 14              420             DB      014H
+0121 15              421             DB      015H
+0122 16              422             DB      016H
+0123 17              423             DB      017H
+0124 18              424             DB      018H
+0125 19              425             DB      019H
+0126 18              426             DB      018H
+0127 19              427             DB      019H
+0128 1A              428             DB      01AH
+0129 1B              429             DB      01BH
+012A 1C              430             DB      01CH
+012B 1D              431             DB      01DH
+012C 1C              432             DB      01CH
+012D 1D              433             DB      01DH
+012E 1E              434             DB      01EH
+012F 1F              435             DB      01FH
+0130 20              436             DB      020H
+0131 01              437             DB      001H
+                     438     
+0132                 439     p_permtab:
+0132 04              440             DB      004H
+0133 04              441             DB      004H
+0134 10              442             DB      010H
+0135 07              443             DB      007H
+0136 14              444             DB      014H
+0137 15              445             DB      015H
+0138 1D              446             DB      01DH
+0139 0C              447             DB      00CH
+013A 1C              448             DB      01CH
+013B 11              449             DB      011H
+013C 01              450             DB      001H
+013D 0F              451             DB      00FH
+013E 17              452             DB      017H
+013F 1A              453             DB      01AH
+A51 MACRO ASSEMBLER  DES                                                                  07/14/2015 21:39:16 PAGE     8
+
+0140 05              454             DB      005H
+0141 12              455             DB      012H
+0142 1F              456             DB      01FH
+0143 0A              457             DB      00AH
+0144 02              458             DB      002H
+0145 08              459             DB      008H
+0146 18              460             DB      018H
+0147 0E              461             DB      00EH
+0148 20              462             DB      020H
+0149 1B              463             DB      01BH
+014A 03              464             DB      003H
+014B 09              465             DB      009H
+014C 13              466             DB      013H
+014D 0D              467             DB      00DH
+014E 1E              468             DB      01EH
+014F 06              469             DB      006H
+0150 16              470             DB      016H
+0151 0B              471             DB      00BH
+0152 04              472             DB      004H
+0153 19              473             DB      019H
+                     474     
+0154                 475     ip_permtab:
+0154 08              476             DB      008H
+0155 08              477             DB      008H
+0156 3A              478             DB      03AH
+0157 32              479             DB      032H
+0158 2A              480             DB      02AH
+0159 22              481             DB      022H
+015A 1A              482             DB      01AH
+015B 12              483             DB      012H
+015C 0A              484             DB      00AH
+015D 02              485             DB      002H
+015E 3C              486             DB      03CH
+015F 34              487             DB      034H
+0160 2C              488             DB      02CH
+0161 24              489             DB      024H
+0162 1C              490             DB      01CH
+0163 14              491             DB      014H
+0164 0C              492             DB      00CH
+0165 04              493             DB      004H
+0166 3E              494             DB      03EH
+0167 36              495             DB      036H
+0168 2E              496             DB      02EH
+0169 26              497             DB      026H
+016A 1E              498             DB      01EH
+016B 16              499             DB      016H
+016C 0E              500             DB      00EH
+016D 06              501             DB      006H
+016E 40              502             DB      040H
+016F 38              503             DB      038H
+0170 30              504             DB      030H
+0171 28              505             DB      028H
+0172 20              506             DB      020H
+0173 18              507             DB      018H
+0174 10              508             DB      010H
+0175 08              509             DB      008H
+0176 39              510             DB      039H
+0177 31              511             DB      031H
+0178 29              512             DB      029H
+0179 21              513             DB      021H
+017A 19              514             DB      019H
+017B 11              515             DB      011H
+017C 09              516             DB      009H
+017D 01              517             DB      001H
+017E 3B              518             DB      03BH
+017F 33              519             DB      033H
+A51 MACRO ASSEMBLER  DES                                                                  07/14/2015 21:39:16 PAGE     9
+
+0180 2B              520             DB      02BH
+0181 23              521             DB      023H
+0182 1B              522             DB      01BH
+0183 13              523             DB      013H
+0184 0B              524             DB      00BH
+0185 03              525             DB      003H
+0186 3D              526             DB      03DH
+0187 35              527             DB      035H
+0188 2D              528             DB      02DH
+0189 25              529             DB      025H
+018A 1D              530             DB      01DH
+018B 15              531             DB      015H
+018C 0D              532             DB      00DH
+018D 05              533             DB      005H
+018E 3F              534             DB      03FH
+018F 37              535             DB      037H
+0190 2F              536             DB      02FH
+0191 27              537             DB      027H
+0192 1F              538             DB      01FH
+0193 17              539             DB      017H
+0194 0F              540             DB      00FH
+0195 07              541             DB      007H
+                     542     
+0196                 543     inv_ip_permtab:
+0196 08              544             DB      008H
+0197 08              545             DB      008H
+0198 28              546             DB      028H
+0199 08              547             DB      008H
+019A 30              548             DB      030H
+019B 10              549             DB      010H
+019C 38              550             DB      038H
+019D 18              551             DB      018H
+019E 40              552             DB      040H
+019F 20              553             DB      020H
+01A0 27              554             DB      027H
+01A1 07              555             DB      007H
+01A2 2F              556             DB      02FH
+01A3 0F              557             DB      00FH
+01A4 37              558             DB      037H
+01A5 17              559             DB      017H
+01A6 3F              560             DB      03FH
+01A7 1F              561             DB      01FH
+01A8 26              562             DB      026H
+01A9 06              563             DB      006H
+01AA 2E              564             DB      02EH
+01AB 0E              565             DB      00EH
+01AC 36              566             DB      036H
+01AD 16              567             DB      016H
+01AE 3E              568             DB      03EH
+01AF 1E              569             DB      01EH
+01B0 25              570             DB      025H
+01B1 05              571             DB      005H
+01B2 2D              572             DB      02DH
+01B3 0D              573             DB      00DH
+01B4 35              574             DB      035H
+01B5 15              575             DB      015H
+01B6 3D              576             DB      03DH
+01B7 1D              577             DB      01DH
+01B8 24              578             DB      024H
+01B9 04              579             DB      004H
+01BA 2C              580             DB      02CH
+01BB 0C              581             DB      00CH
+01BC 34              582             DB      034H
+01BD 14              583             DB      014H
+01BE 3C              584             DB      03CH
+01BF 1C              585             DB      01CH
+A51 MACRO ASSEMBLER  DES                                                                  07/14/2015 21:39:16 PAGE    10
+
+01C0 23              586             DB      023H
+01C1 03              587             DB      003H
+01C2 2B              588             DB      02BH
+01C3 0B              589             DB      00BH
+01C4 33              590             DB      033H
+01C5 13              591             DB      013H
+01C6 3B              592             DB      03BH
+01C7 1B              593             DB      01BH
+01C8 22              594             DB      022H
+01C9 02              595             DB      002H
+01CA 2A              596             DB      02AH
+01CB 0A              597             DB      00AH
+01CC 32              598             DB      032H
+01CD 12              599             DB      012H
+01CE 3A              600             DB      03AH
+01CF 1A              601             DB      01AH
+01D0 21              602             DB      021H
+01D1 01              603             DB      001H
+01D2 29              604             DB      029H
+01D3 09              605             DB      009H
+01D4 31              606             DB      031H
+01D5 11              607             DB      011H
+01D6 39              608             DB      039H
+01D7 19              609             DB      019H
+                     610     
+01D8                 611     pc1_permtab:
+01D8 08              612             DB      008H
+01D9 07              613             DB      007H
+01DA 39              614             DB      039H
+01DB 31              615             DB      031H
+01DC 29              616             DB      029H
+01DD 21              617             DB      021H
+01DE 19              618             DB      019H
+01DF 11              619             DB      011H
+01E0 09              620             DB      009H
+01E1 01              621             DB      001H
+01E2 3A              622             DB      03AH
+01E3 32              623             DB      032H
+01E4 2A              624             DB      02AH
+01E5 22              625             DB      022H
+01E6 1A              626             DB      01AH
+01E7 12              627             DB      012H
+01E8 0A              628             DB      00AH
+01E9 02              629             DB      002H
+01EA 3B              630             DB      03BH
+01EB 33              631             DB      033H
+01EC 2B              632             DB      02BH
+01ED 23              633             DB      023H
+01EE 1B              634             DB      01BH
+01EF 13              635             DB      013H
+01F0 0B              636             DB      00BH
+01F1 03              637             DB      003H
+01F2 3C              638             DB      03CH
+01F3 34              639             DB      034H
+01F4 2C              640             DB      02CH
+01F5 24              641             DB      024H
+01F6 3F              642             DB      03FH
+01F7 37              643             DB      037H
+01F8 2F              644             DB      02FH
+01F9 27              645             DB      027H
+01FA 1F              646             DB      01FH
+01FB 17              647             DB      017H
+01FC 0F              648             DB      00FH
+01FD 07              649             DB      007H
+01FE 3E              650             DB      03EH
+01FF 36              651             DB      036H
+A51 MACRO ASSEMBLER  DES                                                                  07/14/2015 21:39:16 PAGE    11
+
+0200 2E              652             DB      02EH
+0201 26              653             DB      026H
+0202 1E              654             DB      01EH
+0203 16              655             DB      016H
+0204 0E              656             DB      00EH
+0205 06              657             DB      006H
+0206 3D              658             DB      03DH
+0207 35              659             DB      035H
+0208 2D              660             DB      02DH
+0209 25              661             DB      025H
+020A 1D              662             DB      01DH
+020B 15              663             DB      015H
+020C 0D              664             DB      00DH
+020D 05              665             DB      005H
+020E 1C              666             DB      01CH
+020F 14              667             DB      014H
+0210 0C              668             DB      00CH
+0211 04              669             DB      004H
+                     670     
+0212                 671     pc2_permtab:
+0212 07              672             DB      007H
+0213 06              673             DB      006H
+0214 0E              674             DB      00EH
+0215 11              675             DB      011H
+0216 0B              676             DB      00BH
+0217 18              677             DB      018H
+0218 01              678             DB      001H
+0219 05              679             DB      005H
+021A 03              680             DB      003H
+021B 1C              681             DB      01CH
+021C 0F              682             DB      00FH
+021D 06              683             DB      006H
+021E 15              684             DB      015H
+021F 0A              685             DB      00AH
+0220 17              686             DB      017H
+0221 13              687             DB      013H
+0222 0C              688             DB      00CH
+0223 04              689             DB      004H
+0224 1A              690             DB      01AH
+0225 08              691             DB      008H
+0226 10              692             DB      010H
+0227 07              693             DB      007H
+0228 1B              694             DB      01BH
+0229 14              695             DB      014H
+022A 0D              696             DB      00DH
+022B 02              697             DB      002H
+022C 29              698             DB      029H
+022D 34              699             DB      034H
+022E 1F              700             DB      01FH
+022F 25              701             DB      025H
+0230 2F              702             DB      02FH
+0231 37              703             DB      037H
+0232 1E              704             DB      01EH
+0233 28              705             DB      028H
+0234 33              706             DB      033H
+0235 2D              707             DB      02DH
+0236 21              708             DB      021H
+0237 30              709             DB      030H
+0238 2C              710             DB      02CH
+0239 31              711             DB      031H
+023A 27              712             DB      027H
+023B 38              713             DB      038H
+023C 22              714             DB      022H
+023D 35              715             DB      035H
+023E 2E              716             DB      02EH
+023F 2A              717             DB      02AH
+A51 MACRO ASSEMBLER  DES                                                                  07/14/2015 21:39:16 PAGE    12
+
+0240 32              718             DB      032H
+0241 24              719             DB      024H
+0242 1D              720             DB      01DH
+0243 20              721             DB      020H
+                     722     
+0244                 723     splitin6bitword_permtab:
+0244 08              724             DB      008H
+0245 08              725             DB      008H
+0246 40              726             DB      040H
+0247 40              727             DB      040H
+0248 01              728             DB      001H
+0249 06              729             DB      006H
+024A 02              730             DB      002H
+024B 03              731             DB      003H
+024C 04              732             DB      004H
+024D 05              733             DB      005H
+024E 40              734             DB      040H
+024F 40              735             DB      040H
+0250 07              736             DB      007H
+0251 0C              737             DB      00CH
+0252 08              738             DB      008H
+0253 09              739             DB      009H
+0254 0A              740             DB      00AH
+0255 0B              741             DB      00BH
+0256 40              742             DB      040H
+0257 40              743             DB      040H
+0258 0D              744             DB      00DH
+0259 12              745             DB      012H
+025A 0E              746             DB      00EH
+025B 0F              747             DB      00FH
+025C 10              748             DB      010H
+025D 11              749             DB      011H
+025E 40              750             DB      040H
+025F 40              751             DB      040H
+0260 13              752             DB      013H
+0261 18              753             DB      018H
+0262 14              754             DB      014H
+0263 15              755             DB      015H
+0264 16              756             DB      016H
+0265 17              757             DB      017H
+0266 40              758             DB      040H
+0267 40              759             DB      040H
+0268 19              760             DB      019H
+0269 1E              761             DB      01EH
+026A 1A              762             DB      01AH
+026B 1B              763             DB      01BH
+026C 1C              764             DB      01CH
+026D 1D              765             DB      01DH
+026E 40              766             DB      040H
+026F 40              767             DB      040H
+0270 1F              768             DB      01FH
+0271 24              769             DB      024H
+0272 20              770             DB      020H
+0273 21              771             DB      021H
+0274 22              772             DB      022H
+0275 23              773             DB      023H
+0276 40              774             DB      040H
+0277 40              775             DB      040H
+0278 25              776             DB      025H
+0279 2A              777             DB      02AH
+027A 26              778             DB      026H
+027B 27              779             DB      027H
+027C 28              780             DB      028H
+027D 29              781             DB      029H
+027E 40              782             DB      040H
+027F 40              783             DB      040H
+A51 MACRO ASSEMBLER  DES                                                                  07/14/2015 21:39:16 PAGE    13
+
+0280 2B              784             DB      02BH
+0281 30              785             DB      030H
+0282 2C              786             DB      02CH
+0283 2D              787             DB      02DH
+0284 2E              788             DB      02EH
+0285 2F              789             DB      02FH
+                     790     
+0286                 791     shiftkey_permtab:
+0286 07              792             DB      007H
+0287 07              793             DB      007H
+0288 02              794             DB      002H
+0289 03              795             DB      003H
+028A 04              796             DB      004H
+028B 05              797             DB      005H
+028C 06              798             DB      006H
+028D 07              799             DB      007H
+028E 08              800             DB      008H
+028F 09              801             DB      009H
+0290 0A              802             DB      00AH
+0291 0B              803             DB      00BH
+0292 0C              804             DB      00CH
+0293 0D              805             DB      00DH
+0294 0E              806             DB      00EH
+0295 0F              807             DB      00FH
+0296 10              808             DB      010H
+0297 11              809             DB      011H
+0298 12              810             DB      012H
+0299 13              811             DB      013H
+029A 14              812             DB      014H
+029B 15              813             DB      015H
+029C 16              814             DB      016H
+029D 17              815             DB      017H
+029E 18              816             DB      018H
+029F 19              817             DB      019H
+02A0 1A              818             DB      01AH
+02A1 1B              819             DB      01BH
+02A2 1C              820             DB      01CH
+02A3 01              821             DB      001H
+02A4 1E              822             DB      01EH
+02A5 1F              823             DB      01FH
+02A6 20              824             DB      020H
+02A7 21              825             DB      021H
+02A8 22              826             DB      022H
+02A9 23              827             DB      023H
+02AA 24              828             DB      024H
+02AB 25              829             DB      025H
+02AC 26              830             DB      026H
+02AD 27              831             DB      027H
+02AE 28              832             DB      028H
+02AF 29              833             DB      029H
+02B0 2A              834             DB      02AH
+02B1 2B              835             DB      02BH
+02B2 2C              836             DB      02CH
+02B3 2D              837             DB      02DH
+02B4 2E              838             DB      02EH
+02B5 2F              839             DB      02FH
+02B6 30              840             DB      030H
+02B7 31              841             DB      031H
+02B8 32              842             DB      032H
+02B9 33              843             DB      033H
+02BA 34              844             DB      034H
+02BB 35              845             DB      035H
+02BC 36              846             DB      036H
+02BD 37              847             DB      037H
+02BE 38              848             DB      038H
+02BF 1D              849             DB      01DH
+A51 MACRO ASSEMBLER  DES                                                                  07/14/2015 21:39:16 PAGE    14
+
+                     850     
+02C0                 851     shiftkeyinv_permtab:
+02C0 07              852             DB      007H
+02C1 07              853             DB      007H
+02C2 1C              854             DB      01CH
+02C3 01              855             DB      001H
+02C4 02              856             DB      002H
+02C5 03              857             DB      003H
+02C6 04              858             DB      004H
+02C7 05              859             DB      005H
+02C8 06              860             DB      006H
+02C9 07              861             DB      007H
+02CA 08              862             DB      008H
+02CB 09              863             DB      009H
+02CC 0A              864             DB      00AH
+02CD 0B              865             DB      00BH
+02CE 0C              866             DB      00CH
+02CF 0D              867             DB      00DH
+02D0 0E              868             DB      00EH
+02D1 0F              869             DB      00FH
+02D2 10              870             DB      010H
+02D3 11              871             DB      011H
+02D4 12              872             DB      012H
+02D5 13              873             DB      013H
+02D6 14              874             DB      014H
+02D7 15              875             DB      015H
+02D8 16              876             DB      016H
+02D9 17              877             DB      017H
+02DA 18              878             DB      018H
+02DB 19              879             DB      019H
+02DC 1A              880             DB      01AH
+02DD 1B              881             DB      01BH
+02DE 38              882             DB      038H
+02DF 1D              883             DB      01DH
+02E0 1E              884             DB      01EH
+02E1 1F              885             DB      01FH
+02E2 20              886             DB      020H
+02E3 21              887             DB      021H
+02E4 22              888             DB      022H
+02E5 23              889             DB      023H
+02E6 24              890             DB      024H
+02E7 25              891             DB      025H
+02E8 26              892             DB      026H
+02E9 27              893             DB      027H
+02EA 28              894             DB      028H
+02EB 29              895             DB      029H
+02EC 2A              896             DB      02AH
+02ED 2B              897             DB      02BH
+02EE 2C              898             DB      02CH
+02EF 2D              899             DB      02DH
+02F0 2E              900             DB      02EH
+02F1 2F              901             DB      02FH
+02F2 30              902             DB      030H
+02F3 31              903             DB      031H
+02F4 32              904             DB      032H
+02F5 33              905             DB      033H
+02F6 34              906             DB      034H
+02F7 35              907             DB      035H
+02F8 36              908             DB      036H
+02F9 37              909             DB      037H
+                     910     
+                     911     ; /*
+                     912     ; *****************************************************************************************
+                             ****************
+                     913     ; *                                        DES-Algorithm-Implementation
+                     914     ; *                                          Data Encryption Standard
+A51 MACRO ASSEMBLER  DES                                                                  07/14/2015 21:39:16 PAGE    15
+
+                     915     ; *
+                     916     ; *                                           (c) Copyright 2015
+                     917     ; *                                           All Rights Reserved
+                     918     ; *
+                     919     ; * Original version taken from the AVR-Crypto-Lib
+                     920     ; * (http://www.das-labor.org/wiki/AVR-Crypto-Lib)
+                     921     ; * Copyright (C) 2006-2010  Daniel Otte (daniel.otte@rub.de)
+                     922     ; *
+                     923     ; * This program is free software: you can redistribute it and/or modify
+                     924     ; * it under the terms of the GNU General Public License as published by
+                     925     ; * the Free Software Foundation, either version 3 of the License, or
+                     926     ; * (at your option) any later version.
+                     927     ; *
+                     928     ; * This program is distributed in the hope that it will be useful,
+                     929     ; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+                     930     ; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+                     931     ; * GNU General Public License for more details.
+                     932     ; *
+                     933     ; * You should have received a copy of the GNU General Public License
+                     934     ; * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+                     935     ; *
+                     936     ; * File    : DES.C
+                     937     ; * By      : Mostafa Abd El-Fatah, 2015
+                     938     ; * Version : V1
+                     939     ; *
+                     940     ; *****************************************************************************************
+                             ****************
+                     941     ; */
+                     942     ; 
+                     943     ; 
+                     944     ; #include "DES.h"
+                     945     ; #include "uart.h"
+                     946     ; 
+                     947     ; /*
+                     948     ; *****************************************************************************************
+                             *********************
+                     949     ; *                                               VARIABLES
+                     950     ; *****************************************************************************************
+                             *********************
+                     951     ; */
+                     952     ; 
+                     953     ; 
+                     954     ; 
+                     955     ; // S-Box
+                     956     ; // Each value represents 4 bits that the 6-bit input is mapped to.
+                     957     ; //
+                     958     ; // This is in a different order than you would normally find it in an DES
+                     959     ; // reference, so that the sbox lookup is reduced to a single lookup on the
+                     960     ; // input byte.
+                     961     ; code const uint8_t sbox[256]  =
+                     962     ; {
+                     963     ;     /* S-box 1 */
+                     964     ;     0xE4, 0xD1, 0x2F, 0xB8, 0x3A, 0x6C, 0x59, 0x07,
+                     965     ;     0x0F, 0x74, 0xE2, 0xD1, 0xA6, 0xCB, 0x95, 0x38,
+                     966     ;     0x41, 0xE8, 0xD6, 0x2B, 0xFC, 0x97, 0x3A, 0x50,
+                     967     ;     0xFC, 0x82, 0x49, 0x17, 0x5B, 0x3E, 0xA0, 0x6D,
+                     968     ;     /* S-box 2 */
+                     969     ;     0xF1, 0x8E, 0x6B, 0x34, 0x97, 0x2D, 0xC0, 0x5A,
+                     970     ;     0x3D, 0x47, 0xF2, 0x8E, 0xC0, 0x1A, 0x69, 0xB5,
+                     971     ;     0x0E, 0x7B, 0xA4, 0xD1, 0x58, 0xC6, 0x93, 0x2F,
+                     972     ;     0xD8, 0xA1, 0x3F, 0x42, 0xB6, 0x7C, 0x05, 0xE9,
+                     973     ;     /* S-box 3 */
+                     974     ;     0xA0, 0x9E, 0x63, 0xF5, 0x1D, 0xC7, 0xB4, 0x28,
+                     975     ;     0xD7, 0x09, 0x34, 0x6A, 0x28, 0x5E, 0xCB, 0xF1,
+                     976     ;     0xD6, 0x49, 0x8F, 0x30, 0xB1, 0x2C, 0x5A, 0xE7,
+                     977     ;     0x1A, 0xD0, 0x69, 0x87, 0x4F, 0xE3, 0xB5, 0x2C,
+A51 MACRO ASSEMBLER  DES                                                                  07/14/2015 21:39:16 PAGE    16
+
+                     978     ;     /* S-box 4 */
+                     979     ;     0x7D, 0xE3, 0x06, 0x9A, 0x12, 0x85, 0xBC, 0x4F,
+                     980     ;     0xD8, 0xB5, 0x6F, 0x03, 0x47, 0x2C, 0x1A, 0xE9,
+                     981     ;     0xA6, 0x90, 0xCB, 0x7D, 0xF1, 0x3E, 0x52, 0x84,
+                     982     ;     0x3F, 0x06, 0xA1, 0xD8, 0x94, 0x5B, 0xC7, 0x2E,
+                     983     ;     /* S-box 5 */
+                     984     ;     0x2C, 0x41, 0x7A, 0xB6, 0x85, 0x3F, 0xD0, 0xE9,
+                     985     ;     0xEB, 0x2C, 0x47, 0xD1, 0x50, 0xFA, 0x39, 0x86,
+                     986     ;     0x42, 0x1B, 0xAD, 0x78, 0xF9, 0xC5, 0x63, 0x0E,
+                     987     ;     0xB8, 0xC7, 0x1E, 0x2D, 0x6F, 0x09, 0xA4, 0x53,
+                     988     ;     /* S-box 6 */
+                     989     ;     0xC1, 0xAF, 0x92, 0x68, 0x0D, 0x34, 0xE7, 0x5B,
+                     990     ;     0xAF, 0x42, 0x7C, 0x95, 0x61, 0xDE, 0x0B, 0x38,
+                     991     ;     0x9E, 0xF5, 0x28, 0xC3, 0x70, 0x4A, 0x1D, 0xB6,
+                     992     ;     0x43, 0x2C, 0x95, 0xFA, 0xBE, 0x17, 0x60, 0x8D,
+                     993     ;     /* S-box 7 */
+                     994     ;     0x4B, 0x2E, 0xF0, 0x8D, 0x3C, 0x97, 0x5A, 0x61,
+                     995     ;     0xD0, 0xB7, 0x49, 0x1A, 0xE3, 0x5C, 0x2F, 0x86,
+                     996     ;     0x14, 0xBD, 0xC3, 0x7E, 0xAF, 0x68, 0x05, 0x92,
+                     997     ;     0x6B, 0xD8, 0x14, 0xA7, 0x95, 0x0F, 0xE2, 0x3C,
+                     998     ;     /* S-box 8 */
+                     999     ;     0xD2, 0x84, 0x6F, 0xB1, 0xA9, 0x3E, 0x50, 0xC7,
+                    1000     ;     0x1F, 0xD8, 0xA3, 0x74, 0xC5, 0x6B, 0x0E, 0x92,
+                    1001     ;     0x7B, 0x41, 0x9C, 0xE2, 0x06, 0xAD, 0xF3, 0x58,
+                    1002     ;     0x21, 0xE7, 0x4A, 0x8D, 0xFC, 0x90, 0x35, 0x6B
+                    1003     ; };
+                    1004     ; 
+                    1005     ; // Applied to the half-block at the beginning of the Fiestel function.
+                    1006     ; //expansion_permutation
+                    1007     ; code const uint8_t e_permtab[]  =
+                    1008     ; {
+                    1009     ;     4,  6,                                         /* 4 bytes in 6 bytes out*/
+                    1010     ;     32,  1,  2,  3,  4,  5,
+                    1011     ;     4,  5,  6,  7,  8,  9,
+                    1012     ;     8,  9, 10, 11, 12, 13,
+                    1013     ;     12, 13, 14, 15, 16, 17,
+                    1014     ;     16, 17, 18, 19, 20, 21,
+                    1015     ;     20, 21, 22, 23, 24, 25,
+                    1016     ;     24, 25, 26, 27, 28, 29,
+                    1017     ;     28, 29, 30, 31, 32,  1
+                    1018     ; };
+                    1019     ; 
+                    1020     ; // Applied at the end of the Feistel function.
+                    1021     ; code const uint8_t p_permtab[]  =
+                    1022     ; {
+                    1023     ;     4,  4,                                         /* 32 bit -> 32 bit */
+                    1024     ;     16,  7, 20, 21,
+                    1025     ;     29, 12, 28, 17,
+                    1026     ;     1, 15, 23, 26,
+                    1027     ;     5, 18, 31, 10,
+                    1028     ;     2,  8, 24, 14,
+                    1029     ;     32, 27,  3,  9,
+                    1030     ;     19, 13, 30,  6,
+                    1031     ;     22, 11,  4, 25
+                    1032     ; };
+                    1033     ; 
+                    1034     ; // Applied once at the beginning of the algorithm.
+                    1035     ; code const uint8_t ip_permtab[]  =
+                    1036     ; {
+                    1037     ;     8,  8,                                         /* 64 bit -> 64 bit */
+                    1038     ;     //initial_permutation_left
+                    1039     ;     58, 50, 42, 34, 26, 18, 10, 2,
+                    1040     ;     60, 52, 44, 36, 28, 20, 12, 4,
+                    1041     ;     62, 54, 46, 38, 30, 22, 14, 6,
+                    1042     ;     64, 56, 48, 40, 32, 24, 16, 8,
+                    1043     ;     //initial_permutation_right
+A51 MACRO ASSEMBLER  DES                                                                  07/14/2015 21:39:16 PAGE    17
+
+                    1044     ;     57, 49, 41, 33, 25, 17,  9, 1,
+                    1045     ;     59, 51, 43, 35, 27, 19, 11, 3,
+                    1046     ;     61, 53, 45, 37, 29, 21, 13, 5,
+                    1047     ;     63, 55, 47, 39, 31, 23, 15, 7
+                    1048     ; };
+                    1049     ; 
+                    1050     ; code const uint8_t inv_ip_permtab[]  =
+                    1051     ; {
+                    1052     ;     8, 8,                                          /* 64 bit -> 64 bit */
+                    1053     ;     40, 8, 48, 16, 56, 24, 64, 32,
+                    1054     ;     39, 7, 47, 15, 55, 23, 63, 31,
+                    1055     ;     38, 6, 46, 14, 54, 22, 62, 30,
+                    1056     ;     37, 5, 45, 13, 53, 21, 61, 29,
+                    1057     ;     36, 4, 44, 12, 52, 20, 60, 28,
+                    1058     ;     35, 3, 43, 11, 51, 19, 59, 27,
+                    1059     ;     34, 2, 42, 10, 50, 18, 58, 26,
+                    1060     ;     33, 1, 41,  9, 49, 17, 57, 25
+                    1061     ; };
+                    1062     ; 
+                    1063     ; // Converts from full 64-bit key to two key halves: left and right.  Only 48
+                    1064     ; // bits from the original key are used.
+                    1065     ; code const uint8_t pc1_permtab[]  =
+                    1066     ; {
+                    1067     ;     8,  7,                                         /* 64 bit -> 56 bit*/
+                    1068     ;     // Left Half
+                    1069     ;     57, 49, 41, 33, 25, 17,  9,
+                    1070     ;     1, 58, 50, 42, 34, 26, 18,
+                    1071     ;     10,  2, 59, 51, 43, 35, 27,
+                    1072     ;     19, 11,  3, 60, 52, 44, 36,
+                    1073     ;     // Right Half
+                    1074     ;     63, 55, 47, 39, 31, 23, 15,
+                    1075     ;     7, 62, 54, 46, 38, 30, 22,
+                    1076     ;     14,  6, 61, 53, 45, 37, 29,
+                    1077     ;     21, 13,  5, 28, 20, 12,  4
+                    1078     ; };
+                    1079     ; 
+                    1080     ; // Converts the shifted right and left key halves (concatenated together) into
+                    1081     ; // the subkey for the round (input into Feistel function).
+                    1082     ; code const uint8_t pc2_permtab[]  =
+                    1083     ; {
+                    1084     ;     7,      6,                                     /* 56 bit -> 48 bit */
+                    1085     ;     14, 17, 11, 24,  1,  5,
+                    1086     ;     3, 28, 15,  6, 21, 10,
+                    1087     ;     23, 19, 12,  4, 26,  8,
+                    1088     ;     16,  7, 27, 20, 13,  2,
+                    1089     ;     41, 52, 31, 37, 47, 55,
+                    1090     ;     30, 40, 51, 45, 33, 48,
+                    1091     ;     44, 49, 39, 56, 34, 53,
+                    1092     ;     46, 42, 50, 36, 29, 32
+                    1093     ; };
+                    1094     ; 
+                    1095     ; code const uint8_t splitin6bitword_permtab[]  =
+                    1096     ; {
+                    1097     ;     8,  8,                                         /* 64 bit -> 64 bit */
+                    1098     ;     64, 64,  1,  6,  2,  3,  4,  5,
+                    1099     ;     64, 64,  7, 12,  8,  9, 10, 11,
+                    1100     ;     64, 64, 13, 18, 14, 15, 16, 17,
+                    1101     ;     64, 64, 19, 24, 20, 21, 22, 23,
+                    1102     ;     64, 64, 25, 30, 26, 27, 28, 29,
+                    1103     ;     64, 64, 31, 36, 32, 33, 34, 35,
+                    1104     ;     64, 64, 37, 42, 38, 39, 40, 41,
+                    1105     ;     64, 64, 43, 48, 44, 45, 46, 47
+                    1106     ; };
+                    1107     ; 
+                    1108     ; code const uint8_t shiftkey_permtab[]  =
+                    1109     ; {
+A51 MACRO ASSEMBLER  DES                                                                  07/14/2015 21:39:16 PAGE    18
+
+                    1110     ;     7,  7,                                         /* 56 bit -> 56 bit */
+                    1111     ;     2,  3,  4,  5,  6,  7,  8,  9,
+                    1112     ;     10, 11, 12, 13, 14, 15, 16, 17,
+                    1113     ;     18, 19, 20, 21, 22, 23, 24, 25,
+                    1114     ;     26, 27, 28,  1,
+                    1115     ;     30, 31, 32, 33, 34, 35, 36, 37,
+                    1116     ;     38, 39, 40, 41, 42, 43, 44, 45,
+                    1117     ;     46, 47, 48, 49, 50, 51, 52, 53,
+                    1118     ;     54, 55, 56, 29
+                    1119     ; };
+                    1120     ; 
+                    1121     ; code const uint8_t shiftkeyinv_permtab[]  =
+                    1122     ; {
+                    1123     ;     7,  7,
+                    1124     ;     28,  1,  2,  3,  4,  5,  6,  7,
+                    1125     ;     8,  9, 10, 11, 12, 13, 14, 15,
+                    1126     ;     16, 17, 18, 19, 20, 21, 22, 23,
+                    1127     ;     24, 25, 26, 27,
+                    1128     ;     56, 29, 30, 31, 32, 33, 34, 35,
+                    1129     ;     36, 37, 38, 39, 40, 41, 42, 43,
+                    1130     ;     44, 45, 46, 47, 48, 49, 50, 51,
+                    1131     ;     52, 53, 54, 55
+                    1132     ; };
+                    1133     ; 
+                    1134     ; #define ROTTABLE      0x7EFC
+                    1135     ; #define ROTTABLE_INV  0x3F7E
+                    1136     ; 
+                    1137     ; /*$PAGE*/
+                    1138     ; /*
+                    1139     ; *****************************************************************************************
+                             ****************
+                    1140     ; *                                              Permute data
+                    1141     ; *
+                    1142     ; * Description: This function is used to obtain the permuted data "out" from input data "i
+                             n" by table "ptable"
+                    1143     ; *
+                    1144     ; * Arguments  : ptable   is a pointer to the permutaion table to be used.
+                    1145     ; *              Note     ptable is pointer to a different size array, the first of tow ele
+                             ment has the size
+                    1146     ; *                       of array ,the other element is the permuted data incremented by 1
+                              from the standard
+                    1147     ; *
+                    1148     ; *              in       is a pointer that holds the data before the permutations.
+                    1149     ; *
+                    1150     ; *              out      is a pointer that holds the data after the permutation.
+                    1151     ; *
+                    1152     ; * Returns    : None     the output is inside the out pointer
+                    1153     ; *
+                    1154     ; * Note(s)    :          we take number from ptable to permute bits of "in" with this
+                    1155     ; *                       example
+                    1156     ; *                       ptable[3] = 57, so we want to take bit number 57 from data "in"
+                    1157     ; *                       but "in" described by 8 bytes, so to get the selective by in in[x
+                             /8]
+                    1158     ; *                       and get the selective bit by (x%8)
+                    1159     ; *****************************************************************************************
+                             ****************
+                    1160     ; */
+                    1161     ; void permute(const uint8_t *ptable, const uint8_t *in, uint8_t *out) reentrant
+                    1162     
+----                1163             RSEG  ?PR?_?permute?DES
+0000                1164     L?0044:
+                    1165             USING   0
+0000                1166     L?0045:
+0000 A900     F     1167             MOV     R1,?C_IBP
+0002 1500     F     1168             DEC     ?C_IBP
+0004 1500     F     1169             DEC     ?C_IBP
+A51 MACRO ASSEMBLER  DES                                                                  07/14/2015 21:39:16 PAGE    19
+
+0006 1500     F     1170             DEC     ?C_IBP
+0008 A800     F     1171             MOV     R0,?C_IBP
+000A 7600           1172             MOV     @R0,#00H
+000C 08             1173             INC     R0
+000D 7600           1174             MOV     @R0,#00H
+000F 08             1175             INC     R0
+0010 A601           1176             MOV     @R0,AR1
+0012 E500     F     1177             MOV     A,?C_IBP
+0014 2409           1178             ADD     A,#09H
+0016 1500     F     1179             DEC     ?C_IBP
+0018 1500     F     1180             DEC     ?C_IBP
+001A 1500     F     1181             DEC     ?C_IBP
+001C A800     F     1182             MOV     R0,?C_IBP
+001E 7600           1183             MOV     @R0,#00H
+0020 08             1184             INC     R0
+0021 7600           1185             MOV     @R0,#00H
+0023 08             1186             INC     R0
+0024 F6             1187             MOV     @R0,A
+0025 7BFF           1188             MOV     R3,#0FFH
+0027 7A00     F     1189             MOV     R2,#HIGH (pc2_permtab)
+0029 7900     F     1190             MOV     R1,#LOW (pc2_permtab)
+002B                1191     _?permute:
+                    1192             USING   0
+                    1193                             ; SOURCE LINE # 251
+002B 1500     F     1194             DEC     ?C_IBP
+002D 1500     F     1195             DEC     ?C_IBP
+002F 1500     F     1196             DEC     ?C_IBP
+0031 A800     F     1197             MOV     R0,?C_IBP
+0033 A603           1198             MOV     @R0,AR3
+0035 08             1199             INC     R0
+0036 A602           1200             MOV     @R0,AR2
+0038 08             1201             INC     R0
+0039 A601           1202             MOV     @R0,AR1
+003B E500     F     1203             MOV     A,?C_IBP
+003D 24FB           1204             ADD     A,#0FBH
+003F F500     F     1205             MOV     ?C_IBP,A
+                    1206     ; {
+                    1207     ;     uint8_t ob;         /* in-bytes and out-bytes */
+                    1208     ;     uint8_t byte, _bit;  /* counter for bit and byte */
+                    1209     ;     ob = ptable[1];     /* take number of bytes from the 2st element for the table */
+                    1210                             ; SOURCE LINE # 255
+0041 2405           1211             ADD     A,#05H
+0043 F8             1212             MOV     R0,A
+0044 8603           1213             MOV     AR3,@R0
+0046 08             1214             INC     R0
+0047 E6             1215             MOV     A,@R0
+0048 FA             1216             MOV     R2,A
+0049 08             1217             INC     R0
+004A E6             1218             MOV     A,@R0
+004B F9             1219             MOV     R1,A
+004C 900001         1220             MOV     DPTR,#01H
+004F 120000   F     1221             LCALL   ?C?CLDOPTR
+0052 A800     F     1222             MOV     R0,?C_IBP
+0054 F6             1223             MOV     @R0,A
+                    1224     ;     ptable = &ptable[2];            /* ptable pointed to the 3rd element */
+                    1225                             ; SOURCE LINE # 256
+0055 E9             1226             MOV     A,R1
+0056 2402           1227             ADD     A,#02H
+0058 F9             1228             MOV     R1,A
+0059 E4             1229             CLR     A
+005A 3A             1230             ADDC    A,R2
+005B FA             1231             MOV     R2,A
+005C E500     F     1232             MOV     A,?C_IBP
+005E 2405           1233             ADD     A,#05H
+0060 F8             1234             MOV     R0,A
+0061 A603           1235             MOV     @R0,AR3
+A51 MACRO ASSEMBLER  DES                                                                  07/14/2015 21:39:16 PAGE    20
+
+0063 08             1236             INC     R0
+0064 A602           1237             MOV     @R0,AR2
+0066 08             1238             INC     R0
+0067 A601           1239             MOV     @R0,AR1
+                    1240     ;     for(byte=0; byte<ob; byte++)
+                    1241                             ; SOURCE LINE # 257
+0069 A800     F     1242             MOV     R0,?C_IBP
+006B 08             1243             INC     R0
+006C E4             1244             CLR     A
+006D F6             1245             MOV     @R0,A
+006E                1246     ?C0001:
+006E A900     F     1247             MOV     R1,?C_IBP
+0070 A800     F     1248             MOV     R0,?C_IBP
+0072 08             1249             INC     R0
+0073 E6             1250             MOV     A,@R0
+0074 C3             1251             CLR     C
+0075 97             1252             SUBB    A,@R1
+0076 4003           1253             JC      $ + 5H
+0078 020000   F     1254             LJMP    ?C0008
+                    1255     ;     {
+                    1256                             ; SOURCE LINE # 258
+                    1257     ;         uint8_t x,t=0;
+                    1258                             ; SOURCE LINE # 259
+007B E500     F     1259             MOV     A,?C_IBP
+007D 2404           1260             ADD     A,#04H
+007F F8             1261             MOV     R0,A
+0080 E4             1262             CLR     A
+0081 F6             1263             MOV     @R0,A
+                    1264     ;         for(_bit=0; _bit<8; ++_bit)
+                    1265                             ; SOURCE LINE # 260
+0082 A800     F     1266             MOV     R0,?C_IBP
+0084 08             1267             INC     R0
+0085 08             1268             INC     R0
+0086 F6             1269             MOV     @R0,A
+0087                1270     ?C0004:
+0087 A800     F     1271             MOV     R0,?C_IBP
+0089 08             1272             INC     R0
+008A 08             1273             INC     R0
+008B E6             1274             MOV     A,@R0
+008C C3             1275             CLR     C
+008D 9408           1276             SUBB    A,#08H
+008F 4003           1277             JC      $ + 5H
+0091 020000   F     1278             LJMP    ?C0005
+                    1279     ;         {
+                    1280                             ; SOURCE LINE # 261
+                    1281     ;             x = *ptable++ -1 ;      /* decrement table content by 1 for the standard  */
+                    1282                             ; SOURCE LINE # 262
+0094 E500     F     1283             MOV     A,?C_IBP
+0096 2405           1284             ADD     A,#05H
+0098 F8             1285             MOV     R0,A
+0099 8603           1286             MOV     AR3,@R0
+009B 08             1287             INC     R0
+009C 08             1288             INC     R0
+009D 06             1289             INC     @R0
+009E E6             1290             MOV     A,@R0
+009F 18             1291             DEC     R0
+00A0 8602           1292             MOV     AR2,@R0
+00A2 7001           1293             JNZ     ?C0036
+00A4 06             1294             INC     @R0
+00A5                1295     ?C0036:
+00A5 14             1296             DEC     A
+00A6 F9             1297             MOV     R1,A
+00A7 120000   F     1298             LCALL   ?C?CLDPTR
+00AA 14             1299             DEC     A
+00AB FF             1300             MOV     R7,A
+00AC E500     F     1301             MOV     A,?C_IBP
+A51 MACRO ASSEMBLER  DES                                                                  07/14/2015 21:39:16 PAGE    21
+
+00AE 2403           1302             ADD     A,#03H
+00B0 F8             1303             MOV     R0,A
+00B1 A607           1304             MOV     @R0,AR7
+                    1305     ;             t <<= 1;                /* select next bit  */
+                    1306                             ; SOURCE LINE # 263
+00B3 E500     F     1307             MOV     A,?C_IBP
+00B5 2404           1308             ADD     A,#04H
+00B7 F8             1309             MOV     R0,A
+00B8 C000           1310             PUSH    AR0
+00BA E6             1311             MOV     A,@R0
+00BB 25E0           1312             ADD     A,ACC
+00BD D000           1313             POP     AR0
+00BF F6             1314             MOV     @R0,A
+                    1315     ;             if((in[x/8]) & (0x80>>(x%8)) )
+                    1316                             ; SOURCE LINE # 264
+00C0 E500     F     1317             MOV     A,?C_IBP
+00C2 2403           1318             ADD     A,#03H
+00C4 F8             1319             MOV     R0,A
+00C5 E6             1320             MOV     A,@R0
+00C6 FF             1321             MOV     R7,A
+00C7 13             1322             RRC     A
+00C8 13             1323             RRC     A
+00C9 13             1324             RRC     A
+00CA 541F           1325             ANL     A,#01FH
+00CC FE             1326             MOV     R6,A
+00CD E500     F     1327             MOV     A,?C_IBP
+00CF 2408           1328             ADD     A,#08H
+00D1 F8             1329             MOV     R0,A
+00D2 8603           1330             MOV     AR3,@R0
+00D4 08             1331             INC     R0
+00D5 E6             1332             MOV     A,@R0
+00D6 FA             1333             MOV     R2,A
+00D7 08             1334             INC     R0
+00D8 E6             1335             MOV     A,@R0
+00D9 F9             1336             MOV     R1,A
+00DA 8E82           1337             MOV     DPL,R6
+00DC 758300         1338             MOV     DPH,#00H
+00DF 120000   F     1339             LCALL   ?C?CLDOPTR
+00E2 FD             1340             MOV     R5,A
+00E3 7C00           1341             MOV     R4,#00H
+00E5 EF             1342             MOV     A,R7
+00E6 5407           1343             ANL     A,#07H
+00E8 FF             1344             MOV     R7,A
+00E9 7480           1345             MOV     A,#080H
+00EB 7E00           1346             MOV     R6,#00H
+00ED A807           1347             MOV     R0,AR7
+00EF 08             1348             INC     R0
+00F0 8006           1349             SJMP    ?C0038
+00F2                1350     ?C0037:
+00F2 CE             1351             XCH     A,R6
+00F3 A2E7           1352             MOV     C,ACC.7
+00F5 13             1353             RRC     A
+00F6 CE             1354             XCH     A,R6
+00F7 13             1355             RRC     A
+00F8                1356     ?C0038:
+00F8 D8F8           1357             DJNZ    R0,?C0037
+00FA FF             1358             MOV     R7,A
+00FB EE             1359             MOV     A,R6
+00FC 5C             1360             ANL     A,R4
+00FD FE             1361             MOV     R6,A
+00FE EF             1362             MOV     A,R7
+00FF 5D             1363             ANL     A,R5
+0100 4E             1364             ORL     A,R6
+0101 6009           1365             JZ      ?C0006
+                    1366     ;             {
+                    1367                             ; SOURCE LINE # 265
+A51 MACRO ASSEMBLER  DES                                                                  07/14/2015 21:39:16 PAGE    22
+
+                    1368     ;                 t|=0x01;
+                    1369                             ; SOURCE LINE # 266
+0103 E500     F     1370             MOV     A,?C_IBP
+0105 2404           1371             ADD     A,#04H
+0107 F8             1372             MOV     R0,A
+0108 7401           1373             MOV     A,#01H
+010A 46             1374             ORL     A,@R0
+010B F6             1375             MOV     @R0,A
+                    1376     ;             }
+                    1377                             ; SOURCE LINE # 267
+                    1378     ;         }
+                    1379                             ; SOURCE LINE # 268
+010C                1380     ?C0006:
+010C A800     F     1381             MOV     R0,?C_IBP
+010E 08             1382             INC     R0
+010F 08             1383             INC     R0
+0110 06             1384             INC     @R0
+0111 020000   F     1385             LJMP    ?C0004
+0114                1386     ?C0005:
+                    1387     ;         out[byte]=t;
+                    1388                             ; SOURCE LINE # 269
+0114 E500     F     1389             MOV     A,?C_IBP
+0116 2404           1390             ADD     A,#04H
+0118 F8             1391             MOV     R0,A
+0119 E6             1392             MOV     A,@R0
+011A FF             1393             MOV     R7,A
+011B E500     F     1394             MOV     A,?C_IBP
+011D 240B           1395             ADD     A,#0BH
+011F F8             1396             MOV     R0,A
+0120 8603           1397             MOV     AR3,@R0
+0122 08             1398             INC     R0
+0123 E6             1399             MOV     A,@R0
+0124 FA             1400             MOV     R2,A
+0125 08             1401             INC     R0
+0126 E6             1402             MOV     A,@R0
+0127 F9             1403             MOV     R1,A
+0128 A800     F     1404             MOV     R0,?C_IBP
+012A 08             1405             INC     R0
+012B E6             1406             MOV     A,@R0
+012C F582           1407             MOV     DPL,A
+012E 758300         1408             MOV     DPH,#00H
+0131 EF             1409             MOV     A,R7
+0132 120000   F     1410             LCALL   ?C?CSTOPTR
+                    1411     ;     }
+                    1412                             ; SOURCE LINE # 270
+0135 A800     F     1413             MOV     R0,?C_IBP
+0137 08             1414             INC     R0
+0138 06             1415             INC     @R0
+0139 020000   F     1416             LJMP    ?C0001
+                    1417     ; }
+                    1418                             ; SOURCE LINE # 271
+013C                1419     ?C0008:
+013C E500     F     1420             MOV     A,?C_IBP
+013E 240E           1421             ADD     A,#0EH
+0140 F500     F     1422             MOV     ?C_IBP,A
+0142 22             1423             RET     
+                    1424     ; END OF _?permute
+                    1425     
+                    1426     ; 
+                    1427     ; /*$PAGE*/
+                    1428     ; /*
+                    1429     ; *****************************************************************************************
+                             ****************
+                    1430     ; *                                              shift key
+                    1431     ; *
+                    1432     ; * Description: This function is used to shift key by permute it from the permtab
+A51 MACRO ASSEMBLER  DES                                                                  07/14/2015 21:39:16 PAGE    23
+
+                    1433     ; *
+                    1434     ; * Arguments  : key is a pointer to the key (54 bit = 7 byte) to be shifted
+                    1435     ; *
+                    1436     ; * Returns    : None     the output is inside the key pointer
+                    1437     ; *****************************************************************************************
+                             ****************
+                    1438     ; */
+                    1439     ; void shiftkey(uint8_t *key) reentrant
+                    1440     
+----                1441             RSEG  ?PR?_?shiftkey?DES
+0000                1442     L?0048:
+                    1443             USING   0
+0000                1444     L?0049:
+0000 7B00           1445             MOV     R3,#00H
+0002 E500     F     1446             MOV     A,?C_IBP
+0004 2406           1447             ADD     A,#06H
+0006 F9             1448             MOV     R1,A
+0007 7A00           1449             MOV     R2,#00H
+0009                1450     _?shiftkey:
+                    1451             USING   0
+                    1452                             ; SOURCE LINE # 285
+0009 1500     F     1453             DEC     ?C_IBP
+000B 1500     F     1454             DEC     ?C_IBP
+000D 1500     F     1455             DEC     ?C_IBP
+000F A800     F     1456             MOV     R0,?C_IBP
+0011 A603           1457             MOV     @R0,AR3
+0013 08             1458             INC     R0
+0014 A602           1459             MOV     @R0,AR2
+0016 08             1460             INC     R0
+0017 A601           1461             MOV     @R0,AR1
+0019 E500     F     1462             MOV     A,?C_IBP
+001B 24F9           1463             ADD     A,#0F9H
+001D F500     F     1464             MOV     ?C_IBP,A
+                    1465     ; {
+                    1466     ;     uint8_t k[7];
+                    1467     ;     memcpy(k, key, 7);                              /* copy the content of array "key" in
+                              array "k"  */
+                    1468                             ; SOURCE LINE # 288
+001F 2407           1469             ADD     A,#07H
+0021 F8             1470             MOV     R0,A
+0022 8603           1471             MOV     AR3,@R0
+0024 08             1472             INC     R0
+0025 E6             1473             MOV     A,@R0
+0026 FA             1474             MOV     R2,A
+0027 08             1475             INC     R0
+0028 E6             1476             MOV     A,@R0
+0029 F9             1477             MOV     R1,A
+002A A800     F     1478             MOV     R0,?C_IBP
+002C 7C00           1479             MOV     R4,#00H
+002E 7D00           1480             MOV     R5,#00H
+0030 7E00           1481             MOV     R6,#00H
+0032 7F07           1482             MOV     R7,#07H
+0034 120000   F     1483             LCALL   ?C?COPY
+                    1484     ;     permute((uint8_t*)shiftkey_permtab, k, key);    /* Shift bytes circularly. */
+                    1485                             ; SOURCE LINE # 289
+0037 E500     F     1486             MOV     A,?C_IBP
+0039 2407           1487             ADD     A,#07H
+003B F8             1488             MOV     R0,A
+003C 8603           1489             MOV     AR3,@R0
+003E 08             1490             INC     R0
+003F E6             1491             MOV     A,@R0
+0040 FA             1492             MOV     R2,A
+0041 08             1493             INC     R0
+0042 E6             1494             MOV     A,@R0
+0043 F9             1495             MOV     R1,A
+0044 1500     F     1496             DEC     ?C_IBP
+A51 MACRO ASSEMBLER  DES                                                                  07/14/2015 21:39:16 PAGE    24
+
+0046 1500     F     1497             DEC     ?C_IBP
+0048 1500     F     1498             DEC     ?C_IBP
+004A A800     F     1499             MOV     R0,?C_IBP
+004C A603           1500             MOV     @R0,AR3
+004E 08             1501             INC     R0
+004F A602           1502             MOV     @R0,AR2
+0051 08             1503             INC     R0
+0052 A601           1504             MOV     @R0,AR1
+0054 E500     F     1505             MOV     A,?C_IBP
+0056 2403           1506             ADD     A,#03H
+0058 1500     F     1507             DEC     ?C_IBP
+005A 1500     F     1508             DEC     ?C_IBP
+005C 1500     F     1509             DEC     ?C_IBP
+005E A800     F     1510             MOV     R0,?C_IBP
+0060 7600           1511             MOV     @R0,#00H
+0062 08             1512             INC     R0
+0063 7600           1513             MOV     @R0,#00H
+0065 08             1514             INC     R0
+0066 F6             1515             MOV     @R0,A
+0067 7BFF           1516             MOV     R3,#0FFH
+0069 7A00     F     1517             MOV     R2,#HIGH (shiftkey_permtab)
+006B 7900     F     1518             MOV     R1,#LOW (shiftkey_permtab)
+006D 120000   F     1519             LCALL   _?permute
+                    1520     ; }
+                    1521                             ; SOURCE LINE # 290
+0070 E500     F     1522             MOV     A,?C_IBP
+0072 240A           1523             ADD     A,#0AH
+0074 F500     F     1524             MOV     ?C_IBP,A
+0076 22             1525             RET     
+                    1526     ; END OF _?shiftkey
+                    1527     
+                    1528     ; 
+                    1529     ; /*$PAGE*/
+                    1530     ; /*
+                    1531     ; *****************************************************************************************
+                             ****************
+                    1532     ; *                                              shift key inverting
+                    1533     ; *
+                    1534     ; * Description: This function is used to shift key back by permute it from the permtab
+                    1535     ; *
+                    1536     ; * Arguments  : key is a pointer to the key (54 bit = 7 byte) to be shifted
+                    1537     ; *
+                    1538     ; * Returns    : None     the output is inside the key pointer
+                    1539     ; *****************************************************************************************
+                             ****************
+                    1540     ; */
+                    1541     ; void shiftkey_inv(uint8_t *key)       reentrant
+                    1542     
+----                1543             RSEG  ?PR?_?shiftkey_inv?DES
+0000                1544     L?0046:
+                    1545             USING   0
+0000 120000   F     1546             LCALL   ?C?LSTIDATA
+0003                1547     L?0047:
+0003 7B00           1548             MOV     R3,#00H
+0005 E500     F     1549             MOV     A,?C_IBP
+0007 2406           1550             ADD     A,#06H
+0009 F9             1551             MOV     R1,A
+000A 7A00           1552             MOV     R2,#00H
+000C                1553     _?shiftkey_inv:
+                    1554             USING   0
+                    1555                             ; SOURCE LINE # 304
+000C 1500     F     1556             DEC     ?C_IBP
+000E 1500     F     1557             DEC     ?C_IBP
+0010 1500     F     1558             DEC     ?C_IBP
+0012 A800     F     1559             MOV     R0,?C_IBP
+0014 A603           1560             MOV     @R0,AR3
+A51 MACRO ASSEMBLER  DES                                                                  07/14/2015 21:39:16 PAGE    25
+
+0016 08             1561             INC     R0
+0017 A602           1562             MOV     @R0,AR2
+0019 08             1563             INC     R0
+001A A601           1564             MOV     @R0,AR1
+001C E500     F     1565             MOV     A,?C_IBP
+001E 24F9           1566             ADD     A,#0F9H
+0020 F500     F     1567             MOV     ?C_IBP,A
+                    1568     ; {
+                    1569     ;     uint8_t k[7];
+                    1570     ;     memcpy(k, key, 7);
+                    1571                             ; SOURCE LINE # 307
+0022 2407           1572             ADD     A,#07H
+0024 F8             1573             MOV     R0,A
+0025 8603           1574             MOV     AR3,@R0
+0027 08             1575             INC     R0
+0028 E6             1576             MOV     A,@R0
+0029 FA             1577             MOV     R2,A
+002A 08             1578             INC     R0
+002B E6             1579             MOV     A,@R0
+002C F9             1580             MOV     R1,A
+002D A800     F     1581             MOV     R0,?C_IBP
+002F 7C00           1582             MOV     R4,#00H
+0031 7D00           1583             MOV     R5,#00H
+0033 7E00           1584             MOV     R6,#00H
+0035 7F07           1585             MOV     R7,#07H
+0037 120000   F     1586             LCALL   ?C?COPY
+                    1587     ;     permute((uint8_t*)shiftkeyinv_permtab, k, key);
+                    1588                             ; SOURCE LINE # 308
+003A E500     F     1589             MOV     A,?C_IBP
+003C 2407           1590             ADD     A,#07H
+003E F8             1591             MOV     R0,A
+003F 8603           1592             MOV     AR3,@R0
+0041 08             1593             INC     R0
+0042 E6             1594             MOV     A,@R0
+0043 FA             1595             MOV     R2,A
+0044 08             1596             INC     R0
+0045 E6             1597             MOV     A,@R0
+0046 F9             1598             MOV     R1,A
+0047 1500     F     1599             DEC     ?C_IBP
+0049 1500     F     1600             DEC     ?C_IBP
+004B 1500     F     1601             DEC     ?C_IBP
+004D A800     F     1602             MOV     R0,?C_IBP
+004F A603           1603             MOV     @R0,AR3
+0051 08             1604             INC     R0
+0052 A602           1605             MOV     @R0,AR2
+0054 08             1606             INC     R0
+0055 A601           1607             MOV     @R0,AR1
+0057 E500     F     1608             MOV     A,?C_IBP
+0059 2403           1609             ADD     A,#03H
+005B 1500     F     1610             DEC     ?C_IBP
+005D 1500     F     1611             DEC     ?C_IBP
+005F 1500     F     1612             DEC     ?C_IBP
+0061 A800     F     1613             MOV     R0,?C_IBP
+0063 7600           1614             MOV     @R0,#00H
+0065 08             1615             INC     R0
+0066 7600           1616             MOV     @R0,#00H
+0068 08             1617             INC     R0
+0069 F6             1618             MOV     @R0,A
+006A 7BFF           1619             MOV     R3,#0FFH
+006C 7A00     F     1620             MOV     R2,#HIGH (shiftkeyinv_permtab)
+006E 7900     F     1621             MOV     R1,#LOW (shiftkeyinv_permtab)
+0070 120000   F     1622             LCALL   _?permute
+                    1623     ; }
+                    1624                             ; SOURCE LINE # 309
+0073 E500     F     1625             MOV     A,?C_IBP
+0075 240A           1626             ADD     A,#0AH
+A51 MACRO ASSEMBLER  DES                                                                  07/14/2015 21:39:16 PAGE    26
+
+0077 F500     F     1627             MOV     ?C_IBP,A
+0079 22             1628             RET     
+                    1629     ; END OF _?shiftkey_inv
+                    1630     
+                    1631     ; 
+                    1632     ; /*$PAGE*/
+                    1633     ; /*
+                    1634     ; *****************************************************************************************
+                             ****************
+                    1635     ; *                                              split in 6 bit words
+                    1636     ; *
+                    1637     ; * Description: This function is used to split every 6bit in a byte to use it with S-Box, 
+                             so this function
+                    1638     ; *              make data from char data[6]-48bit  to data[8]-64bit
+                    1639     ; *
+                    1640     ; * Arguments  : a        is a pointer to uint64_t that contain content of data[6byte].
+                    1641     ; *
+                    1642     ; * Returns    : uint64_t this function return a spliced data[8byte]
+                    1643     ; *****************************************************************************************
+                             ****************
+                    1644     ; */
+                    1645     ; void splitin6bitwords(unsigned char a[]) reentrant
+                    1646     
+----                1647             RSEG  ?PR?_?splitin6bitwords?DES
+0000                1648     _?splitin6bitwords:
+                    1649             USING   0
+                    1650                             ; SOURCE LINE # 324
+0000 1500     F     1651             DEC     ?C_IBP
+0002 1500     F     1652             DEC     ?C_IBP
+0004 1500     F     1653             DEC     ?C_IBP
+0006 A800     F     1654             MOV     R0,?C_IBP
+0008 A603           1655             MOV     @R0,AR3
+000A 08             1656             INC     R0
+000B A602           1657             MOV     @R0,AR2
+000D 08             1658             INC     R0
+000E A601           1659             MOV     @R0,AR1
+0010 E500     F     1660             MOV     A,?C_IBP
+0012 24F8           1661             ADD     A,#0F8H
+0014 F500     F     1662             MOV     ?C_IBP,A
+                    1663     ; {
+                    1664     ;     uint8_t ret[8];
+                    1665     ;     memcpy(ret, a, 8);
+                    1666                             ; SOURCE LINE # 327
+0016 2408           1667             ADD     A,#08H
+0018 F8             1668             MOV     R0,A
+0019 8603           1669             MOV     AR3,@R0
+001B 08             1670             INC     R0
+001C E6             1671             MOV     A,@R0
+001D FA             1672             MOV     R2,A
+001E 08             1673             INC     R0
+001F E6             1674             MOV     A,@R0
+0020 F9             1675             MOV     R1,A
+0021 A800     F     1676             MOV     R0,?C_IBP
+0023 7C00           1677             MOV     R4,#00H
+0025 7D00           1678             MOV     R5,#00H
+0027 7E00           1679             MOV     R6,#00H
+0029 7F08           1680             MOV     R7,#08H
+002B 120000   F     1681             LCALL   ?C?COPY
+                    1682     ;     permute((uint8_t*)splitin6bitword_permtab, ret, a);
+                    1683                             ; SOURCE LINE # 328
+002E E500     F     1684             MOV     A,?C_IBP
+0030 2408           1685             ADD     A,#08H
+0032 F8             1686             MOV     R0,A
+0033 8603           1687             MOV     AR3,@R0
+0035 08             1688             INC     R0
+0036 E6             1689             MOV     A,@R0
+A51 MACRO ASSEMBLER  DES                                                                  07/14/2015 21:39:16 PAGE    27
+
+0037 FA             1690             MOV     R2,A
+0038 08             1691             INC     R0
+0039 E6             1692             MOV     A,@R0
+003A F9             1693             MOV     R1,A
+003B 1500     F     1694             DEC     ?C_IBP
+003D 1500     F     1695             DEC     ?C_IBP
+003F 1500     F     1696             DEC     ?C_IBP
+0041 A800     F     1697             MOV     R0,?C_IBP
+0043 A603           1698             MOV     @R0,AR3
+0045 08             1699             INC     R0
+0046 A602           1700             MOV     @R0,AR2
+0048 08             1701             INC     R0
+0049 A601           1702             MOV     @R0,AR1
+004B E500     F     1703             MOV     A,?C_IBP
+004D 2403           1704             ADD     A,#03H
+004F 1500     F     1705             DEC     ?C_IBP
+0051 1500     F     1706             DEC     ?C_IBP
+0053 1500     F     1707             DEC     ?C_IBP
+0055 A800     F     1708             MOV     R0,?C_IBP
+0057 7600           1709             MOV     @R0,#00H
+0059 08             1710             INC     R0
+005A 7600           1711             MOV     @R0,#00H
+005C 08             1712             INC     R0
+005D F6             1713             MOV     @R0,A
+005E 7BFF           1714             MOV     R3,#0FFH
+0060 7A00     F     1715             MOV     R2,#HIGH (splitin6bitword_permtab)
+0062 7900     F     1716             MOV     R1,#LOW (splitin6bitword_permtab)
+0064 120000   F     1717             LCALL   _?permute
+                    1718     ; }
+                    1719                             ; SOURCE LINE # 329
+0067 E500     F     1720             MOV     A,?C_IBP
+0069 240B           1721             ADD     A,#0BH
+006B F500     F     1722             MOV     ?C_IBP,A
+006D 22             1723             RET     
+                    1724     ; END OF _?splitin6bitwords
+                    1725     
+                    1726     ; 
+                    1727     ; /*$PAGE*/
+                    1728     ; /*
+                    1729     ; *****************************************************************************************
+                             ****************
+                    1730     ; *                                              substitute
+                    1731     ; *
+                    1732     ; * Description: This function is used to substitute 6 bits to 4 bits by s-box where 1st an
+                             d 6th bits
+                    1733     ; *              represent row and 2nd,3rd,4th,5th bits represent the columns
+                    1734     ; *
+                    1735     ; * Arguments  : a        is a pointer to array of char[64] that contain the data want to b
+                             e substituted
+                    1736     ; *                       ,array position.
+                    1737     ; *
+                    1738     ; *              sbp      is a pointer to array of char[256] S-Box that contain the table o
+                             f data for
+                    1739     ; *                       substitution.
+                    1740     ; *
+                    1741     ; * Returns    : uint32_t this function return the substituted byte
+                    1742     ; *****************************************************************************************
+                             ****************
+                    1743     ; */
+                    1744     ; uint8_t substitute(uint8_t a, uint8_t * sbp) reentrant
+                    1745     
+----                1746             RSEG  ?PR?_?substitute?DES
+0000                1747     _?substitute:
+                    1748             USING   0
+                    1749                             ; SOURCE LINE # 348
+0000 1500     F     1750             DEC     ?C_IBP
+A51 MACRO ASSEMBLER  DES                                                                  07/14/2015 21:39:16 PAGE    28
+
+0002 1500     F     1751             DEC     ?C_IBP
+0004 1500     F     1752             DEC     ?C_IBP
+0006 A800     F     1753             MOV     R0,?C_IBP
+0008 A603           1754             MOV     @R0,AR3
+000A 08             1755             INC     R0
+000B A602           1756             MOV     @R0,AR2
+000D 08             1757             INC     R0
+000E A601           1758             MOV     @R0,AR1
+0010 1500     F     1759             DEC     ?C_IBP
+0012 A800     F     1760             MOV     R0,?C_IBP
+0014 A607           1761             MOV     @R0,AR7
+0016 1500     F     1762             DEC     ?C_IBP
+                    1763     ; {
+                    1764     ;     uint8_t x;
+                    1765     ;     x = sbp[a>>1];                  /* get the substituted data from S-Box */
+                    1766                             ; SOURCE LINE # 351
+0018 A800     F     1767             MOV     R0,?C_IBP
+001A 08             1768             INC     R0
+001B E6             1769             MOV     A,@R0
+001C FF             1770             MOV     R7,A
+001D C3             1771             CLR     C
+001E 13             1772             RRC     A
+001F FE             1773             MOV     R6,A
+0020 A800     F     1774             MOV     R0,?C_IBP
+0022 08             1775             INC     R0
+0023 08             1776             INC     R0
+0024 8603           1777             MOV     AR3,@R0
+0026 08             1778             INC     R0
+0027 E6             1779             MOV     A,@R0
+0028 FA             1780             MOV     R2,A
+0029 08             1781             INC     R0
+002A E6             1782             MOV     A,@R0
+002B F9             1783             MOV     R1,A
+002C 8E82           1784             MOV     DPL,R6
+002E 758300         1785             MOV     DPH,#00H
+0031 120000   F     1786             LCALL   ?C?CLDOPTR
+0034 A800     F     1787             MOV     R0,?C_IBP
+0036 F6             1788             MOV     @R0,A
+                    1789     ;     x = (a&1)?x&0x0F:x>>4;          /* depend on 1st bit, we select LSB or MSB */
+                    1790                             ; SOURCE LINE # 352
+0037 EF             1791             MOV     A,R7
+0038 A800     F     1792             MOV     R0,?C_IBP
+003A 30E003         1793             JNB     ACC.0,?C0012
+003D E6             1794             MOV     A,@R0
+003E 8002           1795             SJMP    ?C0043
+0040                1796     ?C0012:
+0040 E6             1797             MOV     A,@R0
+0041 C4             1798             SWAP    A
+0042                1799     ?C0043:
+0042 540F           1800             ANL     A,#0FH
+0044 FF             1801             MOV     R7,A
+0045                1802     ?C0013:
+0045 A800     F     1803             MOV     R0,?C_IBP
+0047 EF             1804             MOV     A,R7
+0048 F6             1805             MOV     @R0,A
+                    1806     ;     return x;
+                    1807                             ; SOURCE LINE # 353
+                    1808     ; }
+                    1809                             ; SOURCE LINE # 354
+0049                1810     ?C0014:
+0049 E500     F     1811             MOV     A,?C_IBP
+004B 2405           1812             ADD     A,#05H
+004D F500     F     1813             MOV     ?C_IBP,A
+004F 22             1814             RET     
+                    1815     ; END OF _?substitute
+                    1816     
+A51 MACRO ASSEMBLER  DES                                                                  07/14/2015 21:39:16 PAGE    29
+
+                    1817     ; 
+                    1818     ; /*$PAGE*/
+                    1819     ; /*
+                    1820     ; *****************************************************************************************
+                             ****************
+                    1821     ; *                                   DES Feistel"Primary function of DES"
+                    1822     ; *
+                    1823     ; * Description: This function is used to apply the Feistel function on right block with ke
+                             y and return
+                    1824     ; *              the result.
+                    1825     ; *              note:    Used in encryption and decryption process.
+                    1826     ; *
+                    1827     ; * Arguments  : r        is a pointer to array of char[4] that contain the data right bloc
+                             k.
+                    1828     ; *
+                    1829     ; *              kr       is a pointer to array of char[4] that contain the data key.
+                    1830     ; *
+                    1831     ; * Returns    : uint32_t this function return the result of DES Feistel function [32bit]
+                    1832     ; *****************************************************************************************
+                             ****************
+                    1833     ; */
+                    1834     ; uint32_t des_f(uint32_t r, uint8_t* kr)       reentrant
+                    1835     
+----                1836             RSEG  ?PR?_?des_f?DES
+0000                1837     _?des_f:
+                    1838             USING   0
+                    1839                             ; SOURCE LINE # 372
+0000 1500     F     1840             DEC     ?C_IBP
+0002 1500     F     1841             DEC     ?C_IBP
+0004 1500     F     1842             DEC     ?C_IBP
+0006 A800     F     1843             MOV     R0,?C_IBP
+0008 A603           1844             MOV     @R0,AR3
+000A 08             1845             INC     R0
+000B A602           1846             MOV     @R0,AR2
+000D 08             1847             INC     R0
+000E A601           1848             MOV     @R0,AR1
+0010 E500     F     1849             MOV     A,?C_IBP
+0012 24FC           1850             ADD     A,#0FCH
+0014 F500     F     1851             MOV     ?C_IBP,A
+0016 F8             1852             MOV     R0,A
+0017 120000   F     1853             LCALL   ?C?LSTIDATA
+001A E500     F     1854             MOV     A,?C_IBP
+001C 24EB           1855             ADD     A,#0EBH
+001E F500     F     1856             MOV     ?C_IBP,A
+                    1857     ; {
+                    1858     ;     uint8_t i;
+                    1859     ;     uint32_t t=0,ret;
+                    1860                             ; SOURCE LINE # 375
+0020 F8             1861             MOV     R0,A
+0021 08             1862             INC     R0
+0022 120000   F     1863             LCALL   ?C?LSTKIDATA
+0025 00             1864             DB      00H
+0026 00             1865             DB      00H
+0027 00             1866             DB      00H
+0028 00             1867             DB      00H
+                    1868     ;     uint64_t _data;
+                    1869     ;     uint8_t *sbp; /* sboxpointer */
+                    1870     ; 
+                    1871     ;     permute((uint8_t*)e_permtab, (uint8_t*)&r, (uint8_t*)&_data);/* Permute EP "Expansion
+                              Permutation" table with
+                    1872                             ; SOURCE LINE # 379
+0029 E500     F     1873             MOV     A,?C_IBP
+002B 2409           1874             ADD     A,#09H
+002D 1500     F     1875             DEC     ?C_IBP
+002F 1500     F     1876             DEC     ?C_IBP
+0031 1500     F     1877             DEC     ?C_IBP
+A51 MACRO ASSEMBLER  DES                                                                  07/14/2015 21:39:16 PAGE    30
+
+0033 A800     F     1878             MOV     R0,?C_IBP
+0035 7600           1879             MOV     @R0,#00H
+0037 08             1880             INC     R0
+0038 7600           1881             MOV     @R0,#00H
+003A 08             1882             INC     R0
+003B F6             1883             MOV     @R0,A
+003C E500     F     1884             MOV     A,?C_IBP
+003E 2418           1885             ADD     A,#018H
+0040 1500     F     1886             DEC     ?C_IBP
+0042 1500     F     1887             DEC     ?C_IBP
+0044 1500     F     1888             DEC     ?C_IBP
+0046 A800     F     1889             MOV     R0,?C_IBP
+0048 7600           1890             MOV     @R0,#00H
+004A 08             1891             INC     R0
+004B 7600           1892             MOV     @R0,#00H
+004D 08             1893             INC     R0
+004E F6             1894             MOV     @R0,A
+004F 7BFF           1895             MOV     R3,#0FFH
+0051 7A00     F     1896             MOV     R2,#HIGH (e_permtab)
+0053 7900     F     1897             MOV     R1,#LOW (e_permtab)
+0055 120000   F     1898             LCALL   _?permute
+                    1899     ;                                     input data [right block] "r" and return permuted data
+                              in "data[48bit]" */
+                    1900     ;     for(i=0; i<7; ++i)
+                    1901                             ; SOURCE LINE # 381
+0058 A800     F     1902             MOV     R0,?C_IBP
+005A E4             1903             CLR     A
+005B F6             1904             MOV     @R0,A
+005C                1905     ?C0015:
+005C A800     F     1906             MOV     R0,?C_IBP
+005E E6             1907             MOV     A,@R0
+005F C3             1908             CLR     C
+0060 9407           1909             SUBB    A,#07H
+0062 503C           1910             JNC     ?C0016
+                    1911     ;         ((uint8_t*)&_data)[i] ^= kr[i];      /* XORing data [right block] with key [48bit
+                             ]*/
+                    1912                             ; SOURCE LINE # 382
+0064 E6             1913             MOV     A,@R0
+0065 FF             1914             MOV     R7,A
+0066 FD             1915             MOV     R5,A
+0067 7B00           1916             MOV     R3,#00H
+0069 E500     F     1917             MOV     A,?C_IBP
+006B 2409           1918             ADD     A,#09H
+006D 2D             1919             ADD     A,R5
+006E F9             1920             MOV     R1,A
+006F E4             1921             CLR     A
+0070 33             1922             RLC     A
+0071 FA             1923             MOV     R2,A
+0072 C003           1924             PUSH    AR3
+0074 C002           1925             PUSH    AR2
+0076 C001           1926             PUSH    AR1
+0078 120000   F     1927             LCALL   ?C?CLDPTR
+007B FE             1928             MOV     R6,A
+007C E500     F     1929             MOV     A,?C_IBP
+007E 2419           1930             ADD     A,#019H
+0080 F8             1931             MOV     R0,A
+0081 8603           1932             MOV     AR3,@R0
+0083 08             1933             INC     R0
+0084 E6             1934             MOV     A,@R0
+0085 FA             1935             MOV     R2,A
+0086 08             1936             INC     R0
+0087 E6             1937             MOV     A,@R0
+0088 F9             1938             MOV     R1,A
+0089 8F82           1939             MOV     DPL,R7
+008B 758300         1940             MOV     DPH,#00H
+008E 120000   F     1941             LCALL   ?C?CLDOPTR
+A51 MACRO ASSEMBLER  DES                                                                  07/14/2015 21:39:16 PAGE    31
+
+0091 6E             1942             XRL     A,R6
+0092 D001           1943             POP     AR1
+0094 D002           1944             POP     AR2
+0096 D003           1945             POP     AR3
+0098 120000   F     1946             LCALL   ?C?CSTPTR
+009B A800     F     1947             MOV     R0,?C_IBP
+009D 06             1948             INC     @R0
+009E 80BC           1949             SJMP    ?C0015
+00A0                1950     ?C0016:
+                    1951     ; 
+                    1952     ;     /* Sbox substitution */
+                    1953     ;     splitin6bitwords((uint8_t*)&_data);          /* data before 6-byte --> now 8-byte  */
+                    1954                             ; SOURCE LINE # 385
+00A0 7B00           1955             MOV     R3,#00H
+00A2 E500     F     1956             MOV     A,?C_IBP
+00A4 2409           1957             ADD     A,#09H
+00A6 F9             1958             MOV     R1,A
+00A7 7A00           1959             MOV     R2,#00H
+00A9 120000   F     1960             LCALL   _?splitin6bitwords
+                    1961     ;     sbp=(uint8_t*)sbox;
+                    1962                             ; SOURCE LINE # 386
+00AC E500     F     1963             MOV     A,?C_IBP
+00AE 2411           1964             ADD     A,#011H
+00B0 F8             1965             MOV     R0,A
+00B1 76FF           1966             MOV     @R0,#0FFH
+00B3 08             1967             INC     R0
+00B4 7600     F     1968             MOV     @R0,#HIGH (sbox)
+00B6 08             1969             INC     R0
+00B7 7600     F     1970             MOV     @R0,#LOW (sbox)
+                    1971     ;     for(i=0; i<8; ++i)
+                    1972                             ; SOURCE LINE # 387
+00B9 A800     F     1973             MOV     R0,?C_IBP
+00BB E4             1974             CLR     A
+00BC F6             1975             MOV     @R0,A
+00BD                1976     ?C0018:
+00BD A800     F     1977             MOV     R0,?C_IBP
+00BF E6             1978             MOV     A,@R0
+00C0 C3             1979             CLR     C
+00C1 9408           1980             SUBB    A,#08H
+00C3 5078           1981             JNC     ?C0019
+                    1982     ;     {
+                    1983                             ; SOURCE LINE # 388
+                    1984     ;         uint8_t x;
+                    1985     ;         x = substitute(((uint8_t*)&_data)[i], sbp);
+                    1986                             ; SOURCE LINE # 390
+00C5 E500     F     1987             MOV     A,?C_IBP
+00C7 2411           1988             ADD     A,#011H
+00C9 F8             1989             MOV     R0,A
+00CA 8603           1990             MOV     AR3,@R0
+00CC 08             1991             INC     R0
+00CD E6             1992             MOV     A,@R0
+00CE FA             1993             MOV     R2,A
+00CF 08             1994             INC     R0
+00D0 E6             1995             MOV     A,@R0
+00D1 F9             1996             MOV     R1,A
+00D2 C003           1997             PUSH    AR3
+00D4 C002           1998             PUSH    AR2
+00D6 C001           1999             PUSH    AR1
+00D8 A800     F     2000             MOV     R0,?C_IBP
+00DA E6             2001             MOV     A,@R0
+00DB FF             2002             MOV     R7,A
+00DC 7B00           2003             MOV     R3,#00H
+00DE E500     F     2004             MOV     A,?C_IBP
+00E0 2409           2005             ADD     A,#09H
+00E2 2F             2006             ADD     A,R7
+00E3 F9             2007             MOV     R1,A
+A51 MACRO ASSEMBLER  DES                                                                  07/14/2015 21:39:16 PAGE    32
+
+00E4 E4             2008             CLR     A
+00E5 33             2009             RLC     A
+00E6 FA             2010             MOV     R2,A
+00E7 120000   F     2011             LCALL   ?C?CLDPTR
+00EA FF             2012             MOV     R7,A
+00EB D001           2013             POP     AR1
+00ED D002           2014             POP     AR2
+00EF D003           2015             POP     AR3
+00F1 120000   F     2016             LCALL   _?substitute
+00F4 E500     F     2017             MOV     A,?C_IBP
+00F6 2414           2018             ADD     A,#014H
+00F8 F8             2019             MOV     R0,A
+00F9 A607           2020             MOV     @R0,AR7
+                    2021     ;         t <<= 4;
+                    2022                             ; SOURCE LINE # 391
+00FB A800     F     2023             MOV     R0,?C_IBP
+00FD 08             2024             INC     R0
+00FE C000           2025             PUSH    AR0
+0100 120000   F     2026             LCALL   ?C?LLDIDATA
+0103 7804           2027             MOV     R0,#04H
+0105 120000   F     2028             LCALL   ?C?LSHL
+0108 D000           2029             POP     AR0
+010A 120000   F     2030             LCALL   ?C?LSTIDATA
+                    2031     ;         t |= x;
+                    2032                             ; SOURCE LINE # 392
+010D A800     F     2033             MOV     R0,?C_IBP
+010F 08             2034             INC     R0
+0110 C000           2035             PUSH    AR0
+0112 120000   F     2036             LCALL   ?C?LLDIDATA
+0115 C007           2037             PUSH    AR7
+0117 E500     F     2038             MOV     A,?C_IBP
+0119 2414           2039             ADD     A,#014H
+011B F8             2040             MOV     R0,A
+011C E6             2041             MOV     A,@R0
+011D FB             2042             MOV     R3,A
+011E D007           2043             POP     AR7
+0120 EF             2044             MOV     A,R7
+0121 4B             2045             ORL     A,R3
+0122 FF             2046             MOV     R7,A
+0123 EC             2047             MOV     A,R4
+0124 D000           2048             POP     AR0
+0126 120000   F     2049             LCALL   ?C?LSTIDATA
+                    2050     ;         sbp += 32;
+                    2051                             ; SOURCE LINE # 393
+0129 E500     F     2052             MOV     A,?C_IBP
+012B 2411           2053             ADD     A,#011H
+012D F8             2054             MOV     R0,A
+012E 08             2055             INC     R0
+012F 08             2056             INC     R0
+0130 7420           2057             MOV     A,#020H
+0132 26             2058             ADD     A,@R0
+0133 F6             2059             MOV     @R0,A
+0134 18             2060             DEC     R0
+0135 E4             2061             CLR     A
+0136 36             2062             ADDC    A,@R0
+0137 F6             2063             MOV     @R0,A
+                    2064     ;     }
+                    2065                             ; SOURCE LINE # 394
+0138 A800     F     2066             MOV     R0,?C_IBP
+013A 06             2067             INC     @R0
+013B 8080           2068             SJMP    ?C0018
+013D                2069     ?C0019:
+                    2070     ; 
+                    2071     ;     permute((uint8_t*)p_permtab,(uint8_t*)&t, (uint8_t*)&ret);
+                    2072                             ; SOURCE LINE # 396
+013D E500     F     2073             MOV     A,?C_IBP
+A51 MACRO ASSEMBLER  DES                                                                  07/14/2015 21:39:16 PAGE    33
+
+013F 2405           2074             ADD     A,#05H
+0141 1500     F     2075             DEC     ?C_IBP
+0143 1500     F     2076             DEC     ?C_IBP
+0145 1500     F     2077             DEC     ?C_IBP
+0147 A800     F     2078             MOV     R0,?C_IBP
+0149 7600           2079             MOV     @R0,#00H
+014B 08             2080             INC     R0
+014C 7600           2081             MOV     @R0,#00H
+014E 08             2082             INC     R0
+014F F6             2083             MOV     @R0,A
+0150 E500     F     2084             MOV     A,?C_IBP
+0152 2404           2085             ADD     A,#04H
+0154 1500     F     2086             DEC     ?C_IBP
+0156 1500     F     2087             DEC     ?C_IBP
+0158 1500     F     2088             DEC     ?C_IBP
+015A A800     F     2089             MOV     R0,?C_IBP
+015C 7600           2090             MOV     @R0,#00H
+015E 08             2091             INC     R0
+015F 7600           2092             MOV     @R0,#00H
+0161 08             2093             INC     R0
+0162 F6             2094             MOV     @R0,A
+0163 7BFF           2095             MOV     R3,#0FFH
+0165 7A00     F     2096             MOV     R2,#HIGH (p_permtab)
+0167 7900     F     2097             MOV     R1,#LOW (p_permtab)
+0169 120000   F     2098             LCALL   _?permute
+                    2099     ; 
+                    2100     ;     return ret;
+                    2101                             ; SOURCE LINE # 398
+016C E500     F     2102             MOV     A,?C_IBP
+016E 2405           2103             ADD     A,#05H
+0170 F8             2104             MOV     R0,A
+0171 120000   F     2105             LCALL   ?C?LLDIDATA
+                    2106     ; }
+                    2107                             ; SOURCE LINE # 399
+0174                2108     ?C0021:
+0174 E500     F     2109             MOV     A,?C_IBP
+0176 241C           2110             ADD     A,#01CH
+0178 F500     F     2111             MOV     ?C_IBP,A
+017A 22             2112             RET     
+                    2113     ; END OF _?des_f
+                    2114     
+                    2115     ; 
+                    2116     ; /*$PAGE*/
+                    2117     ; /*
+                    2118     ; *****************************************************************************************
+                             ****************
+                    2119     ; *                                      Encryption function
+                    2120     ; *
+                    2121     ; * Description:                  This function encrypts a block of 64 bits (8 bytes) with 
+                             the DES algorithm.
+                    2122     ; *                     Key expansion is done automatically. The key is 64 bits long, but n
+                             ote that
+                    2123     ; *                     only 56 bits are used (the LSB of each byte is dropped). The input 
+                             and output
+                    2124     ; *                     blocks may overlap.
+                    2125     ; *
+                    2126     ; * Arguments  : out    pointer to the block (64 bit = 8 byte) where the ciphertext is writ
+                             ten to
+                    2127     ; *
+                    2128     ; *              in     pointer to the block (64 bit = 8 byte) where the plaintext is read 
+                             from
+                    2129     ; *
+                    2130     ; *              key    pointer to the key (64 bit = 8 byte)
+                    2131     ; *
+                    2132     ; * Returns    : None
+                    2133     ; *****************************************************************************************
+A51 MACRO ASSEMBLER  DES                                                                  07/14/2015 21:39:16 PAGE    34
+
+                             ****************
+                    2134     ; */
+                    2135     ; void encrypt(void* out, const void* in, const void* key) reentrant
+                    2136     
+----                2137             RSEG  ?PR?_?encrypt?DES
+0000                2138     _?encrypt:
+                    2139             USING   0
+                    2140                             ; SOURCE LINE # 420
+0000 1500     F     2141             DEC     ?C_IBP
+0002 1500     F     2142             DEC     ?C_IBP
+0004 1500     F     2143             DEC     ?C_IBP
+0006 A800     F     2144             MOV     R0,?C_IBP
+0008 A603           2145             MOV     @R0,AR3
+000A 08             2146             INC     R0
+000B A602           2147             MOV     @R0,AR2
+000D 08             2148             INC     R0
+000E A601           2149             MOV     @R0,AR1
+0010 E500     F     2150             MOV     A,?C_IBP
+0012 24EA           2151             ADD     A,#0EAH
+0014 F500     F     2152             MOV     ?C_IBP,A
+                    2153     ; {
+                    2154     ; #define R (_data.v32[1])
+                    2155     ; #define L (_data.v32[0])
+                    2156     ;     uint8_t kr[6],k[7];
+                    2157     ;     uint8_t i;
+                    2158     ;     union
+                    2159     ;     {
+                    2160     ;         uint8_t v8[8];
+                    2161     ;         uint32_t v32[2];
+                    2162     ;     } _data;
+                    2163     ; 
+                    2164     ;     permute((uint8_t*)ip_permtab, (uint8_t*)in, _data.v8);   /* Permute IP "Initial Permu
+                             tation" table with
+                    2165                             ; SOURCE LINE # 432
+0016 240E           2166             ADD     A,#0EH
+0018 1500     F     2167             DEC     ?C_IBP
+001A 1500     F     2168             DEC     ?C_IBP
+001C 1500     F     2169             DEC     ?C_IBP
+001E A800     F     2170             MOV     R0,?C_IBP
+0020 7600           2171             MOV     @R0,#00H
+0022 08             2172             INC     R0
+0023 7600           2173             MOV     @R0,#00H
+0025 08             2174             INC     R0
+0026 F6             2175             MOV     @R0,A
+0027 E500     F     2176             MOV     A,?C_IBP
+0029 241C           2177             ADD     A,#01CH
+002B F8             2178             MOV     R0,A
+002C 8603           2179             MOV     AR3,@R0
+002E 08             2180             INC     R0
+002F E6             2181             MOV     A,@R0
+0030 FA             2182             MOV     R2,A
+0031 08             2183             INC     R0
+0032 E6             2184             MOV     A,@R0
+0033 F9             2185             MOV     R1,A
+0034 1500     F     2186             DEC     ?C_IBP
+0036 1500     F     2187             DEC     ?C_IBP
+0038 1500     F     2188             DEC     ?C_IBP
+003A A800     F     2189             MOV     R0,?C_IBP
+003C A603           2190             MOV     @R0,AR3
+003E 08             2191             INC     R0
+003F A602           2192             MOV     @R0,AR2
+0041 08             2193             INC     R0
+0042 A601           2194             MOV     @R0,AR1
+0044 7BFF           2195             MOV     R3,#0FFH
+0046 7A00     F     2196             MOV     R2,#HIGH (ip_permtab)
+0048 7900     F     2197             MOV     R1,#LOW (ip_permtab)
+A51 MACRO ASSEMBLER  DES                                                                  07/14/2015 21:39:16 PAGE    35
+
+004A 120000   F     2198             LCALL   _?permute
+                    2199     ;                                                             input data and return permute
+                             d data in "v8" */
+                    2200     ;     permute((uint8_t*)pc1_permtab, (const uint8_t*)key, k); /* Permute PC1 "Permuted_Choi
+                             ce1" table with
+                    2201                             ; SOURCE LINE # 434
+004D E500     F     2202             MOV     A,?C_IBP
+004F 2406           2203             ADD     A,#06H
+0051 1500     F     2204             DEC     ?C_IBP
+0053 1500     F     2205             DEC     ?C_IBP
+0055 1500     F     2206             DEC     ?C_IBP
+0057 A800     F     2207             MOV     R0,?C_IBP
+0059 7600           2208             MOV     @R0,#00H
+005B 08             2209             INC     R0
+005C 7600           2210             MOV     @R0,#00H
+005E 08             2211             INC     R0
+005F F6             2212             MOV     @R0,A
+0060 E500     F     2213             MOV     A,?C_IBP
+0062 241F           2214             ADD     A,#01FH
+0064 F8             2215             MOV     R0,A
+0065 8603           2216             MOV     AR3,@R0
+0067 08             2217             INC     R0
+0068 E6             2218             MOV     A,@R0
+0069 FA             2219             MOV     R2,A
+006A 08             2220             INC     R0
+006B E6             2221             MOV     A,@R0
+006C F9             2222             MOV     R1,A
+006D 1500     F     2223             DEC     ?C_IBP
+006F 1500     F     2224             DEC     ?C_IBP
+0071 1500     F     2225             DEC     ?C_IBP
+0073 A800     F     2226             MOV     R0,?C_IBP
+0075 A603           2227             MOV     @R0,AR3
+0077 08             2228             INC     R0
+0078 A602           2229             MOV     @R0,AR2
+007A 08             2230             INC     R0
+007B A601           2231             MOV     @R0,AR1
+007D 7BFF           2232             MOV     R3,#0FFH
+007F 7A00     F     2233             MOV     R2,#HIGH (pc1_permtab)
+0081 7900     F     2234             MOV     R1,#LOW (pc1_permtab)
+0083 120000   F     2235             LCALL   _?permute
+                    2236     ;                                                             input key and return permuted
+                              data in "k" */
+                    2237     ;     for(i=0; i<8; ++i)
+                    2238                             ; SOURCE LINE # 436
+0086 E500     F     2239             MOV     A,?C_IBP
+0088 240D           2240             ADD     A,#0DH
+008A F8             2241             MOV     R0,A
+008B E4             2242             CLR     A
+008C F6             2243             MOV     @R0,A
+008D                2244     ?C0022:
+008D E500     F     2245             MOV     A,?C_IBP
+008F 240D           2246             ADD     A,#0DH
+0091 F8             2247             MOV     R0,A
+0092 E6             2248             MOV     A,@R0
+0093 C3             2249             CLR     C
+0094 9408           2250             SUBB    A,#08H
+0096 4003           2251             JC      $ + 5H
+0098 020000   F     2252             LJMP    ?C0023
+                    2253     ;     {
+                    2254                             ; SOURCE LINE # 437
+                    2255     ;         shiftkey(k);
+                    2256                             ; SOURCE LINE # 438
+009B 120000   F     2257             LCALL   L?0048
+                    2258     ; 
+                    2259     ;         if(i==1||i==2||i==3||i==5||i==6||i==7)          /* filtered from round "zero" and
+                              round "four" 1,2,3,5,6,7 */
+A51 MACRO ASSEMBLER  DES                                                                  07/14/2015 21:39:16 PAGE    36
+
+                    2260                             ; SOURCE LINE # 440
+009E E500     F     2261             MOV     A,?C_IBP
+00A0 240D           2262             ADD     A,#0DH
+00A2 F8             2263             MOV     R0,A
+00A3 E6             2264             MOV     A,@R0
+00A4 FF             2265             MOV     R7,A
+00A5 6401           2266             XRL     A,#01H
+00A7 6018           2267             JZ      ?C0026
+00A9 EF             2268             MOV     A,R7
+00AA 6402           2269             XRL     A,#02H
+00AC 6013           2270             JZ      ?C0026
+00AE EF             2271             MOV     A,R7
+00AF 6403           2272             XRL     A,#03H
+00B1 600E           2273             JZ      ?C0026
+00B3 EF             2274             MOV     A,R7
+00B4 6405           2275             XRL     A,#05H
+00B6 6009           2276             JZ      ?C0026
+00B8 EF             2277             MOV     A,R7
+00B9 6406           2278             XRL     A,#06H
+00BB 6004           2279             JZ      ?C0026
+00BD EF             2280             MOV     A,R7
+00BE B40703         2281             CJNE    A,#07H,?C0025
+00C1                2282     ?C0026:
+                    2283     ;             shiftkey(k);
+                    2284                             ; SOURCE LINE # 441
+00C1 120000   F     2285             LCALL   L?0048
+00C4                2286     ?C0025:
+                    2287     ;         permute((uint8_t*)pc2_permtab, k, kr);
+                    2288                             ; SOURCE LINE # 442
+00C4 120000   F     2289             LCALL   L?0044
+                    2290     ;         L ^= des_f(R, kr);
+                    2291                             ; SOURCE LINE # 443
+00C7 E500     F     2292             MOV     A,?C_IBP
+00C9 240E           2293             ADD     A,#0EH
+00CB F8             2294             MOV     R0,A
+00CC C000           2295             PUSH    AR0
+00CE 120000   F     2296             LCALL   ?C?LLDIDATA
+00D1 C004           2297             PUSH    AR4
+00D3 C005           2298             PUSH    AR5
+00D5 C006           2299             PUSH    AR6
+00D7 C007           2300             PUSH    AR7
+00D9 7B00           2301             MOV     R3,#00H
+00DB A900     F     2302             MOV     R1,?C_IBP
+00DD 7A00           2303             MOV     R2,#00H
+00DF E500     F     2304             MOV     A,?C_IBP
+00E1 2412           2305             ADD     A,#012H
+00E3 F8             2306             MOV     R0,A
+00E4 120000   F     2307             LCALL   ?C?LLDIDATA
+00E7 120000   F     2308             LCALL   _?des_f
+00EA A804           2309             MOV     R0,AR4
+00EC A905           2310             MOV     R1,AR5
+00EE AA06           2311             MOV     R2,AR6
+00F0 AB07           2312             MOV     R3,AR7
+00F2 D007           2313             POP     AR7
+00F4 D006           2314             POP     AR6
+00F6 D005           2315             POP     AR5
+00F8 D004           2316             POP     AR4
+00FA EF             2317             MOV     A,R7
+00FB 6B             2318             XRL     A,R3
+00FC FF             2319             MOV     R7,A
+00FD EE             2320             MOV     A,R6
+00FE 6A             2321             XRL     A,R2
+00FF FE             2322             MOV     R6,A
+0100 ED             2323             MOV     A,R5
+0101 69             2324             XRL     A,R1
+0102 FD             2325             MOV     R5,A
+A51 MACRO ASSEMBLER  DES                                                                  07/14/2015 21:39:16 PAGE    37
+
+0103 EC             2326             MOV     A,R4
+0104 68             2327             XRL     A,R0
+0105 FC             2328             MOV     R4,A
+0106 D000           2329             POP     AR0
+0108 120000   F     2330             LCALL   ?C?LSTIDATA
+                    2331     ;         shiftkey(k);
+                    2332                             ; SOURCE LINE # 444
+010B 120000   F     2333             LCALL   L?0049
+                    2334     ;         if(i==1||i==2||i==3||i==4||i==5||i==6)     /* filtered from round "zero" and roun
+                             d "seven" 1,2,3,4,5,6 */
+                    2335                             ; SOURCE LINE # 445
+010E E500     F     2336             MOV     A,?C_IBP
+0110 240D           2337             ADD     A,#0DH
+0112 F8             2338             MOV     R0,A
+0113 E6             2339             MOV     A,@R0
+0114 FF             2340             MOV     R7,A
+0115 6401           2341             XRL     A,#01H
+0117 6018           2342             JZ      ?C0028
+0119 EF             2343             MOV     A,R7
+011A 6402           2344             XRL     A,#02H
+011C 6013           2345             JZ      ?C0028
+011E EF             2346             MOV     A,R7
+011F 6403           2347             XRL     A,#03H
+0121 600E           2348             JZ      ?C0028
+0123 EF             2349             MOV     A,R7
+0124 6404           2350             XRL     A,#04H
+0126 6009           2351             JZ      ?C0028
+0128 EF             2352             MOV     A,R7
+0129 6405           2353             XRL     A,#05H
+012B 6004           2354             JZ      ?C0028
+012D EF             2355             MOV     A,R7
+012E B40603         2356             CJNE    A,#06H,?C0027
+0131                2357     ?C0028:
+                    2358     ;             shiftkey(k);
+                    2359                             ; SOURCE LINE # 446
+0131 120000   F     2360             LCALL   L?0049
+0134                2361     ?C0027:
+                    2362     ; 
+                    2363     ;         permute((uint8_t*)pc2_permtab, k, kr);
+                    2364                             ; SOURCE LINE # 448
+0134 120000   F     2365             LCALL   L?0044
+                    2366     ;         R ^= des_f(L, kr);
+                    2367                             ; SOURCE LINE # 449
+0137 E500     F     2368             MOV     A,?C_IBP
+0139 2412           2369             ADD     A,#012H
+013B F8             2370             MOV     R0,A
+013C C000           2371             PUSH    AR0
+013E 120000   F     2372             LCALL   ?C?LLDIDATA
+0141 C004           2373             PUSH    AR4
+0143 C005           2374             PUSH    AR5
+0145 C006           2375             PUSH    AR6
+0147 C007           2376             PUSH    AR7
+0149 7B00           2377             MOV     R3,#00H
+014B A900     F     2378             MOV     R1,?C_IBP
+014D 7A00           2379             MOV     R2,#00H
+014F E500     F     2380             MOV     A,?C_IBP
+0151 240E           2381             ADD     A,#0EH
+0153 F8             2382             MOV     R0,A
+0154 120000   F     2383             LCALL   ?C?LLDIDATA
+0157 120000   F     2384             LCALL   _?des_f
+015A A804           2385             MOV     R0,AR4
+015C A905           2386             MOV     R1,AR5
+015E AA06           2387             MOV     R2,AR6
+0160 AB07           2388             MOV     R3,AR7
+0162 D007           2389             POP     AR7
+0164 D006           2390             POP     AR6
+A51 MACRO ASSEMBLER  DES                                                                  07/14/2015 21:39:16 PAGE    38
+
+0166 D005           2391             POP     AR5
+0168 D004           2392             POP     AR4
+016A EF             2393             MOV     A,R7
+016B 6B             2394             XRL     A,R3
+016C FF             2395             MOV     R7,A
+016D EE             2396             MOV     A,R6
+016E 6A             2397             XRL     A,R2
+016F FE             2398             MOV     R6,A
+0170 ED             2399             MOV     A,R5
+0171 69             2400             XRL     A,R1
+0172 FD             2401             MOV     R5,A
+0173 EC             2402             MOV     A,R4
+0174 68             2403             XRL     A,R0
+0175 FC             2404             MOV     R4,A
+0176 D000           2405             POP     AR0
+0178 120000   F     2406             LCALL   ?C?LSTIDATA
+                    2407     ;     }
+                    2408                             ; SOURCE LINE # 450
+017B E500     F     2409             MOV     A,?C_IBP
+017D 240D           2410             ADD     A,#0DH
+017F F8             2411             MOV     R0,A
+0180 06             2412             INC     @R0
+0181 020000   F     2413             LJMP    ?C0022
+0184                2414     ?C0023:
+                    2415     ;     /* L <-> R*/
+                    2416     ;     R ^= L;
+                    2417                             ; SOURCE LINE # 452
+0184 E500     F     2418             MOV     A,?C_IBP
+0186 2412           2419             ADD     A,#012H
+0188 F8             2420             MOV     R0,A
+0189 C000           2421             PUSH    AR0
+018B 120000   F     2422             LCALL   ?C?LLDIDATA
+018E E500     F     2423             MOV     A,?C_IBP
+0190 240E           2424             ADD     A,#0EH
+0192 F8             2425             MOV     R0,A
+0193 120000   F     2426             LCALL   ?C?LLDIDATA0
+0196 EF             2427             MOV     A,R7
+0197 6B             2428             XRL     A,R3
+0198 FF             2429             MOV     R7,A
+0199 EE             2430             MOV     A,R6
+019A 6A             2431             XRL     A,R2
+019B FE             2432             MOV     R6,A
+019C ED             2433             MOV     A,R5
+019D 69             2434             XRL     A,R1
+019E FD             2435             MOV     R5,A
+019F EC             2436             MOV     A,R4
+01A0 68             2437             XRL     A,R0
+01A1 FC             2438             MOV     R4,A
+01A2 D000           2439             POP     AR0
+01A4 120000   F     2440             LCALL   ?C?LSTIDATA
+                    2441     ;     L ^= R;
+                    2442                             ; SOURCE LINE # 453
+01A7 E500     F     2443             MOV     A,?C_IBP
+01A9 240E           2444             ADD     A,#0EH
+01AB F8             2445             MOV     R0,A
+01AC C000           2446             PUSH    AR0
+01AE 120000   F     2447             LCALL   ?C?LLDIDATA
+01B1 E500     F     2448             MOV     A,?C_IBP
+01B3 2412           2449             ADD     A,#012H
+01B5 F8             2450             MOV     R0,A
+01B6 120000   F     2451             LCALL   ?C?LLDIDATA0
+01B9 EF             2452             MOV     A,R7
+01BA 6B             2453             XRL     A,R3
+01BB FF             2454             MOV     R7,A
+01BC EE             2455             MOV     A,R6
+01BD 6A             2456             XRL     A,R2
+A51 MACRO ASSEMBLER  DES                                                                  07/14/2015 21:39:16 PAGE    39
+
+01BE FE             2457             MOV     R6,A
+01BF ED             2458             MOV     A,R5
+01C0 69             2459             XRL     A,R1
+01C1 FD             2460             MOV     R5,A
+01C2 EC             2461             MOV     A,R4
+01C3 68             2462             XRL     A,R0
+01C4 FC             2463             MOV     R4,A
+01C5 D000           2464             POP     AR0
+01C7 120000   F     2465             LCALL   ?C?LSTIDATA
+                    2466     ;     R ^= L;
+                    2467                             ; SOURCE LINE # 454
+01CA E500     F     2468             MOV     A,?C_IBP
+01CC 2412           2469             ADD     A,#012H
+01CE F8             2470             MOV     R0,A
+01CF C000           2471             PUSH    AR0
+01D1 120000   F     2472             LCALL   ?C?LLDIDATA
+01D4 E500     F     2473             MOV     A,?C_IBP
+01D6 240E           2474             ADD     A,#0EH
+01D8 F8             2475             MOV     R0,A
+01D9 120000   F     2476             LCALL   ?C?LLDIDATA0
+01DC EF             2477             MOV     A,R7
+01DD 6B             2478             XRL     A,R3
+01DE FF             2479             MOV     R7,A
+01DF EE             2480             MOV     A,R6
+01E0 6A             2481             XRL     A,R2
+01E1 FE             2482             MOV     R6,A
+01E2 ED             2483             MOV     A,R5
+01E3 69             2484             XRL     A,R1
+01E4 FD             2485             MOV     R5,A
+01E5 EC             2486             MOV     A,R4
+01E6 68             2487             XRL     A,R0
+01E7 FC             2488             MOV     R4,A
+01E8 D000           2489             POP     AR0
+01EA 120000   F     2490             LCALL   ?C?LSTIDATA
+                    2491     ; 
+                    2492     ;     // Switch back left and right block
+                    2493     ;     permute((uint8_t*)inv_ip_permtab, _data.v8, (uint8_t*)out);
+                    2494                             ; SOURCE LINE # 457
+01ED E500     F     2495             MOV     A,?C_IBP
+01EF 2416           2496             ADD     A,#016H
+01F1 F8             2497             MOV     R0,A
+01F2 8603           2498             MOV     AR3,@R0
+01F4 08             2499             INC     R0
+01F5 E6             2500             MOV     A,@R0
+01F6 FA             2501             MOV     R2,A
+01F7 08             2502             INC     R0
+01F8 E6             2503             MOV     A,@R0
+01F9 F9             2504             MOV     R1,A
+01FA 1500     F     2505             DEC     ?C_IBP
+01FC 1500     F     2506             DEC     ?C_IBP
+01FE 1500     F     2507             DEC     ?C_IBP
+0200 A800     F     2508             MOV     R0,?C_IBP
+0202 A603           2509             MOV     @R0,AR3
+0204 08             2510             INC     R0
+0205 A602           2511             MOV     @R0,AR2
+0207 08             2512             INC     R0
+0208 A601           2513             MOV     @R0,AR1
+020A E500     F     2514             MOV     A,?C_IBP
+020C 2411           2515             ADD     A,#011H
+020E 1500     F     2516             DEC     ?C_IBP
+0210 1500     F     2517             DEC     ?C_IBP
+0212 1500     F     2518             DEC     ?C_IBP
+0214 A800     F     2519             MOV     R0,?C_IBP
+0216 7600           2520             MOV     @R0,#00H
+0218 08             2521             INC     R0
+0219 7600           2522             MOV     @R0,#00H
+A51 MACRO ASSEMBLER  DES                                                                  07/14/2015 21:39:16 PAGE    40
+
+021B 08             2523             INC     R0
+021C F6             2524             MOV     @R0,A
+021D 7BFF           2525             MOV     R3,#0FFH
+021F 7A00     F     2526             MOV     R2,#HIGH (inv_ip_permtab)
+0221 7900     F     2527             MOV     R1,#LOW (inv_ip_permtab)
+0223 120000   F     2528             LCALL   _?permute
+                    2529     ; }
+                    2530                             ; SOURCE LINE # 458
+0226 E500     F     2531             MOV     A,?C_IBP
+0228 241F           2532             ADD     A,#01FH
+022A F500     F     2533             MOV     ?C_IBP,A
+022C 22             2534             RET     
+                    2535     ; END OF _?encrypt
+                    2536     
+                    2537     ; 
+                    2538     ; /*$PAGE*/
+                    2539     ; /*
+                    2540     ; *****************************************************************************************
+                             ****************
+                    2541     ; *                                      Decryption function
+                    2542     ; *
+                    2543     ; * Description: This function decrypts a block of 64 bits (8 bytes) with the DES algorithm
+                             .
+                    2544     ; *              Key expansion is done automatically. The key is 64 bits long, but note tha
+                             t
+                    2545     ; *              only 56 bits are used (the LSB of each byte is dropped). The input and out
+                             put
+                    2546     ; *              blocks may overlap.
+                    2547     ; *
+                    2548     ; * Arguments  : out    pointer to the block (64 bit = 8 byte) where the plaintext is writt
+                             en to
+                    2549     ; *
+                    2550     ; *              in     pointer to the block (64 bit = 8 byte) where the ciphertext is read
+                              from
+                    2551     ; *
+                    2552     ; *              key    pointer to the key (64 bit = 8 byte)
+                    2553     ; *
+                    2554     ; * Returns    : None
+                    2555     ; *****************************************************************************************
+                             ****************
+                    2556     ; */
+                    2557     ; void decrypt(void* out, const void* in, const uint8_t* key) reentrant
+                    2558     
+----                2559             RSEG  ?PR?_?decrypt?DES
+0000                2560     _?decrypt:
+                    2561             USING   0
+                    2562                             ; SOURCE LINE # 479
+0000 1500     F     2563             DEC     ?C_IBP
+0002 1500     F     2564             DEC     ?C_IBP
+0004 1500     F     2565             DEC     ?C_IBP
+0006 A800     F     2566             MOV     R0,?C_IBP
+0008 A603           2567             MOV     @R0,AR3
+000A 08             2568             INC     R0
+000B A602           2569             MOV     @R0,AR2
+000D 08             2570             INC     R0
+000E A601           2571             MOV     @R0,AR1
+0010 E500     F     2572             MOV     A,?C_IBP
+0012 24EA           2573             ADD     A,#0EAH
+0014 F500     F     2574             MOV     ?C_IBP,A
+                    2575     ; {
+                    2576     ;     uint8_t kr[6],k[7];
+                    2577     ;     union
+                    2578     ;     {
+                    2579     ;         uint8_t v8[8];
+                    2580     ;         uint32_t v32[2];
+                    2581     ;     } _data;
+A51 MACRO ASSEMBLER  DES                                                                  07/14/2015 21:39:16 PAGE    41
+
+                    2582     ;     int8_t i;
+                    2583     ;     permute((uint8_t*)ip_permtab, (uint8_t*)in, _data.v8);/* Permute IP "Initial Permutat
+                             ion" table with
+                    2584                             ; SOURCE LINE # 488
+0016 240D           2585             ADD     A,#0DH
+0018 1500     F     2586             DEC     ?C_IBP
+001A 1500     F     2587             DEC     ?C_IBP
+001C 1500     F     2588             DEC     ?C_IBP
+001E A800     F     2589             MOV     R0,?C_IBP
+0020 7600           2590             MOV     @R0,#00H
+0022 08             2591             INC     R0
+0023 7600           2592             MOV     @R0,#00H
+0025 08             2593             INC     R0
+0026 F6             2594             MOV     @R0,A
+0027 E500     F     2595             MOV     A,?C_IBP
+0029 241C           2596             ADD     A,#01CH
+002B F8             2597             MOV     R0,A
+002C 8603           2598             MOV     AR3,@R0
+002E 08             2599             INC     R0
+002F E6             2600             MOV     A,@R0
+0030 FA             2601             MOV     R2,A
+0031 08             2602             INC     R0
+0032 E6             2603             MOV     A,@R0
+0033 F9             2604             MOV     R1,A
+0034 1500     F     2605             DEC     ?C_IBP
+0036 1500     F     2606             DEC     ?C_IBP
+0038 1500     F     2607             DEC     ?C_IBP
+003A A800     F     2608             MOV     R0,?C_IBP
+003C A603           2609             MOV     @R0,AR3
+003E 08             2610             INC     R0
+003F A602           2611             MOV     @R0,AR2
+0041 08             2612             INC     R0
+0042 A601           2613             MOV     @R0,AR1
+0044 7BFF           2614             MOV     R3,#0FFH
+0046 7A00     F     2615             MOV     R2,#HIGH (ip_permtab)
+0048 7900     F     2616             MOV     R1,#LOW (ip_permtab)
+004A 120000   F     2617             LCALL   _?permute
+                    2618     ;                                                             input data and return permute
+                             d data in "v8" */
+                    2619     ;     permute((uint8_t*)pc1_permtab, (const uint8_t*)key, k);/* Permute PC1 "Permuted_Choic
+                             e1" table with
+                    2620                             ; SOURCE LINE # 490
+004D E500     F     2621             MOV     A,?C_IBP
+004F 2406           2622             ADD     A,#06H
+0051 1500     F     2623             DEC     ?C_IBP
+0053 1500     F     2624             DEC     ?C_IBP
+0055 1500     F     2625             DEC     ?C_IBP
+0057 A800     F     2626             MOV     R0,?C_IBP
+0059 7600           2627             MOV     @R0,#00H
+005B 08             2628             INC     R0
+005C 7600           2629             MOV     @R0,#00H
+005E 08             2630             INC     R0
+005F F6             2631             MOV     @R0,A
+0060 E500     F     2632             MOV     A,?C_IBP
+0062 241F           2633             ADD     A,#01FH
+0064 F8             2634             MOV     R0,A
+0065 8603           2635             MOV     AR3,@R0
+0067 08             2636             INC     R0
+0068 E6             2637             MOV     A,@R0
+0069 FA             2638             MOV     R2,A
+006A 08             2639             INC     R0
+006B E6             2640             MOV     A,@R0
+006C F9             2641             MOV     R1,A
+006D 1500     F     2642             DEC     ?C_IBP
+006F 1500     F     2643             DEC     ?C_IBP
+0071 1500     F     2644             DEC     ?C_IBP
+A51 MACRO ASSEMBLER  DES                                                                  07/14/2015 21:39:16 PAGE    42
+
+0073 A800     F     2645             MOV     R0,?C_IBP
+0075 A603           2646             MOV     @R0,AR3
+0077 08             2647             INC     R0
+0078 A602           2648             MOV     @R0,AR2
+007A 08             2649             INC     R0
+007B A601           2650             MOV     @R0,AR1
+007D 7BFF           2651             MOV     R3,#0FFH
+007F 7A00     F     2652             MOV     R2,#HIGH (pc1_permtab)
+0081 7900     F     2653             MOV     R1,#LOW (pc1_permtab)
+0083 120000   F     2654             LCALL   _?permute
+                    2655     ;                                                             input key and return permuted
+                              data in "k" */
+                    2656     ;     for(i=7; i>=0; --i)
+                    2657                             ; SOURCE LINE # 492
+0086 E500     F     2658             MOV     A,?C_IBP
+0088 2415           2659             ADD     A,#015H
+008A F8             2660             MOV     R0,A
+008B 7607           2661             MOV     @R0,#07H
+008D                2662     ?C0030:
+008D E500     F     2663             MOV     A,?C_IBP
+008F 2415           2664             ADD     A,#015H
+0091 F9             2665             MOV     R1,A
+0092 C3             2666             CLR     C
+0093 E7             2667             MOV     A,@R1
+0094 6480           2668             XRL     A,#080H
+0096 9480           2669             SUBB    A,#080H
+0098 5003           2670             JNC     $ + 5H
+009A 020000   F     2671             LJMP    ?C0031
+                    2672     ;     {
+                    2673                             ; SOURCE LINE # 493
+                    2674     ;         permute((uint8_t*)pc2_permtab, k, kr);
+                    2675                             ; SOURCE LINE # 494
+009D 120000   F     2676             LCALL   L?0045
+                    2677     ;         L ^= des_f(R, kr);
+                    2678                             ; SOURCE LINE # 495
+00A0 E500     F     2679             MOV     A,?C_IBP
+00A2 240D           2680             ADD     A,#0DH
+00A4 F8             2681             MOV     R0,A
+00A5 C000           2682             PUSH    AR0
+00A7 120000   F     2683             LCALL   ?C?LLDIDATA
+00AA C004           2684             PUSH    AR4
+00AC C005           2685             PUSH    AR5
+00AE C006           2686             PUSH    AR6
+00B0 C007           2687             PUSH    AR7
+00B2 7B00           2688             MOV     R3,#00H
+00B4 A900     F     2689             MOV     R1,?C_IBP
+00B6 7A00           2690             MOV     R2,#00H
+00B8 E500     F     2691             MOV     A,?C_IBP
+00BA 2411           2692             ADD     A,#011H
+00BC F8             2693             MOV     R0,A
+00BD 120000   F     2694             LCALL   ?C?LLDIDATA
+00C0 120000   F     2695             LCALL   _?des_f
+00C3 A804           2696             MOV     R0,AR4
+00C5 A905           2697             MOV     R1,AR5
+00C7 AA06           2698             MOV     R2,AR6
+00C9 AB07           2699             MOV     R3,AR7
+00CB D007           2700             POP     AR7
+00CD D006           2701             POP     AR6
+00CF D005           2702             POP     AR5
+00D1 D004           2703             POP     AR4
+00D3 EF             2704             MOV     A,R7
+00D4 6B             2705             XRL     A,R3
+00D5 FF             2706             MOV     R7,A
+00D6 EE             2707             MOV     A,R6
+00D7 6A             2708             XRL     A,R2
+00D8 FE             2709             MOV     R6,A
+A51 MACRO ASSEMBLER  DES                                                                  07/14/2015 21:39:16 PAGE    43
+
+00D9 ED             2710             MOV     A,R5
+00DA 69             2711             XRL     A,R1
+00DB FD             2712             MOV     R5,A
+00DC EC             2713             MOV     A,R4
+00DD 68             2714             XRL     A,R0
+00DE FC             2715             MOV     R4,A
+00DF D000           2716             POP     AR0
+                    2717     ;         shiftkey_inv(k);
+                    2718                             ; SOURCE LINE # 496
+00E1 120000   F     2719             LCALL   L?0046
+                    2720     ;         if(ROTTABLE&((1<<((i<<1)+1))) )     /* filtered from round "zero" and round "seve
+                             n" 1,2,3,4,5,6 */
+                    2721                             ; SOURCE LINE # 497
+00E4 E500     F     2722             MOV     A,?C_IBP
+00E6 2415           2723             ADD     A,#015H
+00E8 F8             2724             MOV     R0,A
+00E9 E6             2725             MOV     A,@R0
+00EA 25E0           2726             ADD     A,ACC
+00EC 04             2727             INC     A
+00ED FF             2728             MOV     R7,A
+00EE 7401           2729             MOV     A,#01H
+00F0 7E00           2730             MOV     R6,#00H
+00F2 A807           2731             MOV     R0,AR7
+00F4 08             2732             INC     R0
+00F5 8005           2733             SJMP    ?C0040
+00F7                2734     ?C0039:
+00F7 C3             2735             CLR     C
+00F8 33             2736             RLC     A
+00F9 CE             2737             XCH     A,R6
+00FA 33             2738             RLC     A
+00FB CE             2739             XCH     A,R6
+00FC                2740     ?C0040:
+00FC D8F9           2741             DJNZ    R0,?C0039
+00FE FF             2742             MOV     R7,A
+00FF EE             2743             MOV     A,R6
+0100 547E           2744             ANL     A,#07EH
+0102 FE             2745             MOV     R6,A
+0103 EF             2746             MOV     A,R7
+0104 54FC           2747             ANL     A,#0FCH
+0106 4E             2748             ORL     A,R6
+0107 6003           2749             JZ      ?C0033
+                    2750     ;             shiftkey_inv(k);
+                    2751                             ; SOURCE LINE # 498
+0109 120000   F     2752             LCALL   L?0047
+010C                2753     ?C0033:
+                    2754     ; 
+                    2755     ;         permute((uint8_t*)pc2_permtab, k, kr);
+                    2756                             ; SOURCE LINE # 500
+010C 120000   F     2757             LCALL   L?0045
+                    2758     ;         R ^= des_f(L, kr);
+                    2759                             ; SOURCE LINE # 501
+010F E500     F     2760             MOV     A,?C_IBP
+0111 2411           2761             ADD     A,#011H
+0113 F8             2762             MOV     R0,A
+0114 C000           2763             PUSH    AR0
+0116 120000   F     2764             LCALL   ?C?LLDIDATA
+0119 C004           2765             PUSH    AR4
+011B C005           2766             PUSH    AR5
+011D C006           2767             PUSH    AR6
+011F C007           2768             PUSH    AR7
+0121 7B00           2769             MOV     R3,#00H
+0123 A900     F     2770             MOV     R1,?C_IBP
+0125 7A00           2771             MOV     R2,#00H
+0127 E500     F     2772             MOV     A,?C_IBP
+0129 240D           2773             ADD     A,#0DH
+012B F8             2774             MOV     R0,A
+A51 MACRO ASSEMBLER  DES                                                                  07/14/2015 21:39:16 PAGE    44
+
+012C 120000   F     2775             LCALL   ?C?LLDIDATA
+012F 120000   F     2776             LCALL   _?des_f
+0132 A804           2777             MOV     R0,AR4
+0134 A905           2778             MOV     R1,AR5
+0136 AA06           2779             MOV     R2,AR6
+0138 AB07           2780             MOV     R3,AR7
+013A D007           2781             POP     AR7
+013C D006           2782             POP     AR6
+013E D005           2783             POP     AR5
+0140 D004           2784             POP     AR4
+0142 EF             2785             MOV     A,R7
+0143 6B             2786             XRL     A,R3
+0144 FF             2787             MOV     R7,A
+0145 EE             2788             MOV     A,R6
+0146 6A             2789             XRL     A,R2
+0147 FE             2790             MOV     R6,A
+0148 ED             2791             MOV     A,R5
+0149 69             2792             XRL     A,R1
+014A FD             2793             MOV     R5,A
+014B EC             2794             MOV     A,R4
+014C 68             2795             XRL     A,R0
+014D FC             2796             MOV     R4,A
+014E D000           2797             POP     AR0
+                    2798     ;         shiftkey_inv(k);
+                    2799                             ; SOURCE LINE # 502
+0150 120000   F     2800             LCALL   L?0046
+                    2801     ;         if(ROTTABLE&((1<<((i<<1)+0))) )        /* filtered from round "zero" and round "f
+                             our" 1,2,3,5,6,7 */
+                    2802                             ; SOURCE LINE # 503
+0153 E500     F     2803             MOV     A,?C_IBP
+0155 2415           2804             ADD     A,#015H
+0157 F8             2805             MOV     R0,A
+0158 E6             2806             MOV     A,@R0
+0159 25E0           2807             ADD     A,ACC
+015B FF             2808             MOV     R7,A
+015C 7401           2809             MOV     A,#01H
+015E 7E00           2810             MOV     R6,#00H
+0160 A807           2811             MOV     R0,AR7
+0162 08             2812             INC     R0
+0163 8005           2813             SJMP    ?C0042
+0165                2814     ?C0041:
+0165 C3             2815             CLR     C
+0166 33             2816             RLC     A
+0167 CE             2817             XCH     A,R6
+0168 33             2818             RLC     A
+0169 CE             2819             XCH     A,R6
+016A                2820     ?C0042:
+016A D8F9           2821             DJNZ    R0,?C0041
+016C FF             2822             MOV     R7,A
+016D EE             2823             MOV     A,R6
+016E 547E           2824             ANL     A,#07EH
+0170 FE             2825             MOV     R6,A
+0171 EF             2826             MOV     A,R7
+0172 54FC           2827             ANL     A,#0FCH
+0174 4E             2828             ORL     A,R6
+0175 6003           2829             JZ      ?C0032
+                    2830     ;             shiftkey_inv(k);
+                    2831                             ; SOURCE LINE # 504
+0177 120000   F     2832             LCALL   L?0047
+                    2833     ;     }
+                    2834                             ; SOURCE LINE # 505
+017A                2835     ?C0032:
+017A E500     F     2836             MOV     A,?C_IBP
+017C 2415           2837             ADD     A,#015H
+017E F8             2838             MOV     R0,A
+017F 16             2839             DEC     @R0
+A51 MACRO ASSEMBLER  DES                                                                  07/14/2015 21:39:16 PAGE    45
+
+0180 020000   F     2840             LJMP    ?C0030
+0183                2841     ?C0031:
+                    2842     ;     /* L <-> R*/
+                    2843     ;     R ^= L;
+                    2844                             ; SOURCE LINE # 507
+0183 E500     F     2845             MOV     A,?C_IBP
+0185 2411           2846             ADD     A,#011H
+0187 F8             2847             MOV     R0,A
+0188 C000           2848             PUSH    AR0
+018A 120000   F     2849             LCALL   ?C?LLDIDATA
+018D E500     F     2850             MOV     A,?C_IBP
+018F 240D           2851             ADD     A,#0DH
+0191 F8             2852             MOV     R0,A
+0192 120000   F     2853             LCALL   ?C?LLDIDATA0
+0195 EF             2854             MOV     A,R7
+0196 6B             2855             XRL     A,R3
+0197 FF             2856             MOV     R7,A
+0198 EE             2857             MOV     A,R6
+0199 6A             2858             XRL     A,R2
+019A FE             2859             MOV     R6,A
+019B ED             2860             MOV     A,R5
+019C 69             2861             XRL     A,R1
+019D FD             2862             MOV     R5,A
+019E EC             2863             MOV     A,R4
+019F 68             2864             XRL     A,R0
+01A0 FC             2865             MOV     R4,A
+01A1 D000           2866             POP     AR0
+01A3 120000   F     2867             LCALL   ?C?LSTIDATA
+                    2868     ;     L ^= R;
+                    2869                             ; SOURCE LINE # 508
+01A6 E500     F     2870             MOV     A,?C_IBP
+01A8 240D           2871             ADD     A,#0DH
+01AA F8             2872             MOV     R0,A
+01AB C000           2873             PUSH    AR0
+01AD 120000   F     2874             LCALL   ?C?LLDIDATA
+01B0 E500     F     2875             MOV     A,?C_IBP
+01B2 2411           2876             ADD     A,#011H
+01B4 F8             2877             MOV     R0,A
+01B5 120000   F     2878             LCALL   ?C?LLDIDATA0
+01B8 EF             2879             MOV     A,R7
+01B9 6B             2880             XRL     A,R3
+01BA FF             2881             MOV     R7,A
+01BB EE             2882             MOV     A,R6
+01BC 6A             2883             XRL     A,R2
+01BD FE             2884             MOV     R6,A
+01BE ED             2885             MOV     A,R5
+01BF 69             2886             XRL     A,R1
+01C0 FD             2887             MOV     R5,A
+01C1 EC             2888             MOV     A,R4
+01C2 68             2889             XRL     A,R0
+01C3 FC             2890             MOV     R4,A
+01C4 D000           2891             POP     AR0
+01C6 120000   F     2892             LCALL   ?C?LSTIDATA
+                    2893     ;     R ^= L;
+                    2894                             ; SOURCE LINE # 509
+01C9 E500     F     2895             MOV     A,?C_IBP
+01CB 2411           2896             ADD     A,#011H
+01CD F8             2897             MOV     R0,A
+01CE C000           2898             PUSH    AR0
+01D0 120000   F     2899             LCALL   ?C?LLDIDATA
+01D3 E500     F     2900             MOV     A,?C_IBP
+01D5 240D           2901             ADD     A,#0DH
+01D7 F8             2902             MOV     R0,A
+01D8 120000   F     2903             LCALL   ?C?LLDIDATA0
+01DB EF             2904             MOV     A,R7
+01DC 6B             2905             XRL     A,R3
+A51 MACRO ASSEMBLER  DES                                                                  07/14/2015 21:39:16 PAGE    46
+
+01DD FF             2906             MOV     R7,A
+01DE EE             2907             MOV     A,R6
+01DF 6A             2908             XRL     A,R2
+01E0 FE             2909             MOV     R6,A
+01E1 ED             2910             MOV     A,R5
+01E2 69             2911             XRL     A,R1
+01E3 FD             2912             MOV     R5,A
+01E4 EC             2913             MOV     A,R4
+01E5 68             2914             XRL     A,R0
+01E6 FC             2915             MOV     R4,A
+01E7 D000           2916             POP     AR0
+01E9 120000   F     2917             LCALL   ?C?LSTIDATA
+                    2918     ;     permute((uint8_t*)inv_ip_permtab, _data.v8, (uint8_t*)out);
+                    2919                             ; SOURCE LINE # 510
+01EC E500     F     2920             MOV     A,?C_IBP
+01EE 2416           2921             ADD     A,#016H
+01F0 F8             2922             MOV     R0,A
+01F1 8603           2923             MOV     AR3,@R0
+01F3 08             2924             INC     R0
+01F4 E6             2925             MOV     A,@R0
+01F5 FA             2926             MOV     R2,A
+01F6 08             2927             INC     R0
+01F7 E6             2928             MOV     A,@R0
+01F8 F9             2929             MOV     R1,A
+01F9 1500     F     2930             DEC     ?C_IBP
+01FB 1500     F     2931             DEC     ?C_IBP
+01FD 1500     F     2932             DEC     ?C_IBP
+01FF A800     F     2933             MOV     R0,?C_IBP
+0201 A603           2934             MOV     @R0,AR3
+0203 08             2935             INC     R0
+0204 A602           2936             MOV     @R0,AR2
+0206 08             2937             INC     R0
+0207 A601           2938             MOV     @R0,AR1
+0209 E500     F     2939             MOV     A,?C_IBP
+020B 2410           2940             ADD     A,#010H
+020D 1500     F     2941             DEC     ?C_IBP
+020F 1500     F     2942             DEC     ?C_IBP
+0211 1500     F     2943             DEC     ?C_IBP
+0213 A800     F     2944             MOV     R0,?C_IBP
+0215 7600           2945             MOV     @R0,#00H
+0217 08             2946             INC     R0
+0218 7600           2947             MOV     @R0,#00H
+021A 08             2948             INC     R0
+021B F6             2949             MOV     @R0,A
+021C 7BFF           2950             MOV     R3,#0FFH
+021E 7A00     F     2951             MOV     R2,#HIGH (inv_ip_permtab)
+0220 7900     F     2952             MOV     R1,#LOW (inv_ip_permtab)
+0222 120000   F     2953             LCALL   _?permute
+                    2954     ; }
+                    2955                             ; SOURCE LINE # 511
+0225 E500     F     2956             MOV     A,?C_IBP
+0227 241F           2957             ADD     A,#01FH
+0229 F500     F     2958             MOV     ?C_IBP,A
+022B 22             2959             RET     
+                    2960     ; END OF _?decrypt
+                    2961     
+                    2962             END
+A51 MACRO ASSEMBLER  DES                                                                  07/14/2015 21:39:16 PAGE    47
+
+SYMBOL TABLE LISTING
+------ ----- -------
+
+
+N A M E                     T Y P E  V A L U E   ATTRIBUTES
+
+?C0001 . . . . . . . . . .  C ADDR   006EH   R   SEG=?PR?_?PERMUTE?DES
+?C0004 . . . . . . . . . .  C ADDR   0087H   R   SEG=?PR?_?PERMUTE?DES
+?C0005 . . . . . . . . . .  C ADDR   0114H   R   SEG=?PR?_?PERMUTE?DES
+?C0006 . . . . . . . . . .  C ADDR   010CH   R   SEG=?PR?_?PERMUTE?DES
+?C0008 . . . . . . . . . .  C ADDR   013CH   R   SEG=?PR?_?PERMUTE?DES
+?C0012 . . . . . . . . . .  C ADDR   0040H   R   SEG=?PR?_?SUBSTITUTE?DES
+?C0013 . . . . . . . . . .  C ADDR   0045H   R   SEG=?PR?_?SUBSTITUTE?DES
+?C0014 . . . . . . . . . .  C ADDR   0049H   R   SEG=?PR?_?SUBSTITUTE?DES
+?C0015 . . . . . . . . . .  C ADDR   005CH   R   SEG=?PR?_?DES_F?DES
+?C0016 . . . . . . . . . .  C ADDR   00A0H   R   SEG=?PR?_?DES_F?DES
+?C0018 . . . . . . . . . .  C ADDR   00BDH   R   SEG=?PR?_?DES_F?DES
+?C0019 . . . . . . . . . .  C ADDR   013DH   R   SEG=?PR?_?DES_F?DES
+?C0021 . . . . . . . . . .  C ADDR   0174H   R   SEG=?PR?_?DES_F?DES
+?C0022 . . . . . . . . . .  C ADDR   008DH   R   SEG=?PR?_?ENCRYPT?DES
+?C0023 . . . . . . . . . .  C ADDR   0184H   R   SEG=?PR?_?ENCRYPT?DES
+?C0025 . . . . . . . . . .  C ADDR   00C4H   R   SEG=?PR?_?ENCRYPT?DES
+?C0026 . . . . . . . . . .  C ADDR   00C1H   R   SEG=?PR?_?ENCRYPT?DES
+?C0027 . . . . . . . . . .  C ADDR   0134H   R   SEG=?PR?_?ENCRYPT?DES
+?C0028 . . . . . . . . . .  C ADDR   0131H   R   SEG=?PR?_?ENCRYPT?DES
+?C0030 . . . . . . . . . .  C ADDR   008DH   R   SEG=?PR?_?DECRYPT?DES
+?C0031 . . . . . . . . . .  C ADDR   0183H   R   SEG=?PR?_?DECRYPT?DES
+?C0032 . . . . . . . . . .  C ADDR   017AH   R   SEG=?PR?_?DECRYPT?DES
+?C0033 . . . . . . . . . .  C ADDR   010CH   R   SEG=?PR?_?DECRYPT?DES
+?C0036 . . . . . . . . . .  C ADDR   00A5H   R   SEG=?PR?_?PERMUTE?DES
+?C0037 . . . . . . . . . .  C ADDR   00F2H   R   SEG=?PR?_?PERMUTE?DES
+?C0038 . . . . . . . . . .  C ADDR   00F8H   R   SEG=?PR?_?PERMUTE?DES
+?C0039 . . . . . . . . . .  C ADDR   00F7H   R   SEG=?PR?_?DECRYPT?DES
+?C0040 . . . . . . . . . .  C ADDR   00FCH   R   SEG=?PR?_?DECRYPT?DES
+?C0041 . . . . . . . . . .  C ADDR   0165H   R   SEG=?PR?_?DECRYPT?DES
+?C0042 . . . . . . . . . .  C ADDR   016AH   R   SEG=?PR?_?DECRYPT?DES
+?C0043 . . . . . . . . . .  C ADDR   0042H   R   SEG=?PR?_?SUBSTITUTE?DES
+?C?CLDOPTR . . . . . . . .  C ADDR   -----       EXT
+?C?CLDPTR. . . . . . . . .  C ADDR   -----       EXT
+?C?COPY. . . . . . . . . .  C ADDR   -----       EXT
+?C?CSTOPTR . . . . . . . .  C ADDR   -----       EXT
+?C?CSTPTR. . . . . . . . .  C ADDR   -----       EXT
+?C?LLDIDATA. . . . . . . .  C ADDR   -----       EXT
+?C?LLDIDATA0 . . . . . . .  C ADDR   -----       EXT
+?C?LSHL. . . . . . . . . .  C ADDR   -----       EXT
+?C?LSTIDATA. . . . . . . .  C ADDR   -----       EXT
+?C?LSTKIDATA . . . . . . .  C ADDR   -----       EXT
+?CO?DES. . . . . . . . . .  C SEG    02FAH       REL=UNIT
+?C_IBP . . . . . . . . . .  D ADDR   -----       EXT
+?PR?_?DECRYPT?DES. . . . .  C SEG    022CH       REL=UNIT
+?PR?_?DES_F?DES. . . . . .  C SEG    017BH       REL=UNIT
+?PR?_?ENCRYPT?DES. . . . .  C SEG    022DH       REL=UNIT
+?PR?_?PERMUTE?DES. . . . .  C SEG    0143H       REL=UNIT
+?PR?_?SHIFTKEY?DES . . . .  C SEG    0077H       REL=UNIT
+?PR?_?SHIFTKEY_INV?DES . .  C SEG    007AH       REL=UNIT
+?PR?_?SPLITIN6BITWORDS?DES  C SEG    006EH       REL=UNIT
+?PR?_?SUBSTITUTE?DES . . .  C SEG    0050H       REL=UNIT
+AC . . . . . . . . . . . .  B ADDR   00D0H.6 A   
+ACC. . . . . . . . . . . .  D ADDR   00E0H   A   
+AR0. . . . . . . . . . . .  D ADDR   0000H   A   
+AR1. . . . . . . . . . . .  D ADDR   0001H   A   
+AR2. . . . . . . . . . . .  D ADDR   0002H   A   
+AR3. . . . . . . . . . . .  D ADDR   0003H   A   
+AR4. . . . . . . . . . . .  D ADDR   0004H   A   
+AR5. . . . . . . . . . . .  D ADDR   0005H   A   
+AR6. . . . . . . . . . . .  D ADDR   0006H   A   
+A51 MACRO ASSEMBLER  DES                                                                  07/14/2015 21:39:16 PAGE    48
+
+AR7. . . . . . . . . . . .  D ADDR   0007H   A   
+B. . . . . . . . . . . . .  D ADDR   00F0H   A   
+CP_RL2 . . . . . . . . . .  B ADDR   00C8H.0 A   
+CY . . . . . . . . . . . .  B ADDR   00D0H.7 A   
+C_T2 . . . . . . . . . . .  B ADDR   00C8H.1 A   
+DES. . . . . . . . . . . .  N NUMB   -----       
+DPH. . . . . . . . . . . .  D ADDR   0083H   A   
+DPL. . . . . . . . . . . .  D ADDR   0082H   A   
+EA . . . . . . . . . . . .  B ADDR   00A8H.7 A   
+ES . . . . . . . . . . . .  B ADDR   00A8H.4 A   
+ET0. . . . . . . . . . . .  B ADDR   00A8H.1 A   
+ET1. . . . . . . . . . . .  B ADDR   00A8H.3 A   
+ET2. . . . . . . . . . . .  B ADDR   00A8H.5 A   
+EX0. . . . . . . . . . . .  B ADDR   00A8H.0 A   
+EX1. . . . . . . . . . . .  B ADDR   00A8H.2 A   
+EXEN2. . . . . . . . . . .  B ADDR   00C8H.3 A   
+EXF2 . . . . . . . . . . .  B ADDR   00C8H.6 A   
+E_PERMTAB. . . . . . . . .  C ADDR   0100H   R   SEG=?CO?DES
+F0 . . . . . . . . . . . .  B ADDR   00D0H.5 A   
+IE . . . . . . . . . . . .  D ADDR   00A8H   A   
+IE0. . . . . . . . . . . .  B ADDR   0088H.1 A   
+IE1. . . . . . . . . . . .  B ADDR   0088H.3 A   
+INT0 . . . . . . . . . . .  B ADDR   00B0H.2 A   
+INT1 . . . . . . . . . . .  B ADDR   00B0H.3 A   
+INV_IP_PERMTAB . . . . . .  C ADDR   0196H   R   SEG=?CO?DES
+IP . . . . . . . . . . . .  D ADDR   00B8H   A   
+IP_PERMTAB . . . . . . . .  C ADDR   0154H   R   SEG=?CO?DES
+IT0. . . . . . . . . . . .  B ADDR   0088H.0 A   
+IT1. . . . . . . . . . . .  B ADDR   0088H.2 A   
+L?0044 . . . . . . . . . .  C ADDR   0000H   R   SEG=?PR?_?PERMUTE?DES
+L?0045 . . . . . . . . . .  C ADDR   0000H   R   SEG=?PR?_?PERMUTE?DES
+L?0046 . . . . . . . . . .  C ADDR   0000H   R   SEG=?PR?_?SHIFTKEY_INV?DES
+L?0047 . . . . . . . . . .  C ADDR   0003H   R   SEG=?PR?_?SHIFTKEY_INV?DES
+L?0048 . . . . . . . . . .  C ADDR   0000H   R   SEG=?PR?_?SHIFTKEY?DES
+L?0049 . . . . . . . . . .  C ADDR   0000H   R   SEG=?PR?_?SHIFTKEY?DES
+OV . . . . . . . . . . . .  B ADDR   00D0H.2 A   
+P. . . . . . . . . . . . .  B ADDR   00D0H.0 A   
+P0 . . . . . . . . . . . .  D ADDR   0080H   A   
+P1 . . . . . . . . . . . .  D ADDR   0090H   A   
+P2 . . . . . . . . . . . .  D ADDR   00A0H   A   
+P3 . . . . . . . . . . . .  D ADDR   00B0H   A   
+PC1_PERMTAB. . . . . . . .  C ADDR   01D8H   R   SEG=?CO?DES
+PC2_PERMTAB. . . . . . . .  C ADDR   0212H   R   SEG=?CO?DES
+PCON . . . . . . . . . . .  D ADDR   0087H   A   
+PS . . . . . . . . . . . .  B ADDR   00B8H.4 A   
+PSW. . . . . . . . . . . .  D ADDR   00D0H   A   
+PT0. . . . . . . . . . . .  B ADDR   00B8H.1 A   
+PT1. . . . . . . . . . . .  B ADDR   00B8H.3 A   
+PT2. . . . . . . . . . . .  B ADDR   00B8H.5 A   
+PX0. . . . . . . . . . . .  B ADDR   00B8H.0 A   
+PX1. . . . . . . . . . . .  B ADDR   00B8H.2 A   
+P_PERMTAB. . . . . . . . .  C ADDR   0132H   R   SEG=?CO?DES
+RB8. . . . . . . . . . . .  B ADDR   0098H.2 A   
+RCAP2H . . . . . . . . . .  D ADDR   00CBH   A   
+RCAP2L . . . . . . . . . .  D ADDR   00CAH   A   
+RCLK . . . . . . . . . . .  B ADDR   00C8H.5 A   
+RD . . . . . . . . . . . .  B ADDR   00B0H.7 A   
+REN. . . . . . . . . . . .  B ADDR   0098H.4 A   
+RI . . . . . . . . . . . .  B ADDR   0098H.0 A   
+RS0. . . . . . . . . . . .  B ADDR   00D0H.3 A   
+RS1. . . . . . . . . . . .  B ADDR   00D0H.4 A   
+RXD. . . . . . . . . . . .  B ADDR   00B0H.0 A   
+SBOX . . . . . . . . . . .  C ADDR   0000H   R   SEG=?CO?DES
+SBUF . . . . . . . . . . .  D ADDR   0099H   A   
+SCON . . . . . . . . . . .  D ADDR   0098H   A   
+SHIFTKEYINV_PERMTAB. . . .  C ADDR   02C0H   R   SEG=?CO?DES
+A51 MACRO ASSEMBLER  DES                                                                  07/14/2015 21:39:16 PAGE    49
+
+SHIFTKEY_PERMTAB . . . . .  C ADDR   0286H   R   SEG=?CO?DES
+SM0. . . . . . . . . . . .  B ADDR   0098H.7 A   
+SM1. . . . . . . . . . . .  B ADDR   0098H.6 A   
+SM2. . . . . . . . . . . .  B ADDR   0098H.5 A   
+SP . . . . . . . . . . . .  D ADDR   0081H   A   
+SPLITIN6BITWORD_PERMTAB. .  C ADDR   0244H   R   SEG=?CO?DES
+T0 . . . . . . . . . . . .  B ADDR   00B0H.4 A   
+T1 . . . . . . . . . . . .  B ADDR   00B0H.5 A   
+T2 . . . . . . . . . . . .  B ADDR   0090H.0 A   
+T2CON. . . . . . . . . . .  D ADDR   00C8H   A   
+T2EX . . . . . . . . . . .  B ADDR   0090H.1 A   
+TB8. . . . . . . . . . . .  B ADDR   0098H.3 A   
+TCLK . . . . . . . . . . .  B ADDR   00C8H.4 A   
+TCON . . . . . . . . . . .  D ADDR   0088H   A   
+TF0. . . . . . . . . . . .  B ADDR   0088H.5 A   
+TF1. . . . . . . . . . . .  B ADDR   0088H.7 A   
+TF2. . . . . . . . . . . .  B ADDR   00C8H.7 A   
+TH0. . . . . . . . . . . .  D ADDR   008CH   A   
+TH1. . . . . . . . . . . .  D ADDR   008DH   A   
+TH2. . . . . . . . . . . .  D ADDR   00CDH   A   
+TI . . . . . . . . . . . .  B ADDR   0098H.1 A   
+TL0. . . . . . . . . . . .  D ADDR   008AH   A   
+TL1. . . . . . . . . . . .  D ADDR   008BH   A   
+TL2. . . . . . . . . . . .  D ADDR   00CCH   A   
+TMOD . . . . . . . . . . .  D ADDR   0089H   A   
+TR0. . . . . . . . . . . .  B ADDR   0088H.4 A   
+TR1. . . . . . . . . . . .  B ADDR   0088H.6 A   
+TR2. . . . . . . . . . . .  B ADDR   00C8H.2 A   
+TXD. . . . . . . . . . . .  B ADDR   00B0H.1 A   
+WR . . . . . . . . . . . .  B ADDR   00B0H.6 A   
+_?DECRYPT. . . . . . . . .  C ADDR   0000H   R   SEG=?PR?_?DECRYPT?DES
+_?DES_F. . . . . . . . . .  C ADDR   0000H   R   SEG=?PR?_?DES_F?DES
+_?ENCRYPT. . . . . . . . .  C ADDR   0000H   R   SEG=?PR?_?ENCRYPT?DES
+_?PERMUTE. . . . . . . . .  C ADDR   002BH   R   SEG=?PR?_?PERMUTE?DES
+_?SHIFTKEY . . . . . . . .  C ADDR   0009H   R   SEG=?PR?_?SHIFTKEY?DES
+_?SHIFTKEY_INV . . . . . .  C ADDR   000CH   R   SEG=?PR?_?SHIFTKEY_INV?DES
+_?SPLITIN6BITWORDS . . . .  C ADDR   0000H   R   SEG=?PR?_?SPLITIN6BITWORDS?DES
+_?SUBSTITUTE . . . . . . .  C ADDR   0000H   R   SEG=?PR?_?SUBSTITUTE?DES
+
+
+REGISTER BANK(S) USED: 0 
+
+
+ASSEMBLY COMPLETE.  0 WARNING(S), 0 ERROR(S)

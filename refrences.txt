@@ -1,0 +1,11 @@
+https://www.keil.com/										compiler
+http://www.atmel.com										data-sheet
+https://en.wikipedia.org/wiki/Data_Encryption_Standard		explanation
+https://github.com/mbrown1413/des							code algorithm
+http://des.online-domain-tools.com/							test code
+http://www.ic.unicamp.br/~lucchesi/cracking-des/CH5/
+https://www.cs.york.ac.uk/rts/documents/thesis/gray10.pdf
+https://github.com/Octoate/ArduinoDES
+site:github.com des
+https://github.com/autoMAD/8051
+github.com 8051 uart

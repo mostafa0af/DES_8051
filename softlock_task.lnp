@@ -1,0 +1,5 @@
+"main.obj",
+"DES.obj",
+"UART.obj",
+"terminal.obj" 
+TO "softlock_task" 

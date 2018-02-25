@@ -1,0 +1,400 @@
+; .\UART.SRC generated from: UART.c
+; COMPILER INVOKED BY:
+;        C:\Keil\C51\BIN\C51.EXE UART.c BROWSE DEBUG OBJECTEXTEND CODE LISTINCLUDE SRC(.\UART.SRC)
+
+$NOMOD51
+
+NAME	UART
+
+P0	DATA	080H
+P1	DATA	090H
+P2	DATA	0A0H
+P3	DATA	0B0H
+T0	BIT	0B0H.4
+AC	BIT	0D0H.6
+T1	BIT	0B0H.5
+T2	BIT	090H.0
+EA	BIT	0A8H.7
+IE	DATA	0A8H
+EXF2	BIT	0C8H.6
+RD	BIT	0B0H.7
+ES	BIT	0A8H.4
+IP	DATA	0B8H
+RI	BIT	098H.0
+INT0	BIT	0B0H.2
+CY	BIT	0D0H.7
+TI	BIT	098H.1
+INT1	BIT	0B0H.3
+RCAP2H	DATA	0CBH
+PS	BIT	0B8H.4
+SP	DATA	081H
+T2EX	BIT	090H.1
+OV	BIT	0D0H.2
+RCAP2L	DATA	0CAH
+C_T2	BIT	0C8H.1
+WR	BIT	0B0H.6
+RCLK	BIT	0C8H.5
+TCLK	BIT	0C8H.4
+SBUF	DATA	099H
+PCON	DATA	087H
+SCON	DATA	098H
+TMOD	DATA	089H
+TCON	DATA	088H
+IE0	BIT	088H.1
+IE1	BIT	088H.3
+B	DATA	0F0H
+CP_RL2	BIT	0C8H.0
+ACC	DATA	0E0H
+ET0	BIT	0A8H.1
+ET1	BIT	0A8H.3
+TF0	BIT	088H.5
+ET2	BIT	0A8H.5
+TF1	BIT	088H.7
+TF2	BIT	0C8H.7
+RB8	BIT	098H.2
+TH0	DATA	08CH
+EX0	BIT	0A8H.0
+IT0	BIT	088H.0
+TH1	DATA	08DH
+TB8	BIT	098H.3
+EX1	BIT	0A8H.2
+IT1	BIT	088H.2
+TH2	DATA	0CDH
+P	BIT	0D0H.0
+SM0	BIT	098H.7
+TL0	DATA	08AH
+SM1	BIT	098H.6
+TL1	DATA	08BH
+SM2	BIT	098H.5
+TL2	DATA	0CCH
+PT0	BIT	0B8H.1
+PT1	BIT	0B8H.3
+RS0	BIT	0D0H.3
+PT2	BIT	0B8H.5
+TR0	BIT	088H.4
+RS1	BIT	0D0H.4
+TR1	BIT	088H.6
+TR2	BIT	0C8H.2
+PX0	BIT	0B8H.0
+PX1	BIT	0B8H.2
+DPH	DATA	083H
+DPL	DATA	082H
+EXEN2	BIT	0C8H.3
+REN	BIT	098H.4
+T2CON	DATA	0C8H
+RXD	BIT	0B0H.0
+TXD	BIT	0B0H.1
+F0	BIT	0D0H.5
+PSW	DATA	0D0H
+?PR?uart_init?UART   SEGMENT CODE 
+?PR?_uart_data?UART  SEGMENT CODE 
+?PR?_uart_string?UART                    SEGMENT CODE 
+?DT?_uart_string?UART                    SEGMENT DATA OVERLAYABLE 
+?PR?uart_rx?UART     SEGMENT CODE 
+?PR?_?uart_getstring?UART                SEGMENT CODE 
+?DT?UART             SEGMENT DATA 
+	EXTRN	CODE (?C?CLDOPTR)
+	EXTRN	DATA (?C_IBP)
+	EXTRN	CODE (?C?CSTPTR)
+	EXTRN	CODE (?C?CLDPTR)
+	PUBLIC	_?uart_getstring
+	PUBLIC	uart_rx
+	PUBLIC	_uart_string
+	PUBLIC	_uart_data
+	PUBLIC	uart_init
+
+	RSEG  ?DT?_uart_string?UART
+?_uart_string?BYTE:
+        mad?241:   DS   3
+
+	RSEG  ?DT?UART
+         output:   DS   26
+; /*
+; *************************************************************************************************************
+; *                                        UART Communication
+; 
+; * File : UART.C
+; * By   : github.com
+; *************************************************************************************************************
+; */
+; #include "UART.h"
+; //#include "stdbool.h"
+; //#include "stdint.h"
+; 
+; /*$PAGE*/
+; /*
+; *********************************************************************************************************
+; *                                      UART initialization
+; *
+; * Description: This function use to enable UART peripheral and set the parameters.
+; *			   Setup the serial port for 1200 baud at 16MHz.
+; *
+; * Arguments  : None
+; *
+; * Returns    : None
+; *********************************************************************************************************
+; */
+; void uart_init()
+
+	RSEG  ?PR?uart_init?UART
+uart_init:
+			; SOURCE LINE # 26
+; {
+			; SOURCE LINE # 27
+;     TMOD |= 0x20;               /* TMOD: timer 1, mode 2, 8-bit reload        */
+			; SOURCE LINE # 28
+	ORL  	TMOD,#020H
+;     SCON  = 0x50;		        		/* SCON: mode 1, 8-bit UART, enable rcvr      */
+			; SOURCE LINE # 29
+	MOV  	SCON,#050H
+;     TH1   = 221;                /* TH1:  reload value for 1200 baud @ 16MHz   */
+			; SOURCE LINE # 30
+	MOV  	TH1,#0DDH
+;     TR1   = 1;                  /* TR1:  timer 1 run                          */
+			; SOURCE LINE # 31
+	SETB 	TR1
+; }
+			; SOURCE LINE # 32
+	RET  	
+; END OF uart_init
+
+; 
+; /*$PAGE*/
+; /*
+; *********************************************************************************************************
+; *                                      UART send data
+; *
+; * Description: This function use to send passed data via UART peripheral.
+; *
+; * Arguments  : mad		is a character will send in Tx pin.
+; *
+; * Returns    : None
+; *********************************************************************************************************
+; */
+; void uart_data(unsigned char mad)
+
+	RSEG  ?PR?_uart_data?UART
+_uart_data:
+			; SOURCE LINE # 46
+;---- Variable 'mad?140' assigned to Register 'R7' ----
+; {
+			; SOURCE LINE # 47
+; //	#progma asm
+; //	MOV SBUF,mad ; write same data to uart
+; //	#progma end asm
+; 
+; //	__asm {
+; //	_asm
+; //		MOV SBUF,mad ; write same data to uart
+; //	//}
+; //	_endasm;
+; //_asm NOP _endasm
+; ////asm { 0x00 }
+; ////asm(" nop ");
+;     SBUF=mad;
+			; SOURCE LINE # 60
+	MOV  	SBUF,R7
+?C0002:
+;     while(TI==0);
+			; SOURCE LINE # 61
+	JNB  	TI,?C0002
+?C0003:
+;     TI=0;
+			; SOURCE LINE # 62
+	CLR  	TI
+; }
+			; SOURCE LINE # 63
+	RET  	
+; END OF _uart_data
+
+; 
+; /*$PAGE*/
+; /*
+; *********************************************************************************************************
+; *                                      UART send string
+; *
+; * Description: This function use to send array of char via UART peripheral.
+; *
+; * Arguments  : mad		is a point to the 1st element of string.
+; *
+; * Returns    : None
+; *********************************************************************************************************
+; */
+; void uart_string(unsigned char mad[])
+
+	RSEG  ?PR?_uart_string?UART
+_uart_string:
+	USING	0
+			; SOURCE LINE # 77
+	MOV  	mad?241,R3
+	MOV  	mad?241+01H,R2
+	MOV  	mad?241+02H,R1
+; {
+			; SOURCE LINE # 78
+;     unsigned int j;
+; 
+;     for(j=0; mad[j]!='\0'; j++)
+			; SOURCE LINE # 81
+;---- Variable 'j?242' assigned to Register 'R4/R5' ----
+	CLR  	A
+	MOV  	R5,A
+	MOV  	R4,A
+?C0005:
+	MOV  	R3,mad?241
+	MOV  	R2,mad?241+01H
+	MOV  	R1,mad?241+02H
+	MOV  	DPL,R5
+	MOV  	DPH,R4
+	LCALL	?C?CLDOPTR
+	MOV  	R7,A
+	JZ   	?C0008
+;         uart_data(mad[j]);
+			; SOURCE LINE # 82
+	LCALL	_uart_data
+	INC  	R5
+	CJNE 	R5,#00H,?C0016
+	INC  	R4
+?C0016:
+	SJMP 	?C0005
+; }
+			; SOURCE LINE # 83
+?C0008:
+	RET  	
+; END OF _uart_string
+
+; 
+; /*$PAGE*/
+; /*
+; *********************************************************************************************************
+; *                                      UART get data
+; *
+; * Description: This function use to data from UART peripheral
+; *
+; * Arguments  : None.
+; *
+; * Returns    : ch	   is a character will receive data.
+; *********************************************************************************************************
+; */
+; unsigned char uart_rx()
+
+	RSEG  ?PR?uart_rx?UART
+uart_rx:
+	USING	0
+			; SOURCE LINE # 97
+; {
+			; SOURCE LINE # 98
+?C0009:
+;     unsigned char ch;
+;     while(RI==0);
+			; SOURCE LINE # 100
+	JNB  	RI,?C0009
+?C0010:
+;     ch=SBUF;
+			; SOURCE LINE # 101
+;---- Variable 'ch?343' assigned to Register 'R7' ----
+	MOV  	R7,SBUF
+;     RI = 0;
+			; SOURCE LINE # 102
+	CLR  	RI
+;     return (ch);
+			; SOURCE LINE # 103
+; }
+			; SOURCE LINE # 104
+?C0011:
+	RET  	
+; END OF uart_rx
+
+; 
+; /*$PAGE*/
+; /*
+; *********************************************************************************************************
+; *                                      UART get string
+; *
+; * Description: This function use to receive data and put it into array of characters
+; *
+; * Arguments  : None.
+; *
+; * Returns    : output	is a point to the 1st element of string.
+; *********************************************************************************************************
+; */
+; char* uart_getstring(void) reentrant
+
+	RSEG  ?PR?_?uart_getstring?UART
+_?uart_getstring:
+	USING	0
+			; SOURCE LINE # 118
+	DEC  	?C_IBP
+	DEC  	?C_IBP
+	DEC  	?C_IBP
+; {
+;     static char output[26];
+;     char* str = output;
+			; SOURCE LINE # 121
+	MOV  	R0,?C_IBP
+	MOV  	@R0,#00H
+	INC  	R0
+	MOV  	@R0,#HIGH (output)
+	INC  	R0
+	MOV  	@R0,#LOW (output)
+?C0014:
+;     do
+;     {
+			; SOURCE LINE # 123
+;         str++;
+			; SOURCE LINE # 124
+	MOV  	R0,?C_IBP
+	INC  	R0
+	INC  	R0
+	MOV  	A,#01H
+	ADD  	A,@R0
+	MOV  	@R0,A
+	DEC  	R0
+	CLR  	A
+	ADDC 	A,@R0
+	MOV  	@R0,A
+;         *str = uart_rx();
+			; SOURCE LINE # 125
+	LCALL	uart_rx
+	MOV  	R0,?C_IBP
+	MOV  	AR3,@R0
+	INC  	R0
+	MOV  	A,@R0
+	MOV  	R2,A
+	INC  	R0
+	MOV  	A,@R0
+	MOV  	R1,A
+	MOV  	A,R7
+	LCALL	?C?CSTPTR
+;     }
+			; SOURCE LINE # 126
+;     while(*str != '\r');
+			; SOURCE LINE # 127
+	MOV  	R0,?C_IBP
+	MOV  	AR3,@R0
+	INC  	R0
+	MOV  	A,@R0
+	MOV  	R2,A
+	INC  	R0
+	MOV  	A,@R0
+	MOV  	R1,A
+	LCALL	?C?CLDPTR
+	CJNE 	A,#0DH,?C0014
+;     *str = '\0';
+			; SOURCE LINE # 128
+	CLR  	A
+	LCALL	?C?CSTPTR
+;     return output+1;
+			; SOURCE LINE # 129
+	MOV  	R3,A
+	MOV  	R2,#HIGH (output+01H)
+	MOV  	R1,#LOW (output+01H)
+; }
+			; SOURCE LINE # 130
+?C0015:
+	INC  	?C_IBP
+	INC  	?C_IBP
+	INC  	?C_IBP
+	RET  	
+; END OF _?uart_getstring
+
+	END
